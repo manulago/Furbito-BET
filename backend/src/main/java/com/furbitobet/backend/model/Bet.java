@@ -16,7 +16,7 @@ public class Bet {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "bet_outcomes", joinColumns = @JoinColumn(name = "bet_id"), inverseJoinColumns = @JoinColumn(name = "outcome_id"))
     private java.util.List<Outcome> outcomes;
 
