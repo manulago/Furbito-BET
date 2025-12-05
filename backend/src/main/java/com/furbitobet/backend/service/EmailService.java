@@ -12,6 +12,7 @@ public class EmailService {
     private JavaMailSender emailSender;
 
     public void sendWelcomeEmail(String to, String username, String password) {
+        System.out.println("Attempting to send welcome email to: " + to);
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom("furbitobet@gmail.com");
         message.setTo(to);
@@ -26,7 +27,14 @@ public class EmailService {
                 "¡Buena suerte con tus apuestas!\n" +
                 "El equipo de FurbitoBET");
 
-        emailSender.send(message);
+        try {
+            emailSender.send(message);
+            System.out.println("Welcome email sent successfully to: " + to);
+        } catch (Exception e) {
+            System.err.println("Failed to send welcome email to " + to + ": " + e.getMessage());
+            e.printStackTrace();
+            throw e;
+        }
     }
 
     public void sendSimpleMessage(String to, String subject, String text) {
