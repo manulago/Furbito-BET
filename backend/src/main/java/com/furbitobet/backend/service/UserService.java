@@ -60,6 +60,12 @@ public class UserService implements UserDetailsService {
         userRepository.deleteById(id);
     }
 
+    public void updatePassword(Long userId, String newPassword) {
+        User user = getUserById(userId);
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+    }
+
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository.findByUsername(username)
