@@ -49,7 +49,7 @@ public class UserService implements UserDetailsService {
     }
 
     public java.util.List<User> getRanking() {
-        return userRepository.findAllByOrderByBalanceDesc();
+        return userRepository.findByRoleNotOrderByBalanceDesc(User.Role.ADMIN);
     }
 
     public void deleteUser(Long id) {

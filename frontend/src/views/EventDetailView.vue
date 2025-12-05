@@ -2,9 +2,11 @@
 import { ref, onMounted, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { useBetStore } from '../stores/bet'
+import { useLanguageStore } from '../stores/language'
 
 const route = useRoute()
 const betStore = useBetStore()
+const langStore = useLanguageStore()
 const event = ref(null)
 const loading = ref(true)
 
@@ -26,7 +28,7 @@ const outcomesByCategory = computed(() => {
   
   const groups = {}
   event.value.outcomes.forEach(outcome => {
-    const category = outcome.outcomeGroup || 'Uncategorized'
+    const category = outcome.outcomeGroup || langStore.t('event.uncategorized')
     if (!groups[category]) {
       groups[category] = []
     }
@@ -39,13 +41,13 @@ onMounted(fetchEvent)
 </script>
 
 <template>
-  <div v-if="loading" class="text-white text-center py-10">Loading...</div>
-  <div v-else-if="!event" class="text-white text-center py-10">Event not found</div>
+  <div v-if="loading" class="text-white text-center py-10">{{ langStore.t('event.loading') }}</div>
+  <div v-else-if="!event" class="text-white text-center py-10">{{ langStore.t('event.notFound') }}</div>
   <div v-else class="space-y-8 pb-24">
     <div class="bg-gray-800 p-6 rounded-lg shadow-lg border border-gray-700">
       <h2 class="text-3xl font-bold text-white mb-2">{{ event.name }}</h2>
-      <p class="text-gray-400">{{ new Date(event.date).toLocaleString() }}</p>
-      <span class="inline-block mt-2 text-xs font-bold px-2 py-1 rounded bg-red-500/20 text-red-400 uppercase tracking-wider">{{ event.status }}</span>
+      <p class="text-gray-400">{{ new Date(event.date).toLocaleString(langStore.currentLanguage) }}</p>
+      <span class="inline-block mt-2 text-xs font-bold px-2 py-1 rounded bg-red-500/20 text-red-400 uppercase tracking-wider">{{ langStore.t('common.status.' + event.status) }}</span>
     </div>
 
     <div class="space-y-6">

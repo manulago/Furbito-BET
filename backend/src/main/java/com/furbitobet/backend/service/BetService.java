@@ -31,6 +31,15 @@ public class BetService {
             throw new RuntimeException("No outcomes selected");
         }
 
+        // Check if any event is completed or cancelled
+        for (Outcome outcome : outcomes) {
+            if (outcome.getEvent().getStatus() == com.furbitobet.backend.model.Event.EventStatus.COMPLETED ||
+                    outcome.getEvent().getStatus() == com.furbitobet.backend.model.Event.EventStatus.CANCELLED) {
+                throw new RuntimeException(
+                        "Cannot place bet on completed or cancelled event: " + outcome.getEvent().getName());
+            }
+        }
+
         // Check for mutually exclusive outcomes
         for (int i = 0; i < outcomes.size(); i++) {
             for (int j = i + 1; j < outcomes.size(); j++) {
@@ -97,6 +106,9 @@ public class BetService {
         betRepository.save(bet);
     }
 
+    @Autowired
+    private EmailService emailService;
+
     @Transactional
     public void settleBets(com.furbitobet.backend.model.Event event) {
         java.util.List<Bet> pendingBets = betRepository.findByStatus(Bet.BetStatus.PENDING);
@@ -110,7 +122,7 @@ public class BetService {
             for (Outcome outcome : bet.getOutcomes()) {
                 if (outcome.getStatus() == Outcome.OutcomeStatus.PENDING) {
                     allResolved = false;
-                    break;
+                    // Don't break, we need to check if any other outcome is LOST
                 }
                 if (outcome.getStatus() == Outcome.OutcomeStatus.LOST) {
                     anyLost = true;
@@ -120,35 +132,127 @@ public class BetService {
                 }
                 if (outcome.getStatus() == Outcome.OutcomeStatus.VOID) {
                     anyVoid = true;
-                    // Void outcomes count as odds 1.0, so we don't multiply
                 }
             }
 
-            if (!allResolved) {
+            // If any outcome is lost, the bet is lost, regardless of other pending outcomes
+            if (!anyLost && !allResolved) {
                 continue;
             }
 
+            String subject = "Resultado de tu apuesta #" + bet.getId();
+            String body = "";
+
             if (anyLost) {
                 bet.setStatus(Bet.BetStatus.LOST);
+                body = "Hola " + bet.getUser().getUsername() + ",\n\n" +
+                        "Tu apuesta #" + bet.getId() + " ha sido resuelta como PERDIDA.\n" +
+                        "Más suerte la próxima vez.\n\n" +
+                        "FurbitoBET";
             } else {
                 // All won or void
                 if (anyVoid && totalOdds.compareTo(BigDecimal.ONE) == 0
                         && bet.getOutcomes().stream().allMatch(o -> o.getStatus() == Outcome.OutcomeStatus.VOID)) {
                     // All outcomes are VOID -> Refund
-                    bet.setStatus(Bet.BetStatus.VOID); // Or REFUNDED if enum exists, assuming VOID or treating as WON
-                                                       // with odds 1.0
+                    bet.setStatus(Bet.BetStatus.VOID);
                     User user = bet.getUser();
                     user.setBalance(user.getBalance().add(bet.getAmount()));
                     userRepository.save(user);
+
+                    body = "Hola " + bet.getUser().getUsername() + ",\n\n" +
+                            "Tu apuesta #" + bet.getId() + " ha sido ANULADA.\n" +
+                            "Se te ha devuelto el importe de " + String.format("%.2f", bet.getAmount()) + "€.\n\n" +
+                            "FurbitoBET";
                 } else {
                     bet.setStatus(Bet.BetStatus.WON);
                     BigDecimal winnings = bet.getAmount().multiply(totalOdds);
                     User user = bet.getUser();
                     user.setBalance(user.getBalance().add(winnings));
                     userRepository.save(user);
+
+                    body = "Hola " + bet.getUser().getUsername() + ",\n\n" +
+                            "¡Felicidades! Tu apuesta #" + bet.getId() + " ha sido GANADORA.\n" +
+                            "Has ganado " + String.format("%.2f", winnings) + "€.\n" +
+                            "Tu nuevo saldo es: " + String.format("%.2f", user.getBalance()) + "€.\n\n" +
+                            "FurbitoBET";
                 }
             }
             betRepository.save(bet);
+
+            // Send email asynchronously or safely catch errors to not rollback transaction
+            try {
+                emailService.sendSimpleMessage(bet.getUser().getEmail(), subject, body);
+            } catch (Exception e) {
+                System.err.println("Error sending email for bet " + bet.getId() + ": " + e.getMessage());
+            }
         }
+    }
+
+    public java.util.List<com.furbitobet.backend.dto.EventResultDTO> getEventResults(Long eventId) {
+        java.util.List<Bet> bets = betRepository.findDistinctByOutcomes_Event_Id(eventId);
+
+        // Group bets by user
+        java.util.Map<User, java.util.List<Bet>> betsByUser = bets.stream()
+                .collect(java.util.stream.Collectors.groupingBy(Bet::getUser));
+
+        java.util.List<com.furbitobet.backend.dto.EventResultDTO> results = new java.util.ArrayList<>();
+
+        for (java.util.Map.Entry<User, java.util.List<Bet>> entry : betsByUser.entrySet()) {
+            User user = entry.getKey();
+            java.util.List<Bet> userBets = entry.getValue();
+
+            BigDecimal totalWagered = BigDecimal.ZERO;
+            BigDecimal totalWon = BigDecimal.ZERO;
+            java.util.List<com.furbitobet.backend.dto.BetSummaryDTO> betSummaries = new java.util.ArrayList<>();
+
+            for (Bet bet : userBets) {
+                totalWagered = totalWagered.add(bet.getAmount());
+
+                BigDecimal winnings = BigDecimal.ZERO;
+                if (bet.getStatus() == Bet.BetStatus.WON) {
+                    BigDecimal totalOdds = BigDecimal.ONE;
+                    for (Outcome outcome : bet.getOutcomes()) {
+                        if (outcome.getStatus() == Outcome.OutcomeStatus.WON) {
+                            totalOdds = totalOdds.multiply(outcome.getOdds());
+                        }
+                    }
+                    winnings = bet.getAmount().multiply(totalOdds);
+                    totalWon = totalWon.add(winnings);
+                }
+
+                // Calculate potential winnings for display
+                BigDecimal potentialOdds = BigDecimal.ONE;
+                for (Outcome outcome : bet.getOutcomes()) {
+                    potentialOdds = potentialOdds.multiply(outcome.getOdds());
+                }
+                BigDecimal potentialWinnings = bet.getAmount().multiply(potentialOdds);
+
+                java.util.List<String> outcomeDescriptions = bet.getOutcomes().stream()
+                        .map(o -> o.getEvent().getName() + ": " + o.getDescription() + " (@" + o.getOdds() + ")")
+                        .collect(java.util.stream.Collectors.toList());
+
+                betSummaries.add(new com.furbitobet.backend.dto.BetSummaryDTO(
+                        bet.getId(),
+                        bet.getAmount(),
+                        potentialWinnings,
+                        bet.getStatus().toString(),
+                        outcomeDescriptions));
+            }
+
+            results.add(new com.furbitobet.backend.dto.EventResultDTO(
+                    user.getUsername(),
+                    totalWagered,
+                    totalWon,
+                    betSummaries));
+        }
+
+        // Sort by net profit (Won - Wagered) descending
+        results.sort((r1, r2) -> {
+            BigDecimal net1 = r1.getTotalWon().subtract(r1.getTotalWagered());
+            BigDecimal net2 = r2.getTotalWon().subtract(r2.getTotalWagered());
+            return net2.compareTo(net1);
+        });
+
+        return results;
     }
 }

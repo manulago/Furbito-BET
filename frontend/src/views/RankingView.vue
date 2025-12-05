@@ -76,8 +76,8 @@ const groupedMatchResults = computed(() => {
   }))
 })
 
-async function addEventFromMatch(match) {
-  if (!confirm(`Create event for ${match.homeTeam} vs ${match.awayTeam}?`)) return
+    async function addEventFromMatch(match) {
+  if (!confirm(`${langStore.t('ranking.admin.confirmCreate')} ${match.homeTeam} vs ${match.awayTeam}?`)) return
 
   // Parse date: "18/11/2025 - 14:00" -> "2025-11-18T14:00:00"
   try {
@@ -96,9 +96,9 @@ async function addEventFromMatch(match) {
     })
 
     if (res.ok) {
-      alert('Event created successfully!')
+      alert(langStore.t('ranking.admin.success'))
     } else {
-      alert('Failed to create event.')
+      alert(langStore.t('ranking.admin.fail'))
     }
   } catch (e) {
     console.error(e)
@@ -228,7 +228,7 @@ function getRank(index) {
           <button v-if="auth.user && auth.user.role === 'ADMIN'" 
                   @click="addEventFromMatch(match)"
                   class="bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold px-4 py-2 rounded-full self-center shadow-md transition transform hover:scale-105">
-            + Create Event
+            {{ langStore.t('ranking.admin.createEvent') }}
           </button>
         </div>
       </div>

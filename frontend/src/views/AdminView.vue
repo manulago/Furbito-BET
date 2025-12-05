@@ -1,8 +1,10 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useAuthStore } from '../stores/auth'
+import { useLanguageStore } from '../stores/language'
 
 const auth = useAuthStore()
+const langStore = useLanguageStore()
 
 const activeTab = ref('events')
 const events = ref([])
@@ -17,7 +19,8 @@ const outcomeOdds = ref('')
 const outcomeGroup = ref('')
 
 const users = ref([])
-const selectedUserId = ref('')
+const selectedUser = ref(null) // The user currently being viewed/edited in detail
+const selectedUserId = ref('') // Deprecated, but keeping to avoid breaking if used elsewhere
 const balanceAmount = ref('')
 const newPassword = ref('')
 
@@ -38,6 +41,13 @@ async function fetchUsers() {
     headers: { 'Authorization': `Bearer ${auth.token}` }
   })
   users.value = await res.json()
+  
+  // Refresh selected user if active
+  if (selectedUser.value) {
+      const updated = users.value.find(u => u.id === selectedUser.value.id)
+      if (updated) selectedUser.value = updated
+      else selectedUser.value = null
+  }
 }
 
 async function fetchEvents() {
@@ -82,25 +92,8 @@ async function createEvent() {
 }
 
 function startEditEvent(event) {
-  // We can reuse the create modal or a separate one. 
-  // For now, let's use a simple prompt or the existing inline logic if we want.
-  // But the new design has a "Edit Details" button.
-  // Let's use a prompt for simplicity or reuse the editingEvent state for a modal.
-  // Actually, let's just use the editingEvent state and show a modal.
-  // But wait, I removed the "Edit Event Modal" from the template in the previous step!
-  // I should have kept it or added it back. 
-  // Let's add a simple prompt for now to avoid complexity, or better, re-add the modal in the next step if needed.
-  // Actually, I can just use prompts for name and date for now, or better yet, I'll add the modal back in the template if I missed it.
-  // Looking at my previous replacement, I DID remove the "Edit Event Modal".
-  // I will use prompts for now to keep it simple, or I can add the modal back.
-  // Let's use prompts.
-  
   const newName = prompt("Event Name:", event.name)
   if (newName === null) return
-  
-  // Date handling with prompt is tricky. Let's just update name for now or use a proper modal.
-  // Actually, I'll implement a proper modal in the template in a fix-up step if needed.
-  // For now, let's just update the name.
   
   if (newName && newName !== event.name) {
       editEventName.value = newName
@@ -125,7 +118,7 @@ async function updateEvent() {
 }
 
 async function cloneEvent(id) {
-  if (!confirm('Clone this event?')) return
+  if (!confirm(langStore.t('admin.confirmClone'))) return
   await fetch(`${import.meta.env.VITE_API_URL}/api/admin/events/${id}/clone`, { 
       method: 'POST',
       headers: { 'Authorization': `Bearer ${auth.token}` }
@@ -134,7 +127,7 @@ async function cloneEvent(id) {
 }
 
 async function deleteEvent(id) {
-  if (!confirm('Delete this event? This action cannot be undone.')) return
+  if (!confirm(langStore.t('admin.confirmDeleteEvent'))) return
   await fetch(`${import.meta.env.VITE_API_URL}/api/events/${id}`, { 
       method: 'DELETE',
       headers: { 'Authorization': `Bearer ${auth.token}` }
@@ -163,7 +156,7 @@ async function createCategory() {
 }
 
 async function deleteCategory(id) {
-  if (!confirm('Delete category?')) return
+  if (!confirm(langStore.t('admin.confirmDeleteCategory'))) return
   await fetch(`${import.meta.env.VITE_API_URL}/api/categories/${id}`, { 
       method: 'DELETE',
       headers: { 'Authorization': `Bearer ${auth.token}` }
@@ -318,7 +311,7 @@ async function deleteUser(id) {
 }
 
 async function deleteOutcome(id) {
-  if (!confirm('Delete outcome?')) return
+  if (!confirm(langStore.t('admin.confirmDeleteOutcome'))) return
   await fetch(`${import.meta.env.VITE_API_URL}/api/admin/outcomes/${id}`, { 
       method: 'DELETE',
       headers: { 'Authorization': `Bearer ${auth.token}` }
@@ -347,7 +340,7 @@ function startResolveEvent(event) {
 
 async function resolveEvent() {
   if (!resolvingEvent.value) return
-  if (!confirm(`Resolve event ${resolvingEvent.value.name} with score ${resolveHomeGoals.value}-${resolveAwayGoals.value}?`)) return
+  if (!confirm(langStore.t('admin.confirmResolve') + ` ${resolvingEvent.value.name} ${resolveHomeGoals.value}-${resolveAwayGoals.value}?`)) return
   
   await fetch(`${import.meta.env.VITE_API_URL}/api/admin/events/${resolvingEvent.value.id}/resolve`, {
     method: 'POST',
@@ -363,7 +356,7 @@ async function resolveEvent() {
   
   resolvingEvent.value = null
   fetchEvents()
-  alert('Event resolved and bets settled!')
+  alert(langStore.t('admin.eventResolved'))
 }
 
 onMounted(() => {
@@ -375,21 +368,21 @@ onMounted(() => {
 
 <template>
   <div class="space-y-8">
-    <h2 class="text-3xl font-bold text-white">Admin Dashboard</h2>
+    <h2 class="text-3xl font-bold text-white">{{ langStore.t('admin.dashboard') }}</h2>
 
     <!-- Tabs -->
     <div class="flex border-b border-gray-700">
       <button @click="activeTab = 'events'"
         :class="['px-4 py-2 font-medium', activeTab === 'events' ? 'text-green-400 border-b-2 border-green-400' : 'text-gray-400 hover:text-white']">
-        Events
+        {{ langStore.t('admin.events') }}
       </button>
       <button @click="activeTab = 'users'"
         :class="['px-4 py-2 font-medium', activeTab === 'users' ? 'text-blue-400 border-b-2 border-blue-400' : 'text-gray-400 hover:text-white']">
-        Users
+        {{ langStore.t('admin.users') }}
       </button>
       <button @click="activeTab = 'categories'"
         :class="['px-4 py-2 font-medium', activeTab === 'categories' ? 'text-yellow-400 border-b-2 border-yellow-400' : 'text-gray-400 hover:text-white']">
-        Categories
+        {{ langStore.t('admin.categories') }}
       </button>
     </div>
 
@@ -398,29 +391,52 @@ onMounted(() => {
       
       <!-- Top Actions -->
       <div v-if="!selectedEvent" class="flex justify-between items-center">
-        <h3 class="text-2xl font-bold text-white">Events</h3>
+        <h3 class="text-2xl font-bold text-white">{{ langStore.t('admin.events') }}</h3>
         <button @click="showCreateEvent = true" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded font-bold shadow flex items-center gap-2">
-          <span>+</span> Create Event
+          <span>+</span> {{ langStore.t('admin.createEvent') }}
         </button>
       </div>
 
       <!-- Create Event Modal -->
       <div v-if="showCreateEvent" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
         <div class="bg-gray-800 p-6 rounded-lg shadow-xl border border-gray-700 w-full max-w-md">
-          <h3 class="text-xl font-bold mb-4 text-green-400">New Event</h3>
+          <h3 class="text-xl font-bold mb-4 text-green-400">{{ langStore.t('admin.newEvent') }}</h3>
           <div class="space-y-4">
             <div>
-              <label class="block text-sm text-gray-400 mb-1">Event Name</label>
+              <label class="block text-sm text-gray-400 mb-1">{{ langStore.t('admin.eventName') }}</label>
               <input v-model="eventName" placeholder="e.g. Madrid vs Barça" class="w-full bg-gray-700 text-white p-2 rounded border border-gray-600 focus:border-green-500 outline-none" />
             </div>
             <div>
-              <label class="block text-sm text-gray-400 mb-1">Date & Time</label>
+              <label class="block text-sm text-gray-400 mb-1">{{ langStore.t('admin.dateTime') }}</label>
               <input v-model="eventDate" type="datetime-local" class="w-full bg-gray-700 text-white p-2 rounded border border-gray-600 focus:border-green-500 outline-none" />
             </div>
             <div class="flex justify-end gap-3 mt-6">
-              <button @click="showCreateEvent = false" class="px-4 py-2 text-gray-300 hover:text-white">Cancel</button>
-              <button @click="createEvent" class="bg-green-500 hover:bg-green-600 px-6 py-2 rounded text-white font-bold">Create</button>
+              <button @click="showCreateEvent = false" class="px-4 py-2 text-gray-300 hover:text-white">{{ langStore.t('admin.cancel') }}</button>
+              <button @click="createEvent" class="bg-green-500 hover:bg-green-600 px-6 py-2 rounded text-white font-bold">{{ langStore.t('admin.create') }}</button>
             </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Resolve Event Modal -->
+      <div v-if="resolvingEvent" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
+        <div class="bg-gray-800 p-6 rounded-lg shadow-xl border border-blue-500 w-full max-w-md">
+          <h3 class="text-xl font-bold mb-4 text-blue-400">{{ langStore.t('admin.simulateResult') }}</h3>
+          <p class="text-white mb-4 font-bold">{{ resolvingEvent.name }}</p>
+          <div class="flex gap-4 items-center justify-center mb-6">
+            <div class="flex flex-col items-center">
+               <label class="text-gray-400 text-sm mb-1">{{ langStore.t('admin.home') }}</label>
+               <input v-model="resolveHomeGoals" type="number" class="bg-gray-700 text-white p-2 rounded w-20 text-center text-xl font-bold border border-gray-600 focus:border-blue-500 outline-none" />
+            </div>
+            <span class="text-2xl text-gray-500">-</span>
+            <div class="flex flex-col items-center">
+               <label class="text-gray-400 text-sm mb-1">{{ langStore.t('admin.away') }}</label>
+               <input v-model="resolveAwayGoals" type="number" class="bg-gray-700 text-white p-2 rounded w-20 text-center text-xl font-bold border border-gray-600 focus:border-blue-500 outline-none" />
+            </div>
+          </div>
+          <div class="flex justify-end gap-3">
+            <button @click="resolvingEvent = null" class="px-4 py-2 text-gray-300 hover:text-white">{{ langStore.t('admin.cancel') }}</button>
+            <button @click="resolveEvent" class="bg-blue-600 hover:bg-blue-500 px-6 py-2 rounded text-white font-bold">{{ langStore.t('admin.resolveSettle') }}</button>
           </div>
         </div>
       </div>
@@ -432,7 +448,7 @@ onMounted(() => {
              class="bg-gray-800 p-4 rounded-lg border border-gray-700 hover:border-blue-500 cursor-pointer transition shadow-lg group relative overflow-hidden">
           
           <div class="absolute top-0 right-0 p-2 opacity-0 group-hover:opacity-100 transition">
-             <span class="text-xs text-blue-400">Click to Edit</span>
+             <span class="text-xs text-blue-400">{{ langStore.t('admin.clickToEdit') }}</span>
           </div>
 
           <div class="flex justify-between items-start mb-2">
@@ -448,8 +464,8 @@ onMounted(() => {
           <p class="text-sm text-gray-500">{{ new Date(event.date).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) }}</p>
           
           <div class="mt-4 flex gap-2">
-             <button @click.stop="cloneEvent(event.id)" class="text-xs bg-purple-900 text-purple-300 px-2 py-1 rounded hover:bg-purple-800">Clone</button>
-             <button @click.stop="deleteEvent(event.id)" class="text-xs bg-red-900 text-red-300 px-2 py-1 rounded hover:bg-red-800">Delete</button>
+             <button @click.stop="cloneEvent(event.id)" class="text-xs bg-purple-900 text-purple-300 px-2 py-1 rounded hover:bg-purple-800">{{ langStore.t('admin.clone') }}</button>
+             <button @click.stop="deleteEvent(event.id)" class="text-xs bg-red-900 text-red-300 px-2 py-1 rounded hover:bg-red-800">{{ langStore.t('admin.delete') }}</button>
           </div>
         </div>
       </div>
@@ -460,7 +476,7 @@ onMounted(() => {
         <div class="bg-gray-900 p-6 border-b border-gray-700 flex justify-between items-start">
           <div>
             <button @click="selectedEvent = null" class="text-gray-400 hover:text-white mb-2 flex items-center gap-1 text-sm">
-              &larr; Back to Events
+              &larr; {{ langStore.t('admin.backToEvents') }}
             </button>
             <h2 class="text-2xl font-bold text-white flex items-center gap-3">
               {{ selectedEvent.name }}
@@ -469,43 +485,43 @@ onMounted(() => {
             <p class="text-gray-400 text-sm mt-1">{{ new Date(selectedEvent.date).toLocaleString() }}</p>
           </div>
           <div class="flex gap-2">
-             <button @click="startEditEvent(selectedEvent)" class="bg-blue-600 hover:bg-blue-500 text-white px-3 py-1 rounded text-sm font-bold">Edit Details</button>
-             <button v-if="selectedEvent.status === 'UPCOMING'" @click="startResolveEvent(selectedEvent)" class="bg-green-600 hover:bg-green-500 text-white px-3 py-1 rounded text-sm font-bold">Simulate Result</button>
+             <button @click="startEditEvent(selectedEvent)" class="bg-blue-600 hover:bg-blue-500 text-white px-3 py-1 rounded text-sm font-bold">{{ langStore.t('admin.editDetails') }}</button>
+             <button v-if="selectedEvent.status === 'UPCOMING'" @click="startResolveEvent(selectedEvent)" class="bg-green-600 hover:bg-green-500 text-white px-3 py-1 rounded text-sm font-bold">{{ langStore.t('admin.simulateResult') }}</button>
           </div>
         </div>
 
         <!-- Outcomes Section -->
         <div class="p-6">
           <div class="flex justify-between items-center mb-6">
-            <h3 class="text-xl font-bold text-white">Outcomes (Markets)</h3>
+            <h3 class="text-xl font-bold text-white">{{ langStore.t('admin.outcomes') }}</h3>
             <button @click="showAddOutcome = true" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm font-bold shadow">
-              + Add Outcome
+              {{ langStore.t('admin.addOutcome') }}
             </button>
           </div>
 
           <!-- Add Outcome Form (Inline) -->
           <div v-if="showAddOutcome" class="bg-gray-700 p-4 rounded-lg mb-6 border border-blue-500 animate-fade-in">
-            <h4 class="text-blue-300 font-bold mb-3">New Outcome</h4>
+            <h4 class="text-blue-300 font-bold mb-3">{{ langStore.t('admin.newOutcome') }}</h4>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
               <div>
-                <label class="block text-xs text-gray-400 mb-1">Description</label>
+                <label class="block text-xs text-gray-400 mb-1">{{ langStore.t('admin.description') }}</label>
                 <input v-model="outcomeDesc" placeholder="e.g. Home Win" class="w-full bg-gray-600 text-white p-2 rounded border border-gray-500 focus:border-blue-400 outline-none" />
               </div>
               <div>
-                <label class="block text-xs text-gray-400 mb-1">Category</label>
+                <label class="block text-xs text-gray-400 mb-1">{{ langStore.t('admin.category') }}</label>
                 <select v-model="outcomeGroup" class="w-full bg-gray-600 text-white p-2 rounded border border-gray-500 focus:border-blue-400 outline-none">
                   <option value="" disabled>Select Category</option>
                   <option v-for="category in categories" :key="category.id" :value="category.name">{{ category.name }}</option>
                 </select>
               </div>
               <div>
-                <label class="block text-xs text-gray-400 mb-1">Odds</label>
+                <label class="block text-xs text-gray-400 mb-1">{{ langStore.t('admin.odds') }}</label>
                 <input v-model="outcomeOdds" type="number" step="0.01" placeholder="1.50" class="w-full bg-gray-600 text-white p-2 rounded border border-gray-500 focus:border-blue-400 outline-none" />
               </div>
             </div>
             <div class="flex justify-end gap-2">
-              <button @click="showAddOutcome = false" class="text-gray-300 hover:text-white px-3 py-1">Cancel</button>
-              <button @click="addOutcome" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-1 rounded font-bold">Add Outcome</button>
+              <button @click="showAddOutcome = false" class="text-gray-300 hover:text-white px-3 py-1">{{ langStore.t('admin.cancel') }}</button>
+              <button @click="addOutcome" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-1 rounded font-bold">{{ langStore.t('admin.addOutcome') }}</button>
             </div>
           </div>
 
@@ -531,7 +547,7 @@ onMounted(() => {
                    <span v-if="outcome.outcomeGroup" class="text-xs bg-gray-600 text-gray-300 px-2 py-0.5 rounded border border-gray-500">{{ outcome.outcomeGroup }}</span>
                 </div>
                 <div class="text-sm text-gray-400 mt-1">
-                  Odds: <span class="text-yellow-400 font-bold">{{ outcome.odds }}</span>
+                  {{ langStore.t('admin.odds') }}: <span class="text-yellow-400 font-bold">{{ outcome.odds }}</span>
                   <span class="ml-2 px-2 py-0.5 rounded text-xs uppercase font-bold" :class="{
                     'bg-yellow-900 text-yellow-400': outcome.status === 'PENDING',
                     'bg-green-900 text-green-400': outcome.status === 'WON',
@@ -542,12 +558,12 @@ onMounted(() => {
 
               <div class="flex gap-2 shrink-0">
                 <template v-if="editingOutcome && editingOutcome.id === outcome.id">
-                   <button @click="updateOutcome" class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-sm font-bold">Save</button>
-                   <button @click="editingOutcome = null" class="bg-gray-500 hover:bg-gray-600 text-white px-3 py-1 rounded text-sm">Cancel</button>
+                   <button @click="updateOutcome" class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-sm font-bold">{{ langStore.t('admin.save') }}</button>
+                   <button @click="editingOutcome = null" class="bg-gray-500 hover:bg-gray-600 text-white px-3 py-1 rounded text-sm">{{ langStore.t('admin.cancel') }}</button>
                 </template>
                 <template v-else>
-                   <button @click="startEditOutcome(outcome)" class="bg-blue-600 hover:bg-blue-500 text-white px-3 py-1 rounded text-sm">Edit</button>
-                   <button @click="deleteOutcome(outcome.id)" class="bg-red-600 hover:bg-red-500 text-white px-3 py-1 rounded text-sm">Delete</button>
+                   <button @click="startEditOutcome(outcome)" class="bg-blue-600 hover:bg-blue-500 text-white px-3 py-1 rounded text-sm">{{ langStore.t('admin.edit') }}</button>
+                   <button @click="deleteOutcome(outcome.id)" class="bg-red-600 hover:bg-red-500 text-white px-3 py-1 rounded text-sm">{{ langStore.t('admin.delete') }}</button>
                    
                    <div v-if="outcome.status === 'PENDING'" class="flex gap-1 ml-2 border-l border-gray-600 pl-2">
                       <button @click="settleOutcome(outcome.id, 'WON')" class="bg-green-700 hover:bg-green-600 text-white px-2 py-1 rounded text-xs" title="Mark as Won">W</button>
@@ -566,7 +582,7 @@ onMounted(() => {
       
       <!-- Top Actions -->
       <div v-if="!selectedUser" class="flex justify-between items-center">
-        <h3 class="text-2xl font-bold text-white">Users</h3>
+        <h3 class="text-2xl font-bold text-white">{{ langStore.t('admin.users') }}</h3>
         <!-- Search or Filter could go here -->
       </div>
 
@@ -577,7 +593,7 @@ onMounted(() => {
              class="bg-gray-800 p-4 rounded-lg border border-gray-700 hover:border-purple-500 cursor-pointer transition shadow-lg group relative overflow-hidden">
           
           <div class="absolute top-0 right-0 p-2 opacity-0 group-hover:opacity-100 transition">
-             <span class="text-xs text-purple-400">Click to Manage</span>
+             <span class="text-xs text-purple-400">{{ langStore.t('admin.clickToManage') }}</span>
           </div>
 
           <div class="flex items-center gap-4 mb-3">
@@ -591,7 +607,7 @@ onMounted(() => {
           </div>
           
           <div class="flex justify-between items-center text-sm">
-             <span class="text-gray-400">Balance: <span class="text-green-400 font-bold">{{ user.balance }} €</span></span>
+             <span class="text-gray-400">{{ langStore.t('admin.currentBalance') }}: <span class="text-green-400 font-bold">{{ user.balance }} €</span></span>
              <span class="px-2 py-0.5 rounded text-xs uppercase font-bold" :class="{
                 'bg-purple-900 text-purple-300': user.role === 'ADMIN',
                 'bg-blue-900 text-blue-300': user.role === 'USER'
@@ -606,7 +622,7 @@ onMounted(() => {
         <div class="bg-gray-900 p-6 border-b border-gray-700 flex justify-between items-start">
           <div>
             <button @click="selectedUser = null" class="text-gray-400 hover:text-white mb-2 flex items-center gap-1 text-sm">
-              &larr; Back to Users
+              &larr; {{ langStore.t('admin.backToUsers') }}
             </button>
             <div class="flex items-center gap-4">
                <div class="bg-purple-600 w-16 h-16 rounded-full flex items-center justify-center text-3xl font-bold text-white uppercase">
@@ -619,7 +635,7 @@ onMounted(() => {
             </div>
           </div>
           <div class="text-right">
-             <p class="text-sm text-gray-400">Role</p>
+             <p class="text-sm text-gray-400">{{ langStore.t('admin.role') }}</p>
              <span class="px-3 py-1 rounded text-sm uppercase font-bold" :class="{
                 'bg-purple-900 text-purple-300': selectedUser.role === 'ADMIN',
                 'bg-blue-900 text-blue-300': selectedUser.role === 'USER'
@@ -632,39 +648,39 @@ onMounted(() => {
            
            <!-- Balance Management -->
            <div class="bg-gray-700 p-6 rounded-lg border border-gray-600">
-              <h3 class="text-xl font-bold text-green-400 mb-4">Manage Balance</h3>
-              <p class="text-gray-300 mb-4">Current Balance: <span class="text-white font-bold text-2xl">{{ selectedUser.balance }} €</span></p>
+              <h3 class="text-xl font-bold text-green-400 mb-4">{{ langStore.t('admin.manageBalance') }}</h3>
+              <p class="text-gray-300 mb-4">{{ langStore.t('admin.currentBalance') }}: <span class="text-white font-bold text-2xl">{{ selectedUser.balance }} €</span></p>
               
               <div class="flex gap-2">
                  <input v-model="balanceAmount" type="number" placeholder="Amount to Add" class="flex-1 bg-gray-600 text-white p-2 rounded border border-gray-500 focus:border-green-400 outline-none" />
-                 <button @click="updateBalance(selectedUser.id)" class="bg-green-600 hover:bg-green-500 text-white px-4 py-2 rounded font-bold">Add Funds</button>
+                 <button @click="updateBalance(selectedUser.id)" class="bg-green-600 hover:bg-green-500 text-white px-4 py-2 rounded font-bold">{{ langStore.t('admin.addFunds') }}</button>
               </div>
               <p class="text-xs text-gray-400 mt-2">Enter a negative amount to deduct funds.</p>
            </div>
 
            <!-- Security Management -->
            <div class="bg-gray-700 p-6 rounded-lg border border-gray-600">
-              <h3 class="text-xl font-bold text-red-400 mb-4">Security & Danger Zone</h3>
+              <h3 class="text-xl font-bold text-red-400 mb-4">{{ langStore.t('admin.security') }}</h3>
               
               <div class="mb-6">
-                 <label class="block text-sm text-gray-300 mb-1">Reset Password</label>
+                 <label class="block text-sm text-gray-300 mb-1">{{ langStore.t('admin.resetPassword') }}</label>
                  <div class="flex gap-2">
-                    <input v-model="newPassword" type="text" placeholder="New Password" class="flex-1 bg-gray-600 text-white p-2 rounded border border-gray-500 focus:border-red-400 outline-none" />
-                    <button @click="resetPassword(selectedUser.id)" class="bg-yellow-600 hover:bg-yellow-500 text-white px-4 py-2 rounded font-bold">Reset</button>
+                    <input v-model="newPassword" type="text" :placeholder="langStore.t('admin.newPassword')" class="flex-1 bg-gray-600 text-white p-2 rounded border border-gray-500 focus:border-red-400 outline-none" />
+                    <button @click="resetPassword(selectedUser.id)" class="bg-yellow-600 hover:bg-yellow-500 text-white px-4 py-2 rounded font-bold">{{ langStore.t('admin.reset') }}</button>
                  </div>
               </div>
 
               <div class="mb-6 border-t border-gray-600 pt-4">
-                 <h4 class="text-blue-300 font-bold mb-2">Email System</h4>
+                 <h4 class="text-blue-300 font-bold mb-2">{{ langStore.t('admin.emailSystem') }}</h4>
                  <button @click="sendTestEmail(selectedUser.email)" class="w-full bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded font-bold flex items-center justify-center gap-2">
-                    <span>📧</span> Send Test Email to User
+                    <span>📧</span> {{ langStore.t('admin.sendTestEmail') }}
                  </button>
                  <p class="text-xs text-gray-400 mt-1 text-center">Sends a verification email to {{ selectedUser.email }}</p>
               </div>
 
               <div class="border-t border-gray-600 pt-4 mt-4">
                  <button @click="deleteUser(selectedUser.id)" class="w-full bg-red-700 hover:bg-red-600 text-white px-4 py-3 rounded font-bold flex items-center justify-center gap-2">
-                    <span>⚠️</span> Delete User Account
+                    <span>⚠️</span> {{ langStore.t('admin.deleteUser') }}
                  </button>
                  <p class="text-xs text-gray-400 mt-2 text-center">This action cannot be undone. Admin accounts cannot be deleted.</p>
               </div>
@@ -678,13 +694,13 @@ onMounted(() => {
       
       <!-- Top Actions -->
       <div class="flex justify-between items-center">
-        <h3 class="text-2xl font-bold text-white">Categories</h3>
+        <h3 class="text-2xl font-bold text-white">{{ langStore.t('admin.categories') }}</h3>
         <div class="flex gap-2">
            <button @click="initDefaultCategories" class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded font-bold shadow flex items-center gap-2">
-             <span>⚡</span> Init Defaults
+             <span>⚡</span> {{ langStore.t('admin.initDefaults') }}
            </button>
            <button @click="showCreateCategory = true" class="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded font-bold shadow flex items-center gap-2">
-             <span>+</span> New Category
+             <span>+</span> {{ langStore.t('admin.newCategory') }}
            </button>
         </div>
       </div>
@@ -692,15 +708,15 @@ onMounted(() => {
       <!-- Create Category Modal -->
       <div v-if="showCreateCategory" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
         <div class="bg-gray-800 p-6 rounded-lg shadow-xl border border-gray-700 w-full max-w-md">
-          <h3 class="text-xl font-bold mb-4 text-yellow-400">New Category</h3>
+          <h3 class="text-xl font-bold mb-4 text-yellow-400">{{ langStore.t('admin.newCategory') }}</h3>
           <div class="space-y-4">
             <div>
-              <label class="block text-sm text-gray-400 mb-1">Category Name</label>
+              <label class="block text-sm text-gray-400 mb-1">{{ langStore.t('admin.categoryName') }}</label>
               <input v-model="newCategoryName" placeholder="e.g. Match Winner" class="w-full bg-gray-700 text-white p-2 rounded border border-gray-600 focus:border-yellow-500 outline-none" />
             </div>
             <div class="flex justify-end gap-3 mt-6">
-              <button @click="showCreateCategory = false" class="px-4 py-2 text-gray-300 hover:text-white">Cancel</button>
-              <button @click="createCategory" class="bg-yellow-500 hover:bg-yellow-600 px-6 py-2 rounded text-white font-bold">Create</button>
+              <button @click="showCreateCategory = false" class="px-4 py-2 text-gray-300 hover:text-white">{{ langStore.t('admin.cancel') }}</button>
+              <button @click="createCategory" class="bg-yellow-500 hover:bg-yellow-600 px-6 py-2 rounded text-white font-bold">{{ langStore.t('admin.create') }}</button>
             </div>
           </div>
         </div>

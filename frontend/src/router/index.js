@@ -40,6 +40,11 @@ const router = createRouter({
             component: () => import('../views/RankingView.vue')
         },
         {
+            path: '/results',
+            name: 'results',
+            component: () => import('../views/ResultsView.vue')
+        },
+        {
             path: '/event/:id',
             name: 'event-detail',
             component: () => import('../views/EventDetailView.vue')

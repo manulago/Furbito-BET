@@ -2,9 +2,11 @@
 import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
+import { useLanguageStore } from '../stores/language'
 
 const route = useRoute()
 const auth = useAuthStore()
+const langStore = useLanguageStore()
 const userId = route.params.id
 const user = ref(null)
 const bets = ref([])
@@ -51,7 +53,7 @@ onMounted(() => {
 
 <template>
   <div class="max-w-4xl mx-auto space-y-8">
-    <div v-if="loading" class="text-center text-gray-400">Loading profile...</div>
+    <div v-if="loading" class="text-center text-gray-400">{{ langStore.t('profile.loading') }}</div>
     
     <div v-else-if="user" class="space-y-6">
       <div class="bg-gray-800 p-6 rounded-lg shadow-lg border border-gray-700 flex items-center gap-4">
@@ -60,14 +62,14 @@ onMounted(() => {
         </div>
         <div>
           <h2 class="text-3xl font-bold text-white">{{ user.username }}</h2>
-          <p class="text-gray-400">Balance: <span class="text-green-400 font-bold">{{ user.balance }} €</span></p>
+          <p class="text-gray-400">{{ langStore.t('profile.balance') }}: <span class="text-green-400 font-bold">{{ user.balance }} €</span></p>
         </div>
       </div>
 
-      <h3 class="text-2xl font-bold text-white">Bet History</h3>
+      <h3 class="text-2xl font-bold text-white">{{ langStore.t('profile.history') }}</h3>
       
       <div v-if="bets.length === 0" class="text-gray-400 text-center py-8 bg-gray-800 rounded-lg">
-        No bets placed yet.
+        {{ langStore.t('profile.noBets') }}
       </div>
 
       <div v-else class="space-y-4">
@@ -82,16 +84,16 @@ onMounted(() => {
               'bg-green-900 text-green-400': bet.status === 'WON',
               'bg-red-900 text-red-400': bet.status === 'LOST',
               'bg-gray-700 text-gray-400': bet.status === 'VOID' || bet.status === 'CANCELLED'
-            }">{{ bet.status }}</span>
+            }">{{ langStore.t('common.status.' + bet.status) }}</span>
           </div>
           <div class="flex justify-between items-center text-sm border-t border-gray-700 pt-2 mt-2">
-            <span class="text-gray-300">Wager: <span class="font-bold text-white">{{ bet.amount }} €</span></span>
-            <span class="text-gray-300">Potential Win: <span class="font-bold text-green-400">{{ calculatePotentialWin(bet) }} €</span></span>
+            <span class="text-gray-300">{{ langStore.t('profile.wager') }}: <span class="font-bold text-white">{{ bet.amount }} €</span></span>
+            <span class="text-gray-300">{{ langStore.t('profile.potWin') }}: <span class="font-bold text-green-400">{{ calculatePotentialWin(bet) }} €</span></span>
           </div>
         </div>
       </div>
     </div>
     
-    <div v-else class="text-center text-red-400">User not found</div>
+    <div v-else class="text-center text-red-400">{{ langStore.t('profile.notFound') }}</div>
   </div>
 </template>

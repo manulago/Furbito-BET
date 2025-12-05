@@ -1,10 +1,13 @@
 /home/manulago/Escritorio/FurbitoBET/backend/src/main/java/com/furbitobet/backend/controller/AuthController.java
 /home/manulago/Escritorio/FurbitoBET/backend/src/main/java/com/furbitobet/backend/model/Category.java
 /home/manulago/Escritorio/FurbitoBET/backend/src/main/java/com/furbitobet/backend/config/DataInitializer.java
+/home/manulago/Escritorio/FurbitoBET/backend/src/main/java/com/furbitobet/backend/dto/WinningBetDTO.java
 /home/manulago/Escritorio/FurbitoBET/backend/src/main/java/com/furbitobet/backend/controller/LeagueController.java
 /home/manulago/Escritorio/FurbitoBET/backend/src/main/java/com/furbitobet/backend/security/JwtUtil.java
 /home/manulago/Escritorio/FurbitoBET/backend/src/main/java/com/furbitobet/backend/model/User.java
+/home/manulago/Escritorio/FurbitoBET/backend/src/main/java/com/furbitobet/backend/dto/EventResultDTO.java
 /home/manulago/Escritorio/FurbitoBET/backend/src/main/java/com/furbitobet/backend/service/BetService.java
+/home/manulago/Escritorio/FurbitoBET/backend/src/main/java/com/furbitobet/backend/dto/BetSummaryDTO.java
 /home/manulago/Escritorio/FurbitoBET/backend/src/main/java/com/furbitobet/backend/repository/OutcomeRepository.java
 /home/manulago/Escritorio/FurbitoBET/backend/src/main/java/com/furbitobet/backend/controller/CategoryController.java
 /home/manulago/Escritorio/FurbitoBET/backend/src/main/java/com/furbitobet/backend/security/JwtRequestFilter.java

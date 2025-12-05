@@ -33,34 +33,44 @@ function logout() {
         </div>
 
         <!-- Desktop Menu -->
-        <div class="hidden md:flex items-center gap-4">
+        <div class="hidden md:flex items-center gap-6">
+          <!-- Public Links -->
+          <router-link to="/" class="text-gray-300 hover:text-green-400 transition font-medium text-lg">{{ langStore.t('nav.home') }}</router-link>
+          <RouterLink to="/ranking" class="text-gray-300 hover:text-green-400 transition font-medium text-lg">{{ langStore.t('nav.ranking') }}</RouterLink>
+          <!-- <RouterLink to="/results" class="text-gray-300 hover:text-green-400 transition font-medium text-lg">Results</RouterLink> -->
+
+          <div v-if="auth.user" class="flex items-center gap-6">
+            <RouterLink to="/my-bets" class="text-gray-300 hover:text-green-400 transition font-medium text-lg">{{ langStore.t('nav.myBets') }}</RouterLink>
+            <RouterLink v-if="auth.user.role === 'ADMIN'" to="/admin" class="text-gray-300 hover:text-green-400 transition font-medium text-lg">{{ langStore.t('nav.admin') }}</RouterLink>
+            
+            <div class="flex items-center gap-3 bg-gray-700 px-4 py-2 rounded-full border border-gray-600">
+              <span class="text-gray-300 text-sm">{{ langStore.t('nav.welcome') }}, <span class="font-bold text-white">{{ auth.user.username }}</span></span>
+              <span class="text-green-400 font-bold text-lg">{{ auth.user.balance }} €</span>
+            </div>
+
+            <button @click="logout" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition shadow-md">{{ langStore.t('nav.logout') }}</button>
+          </div>
+          <div v-else class="flex items-center gap-4">
+             <RouterLink to="/login" class="bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded-lg transition font-bold shadow-lg shadow-green-500/20">Login</RouterLink>
+          </div>
+
           <!-- Language Selector -->
           <select 
             v-model="langStore.currentLanguage" 
             @change="langStore.setLanguage($event.target.value)"
-            class="bg-gray-700 text-white text-sm p-1 rounded border border-gray-600 focus:border-green-500 outline-none"
+            class="bg-gray-700 text-white text-sm p-2 rounded-lg border border-gray-600 focus:border-green-500 outline-none cursor-pointer hover:bg-gray-600 transition"
           >
-            <option value="es">Español</option>
-            <option value="gl">Galego</option>
-            <option value="en">English</option>
+            <option value="es">🇪🇸 ES</option>
+            <option value="gl">🐙 GL</option>
+            <option value="en">🇬🇧 EN</option>
           </select>
-
-          <div v-if="auth.user" class="flex items-center gap-4">
-            <span class="text-green-400 font-bold">{{ auth.user.balance }} €</span>
-            <span class="text-gray-300">{{ langStore.t('nav.welcome') }}, {{ auth.user.username }}</span>
-            <router-link to="/" class="hover:text-green-400 transition">{{ langStore.t('nav.home') }}</router-link>
-            <RouterLink to="/my-bets" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">{{ langStore.t('nav.myBets') }}</RouterLink>
-            <RouterLink to="/ranking" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">{{ langStore.t('nav.ranking') }}</RouterLink>
-            <RouterLink v-if="auth.user.role === 'ADMIN'" to="/admin" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">{{ langStore.t('nav.admin') }}</RouterLink>
-            <button @click="logout" class="bg-red-500 hover:bg-red-600 px-4 py-2 rounded transition">{{ langStore.t('nav.logout') }}</button>
-          </div>
         </div>
 
         <!-- Mobile Menu Button -->
         <div class="md:hidden flex items-center gap-4">
-           <span v-if="auth.user" class="text-green-400 font-bold text-sm">{{ auth.user.balance }} €</span>
-           <button @click="isMobileMenuOpen = !isMobileMenuOpen" class="text-gray-300 hover:text-white focus:outline-none">
-            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+           <span v-if="auth.user" class="text-green-400 font-bold text-sm bg-gray-700 px-2 py-1 rounded-full border border-gray-600">{{ auth.user.balance }} €</span>
+           <button @click="isMobileMenuOpen = !isMobileMenuOpen" class="text-gray-300 hover:text-white focus:outline-none p-2">
+            <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path v-if="!isMobileMenuOpen" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
               <path v-else stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
             </svg>
@@ -69,9 +79,9 @@ function logout() {
       </div>
 
       <!-- Mobile Menu Dropdown -->
-      <div v-if="isMobileMenuOpen" class="md:hidden absolute top-full left-0 right-0 bg-gray-800 border-b border-gray-700 shadow-xl p-4 flex flex-col gap-4">
+      <div v-if="isMobileMenuOpen" class="md:hidden absolute top-full left-0 right-0 bg-gray-800 border-b border-gray-700 shadow-xl p-4 flex flex-col gap-4 animate-fade-in-down">
           <div class="flex justify-between items-center border-b border-gray-700 pb-2">
-             <span class="text-gray-400 text-sm">Language</span>
+             <span class="text-gray-400 text-sm font-medium">Language</span>
              <select 
                 v-model="langStore.currentLanguage" 
                 @change="langStore.setLanguage($event.target.value)"
@@ -83,15 +93,20 @@ function logout() {
               </select>
           </div>
 
-          <div v-if="auth.user" class="flex flex-col gap-2">
-            <div class="text-gray-300 text-sm pb-2">{{ langStore.t('nav.welcome') }}, <span class="font-bold text-white">{{ auth.user.username }}</span></div>
+          <RouterLink to="/" @click="isMobileMenuOpen = false" class="block py-3 px-4 rounded-lg hover:bg-gray-700 text-white font-medium text-lg">{{ langStore.t('nav.home') }}</RouterLink>
+          <RouterLink to="/ranking" @click="isMobileMenuOpen = false" class="block py-3 px-4 rounded-lg hover:bg-gray-700 text-white font-medium text-lg">{{ langStore.t('nav.ranking') }}</RouterLink>
+          <!-- <RouterLink to="/results" @click="isMobileMenuOpen = false" class="block py-3 px-4 rounded-lg hover:bg-gray-700 text-white font-medium text-lg">Results</RouterLink> -->
+
+          <div v-if="auth.user" class="flex flex-col gap-2 border-t border-gray-700 pt-2">
+            <div class="text-gray-300 text-sm pb-2 px-4">{{ langStore.t('nav.welcome') }}, <span class="font-bold text-white text-lg">{{ auth.user.username }}</span></div>
             
-            <router-link to="/" @click="isMobileMenuOpen = false" class="block py-2 px-4 rounded hover:bg-gray-700 text-white">{{ langStore.t('nav.home') }}</router-link>
-            <RouterLink to="/my-bets" @click="isMobileMenuOpen = false" class="block py-2 px-4 rounded hover:bg-gray-700 text-white">{{ langStore.t('nav.myBets') }}</RouterLink>
-            <RouterLink to="/ranking" @click="isMobileMenuOpen = false" class="block py-2 px-4 rounded hover:bg-gray-700 text-white">{{ langStore.t('nav.ranking') }}</RouterLink>
-            <RouterLink v-if="auth.user.role === 'ADMIN'" to="/admin" @click="isMobileMenuOpen = false" class="block py-2 px-4 rounded hover:bg-gray-700 text-white">{{ langStore.t('nav.admin') }}</RouterLink>
+            <RouterLink to="/my-bets" @click="isMobileMenuOpen = false" class="block py-3 px-4 rounded-lg hover:bg-gray-700 text-white font-medium text-lg">{{ langStore.t('nav.myBets') }}</RouterLink>
+            <RouterLink v-if="auth.user.role === 'ADMIN'" to="/admin" @click="isMobileMenuOpen = false" class="block py-3 px-4 rounded-lg hover:bg-gray-700 text-white font-medium text-lg">{{ langStore.t('nav.admin') }}</RouterLink>
             
-            <button @click="logout(); isMobileMenuOpen = false" class="w-full text-left bg-red-500/20 text-red-400 hover:bg-red-500 hover:text-white px-4 py-2 rounded transition mt-2">{{ langStore.t('nav.logout') }}</button>
+            <button @click="logout(); isMobileMenuOpen = false" class="w-full text-left bg-red-500/20 text-red-400 hover:bg-red-500 hover:text-white px-4 py-3 rounded-lg transition mt-2 font-bold">{{ langStore.t('nav.logout') }}</button>
+          </div>
+          <div v-else class="flex flex-col gap-2 border-t border-gray-700 pt-4">
+            <RouterLink to="/login" @click="isMobileMenuOpen = false" class="block py-3 px-4 rounded-lg bg-green-500 hover:bg-green-600 text-white text-center font-bold text-lg shadow-lg">Login</RouterLink>
           </div>
       </div>
     </nav>

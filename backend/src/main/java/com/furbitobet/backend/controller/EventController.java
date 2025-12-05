@@ -27,4 +27,12 @@ public class EventController {
     public void deleteEvent(@PathVariable Long id) {
         eventService.deleteEvent(id);
     }
+
+    @Autowired
+    private com.furbitobet.backend.service.BetService betService;
+
+    @GetMapping("/{id}/winning-bets")
+    public java.util.List<com.furbitobet.backend.dto.EventResultDTO> getEventResults(@PathVariable Long id) {
+        return betService.getEventResults(id);
+    }
 }
