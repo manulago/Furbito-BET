@@ -209,18 +209,18 @@ function getRank(index) {
             {{ match.dateTime }}
           </div>
           
-          <div class="grid grid-cols-[1fr_auto_1fr] items-center gap-3 w-full">
-            <span class="text-right text-white font-bold text-sm md:text-lg leading-tight break-words">
+          <div class="flex flex-col md:grid md:grid-cols-[1fr_auto_1fr] items-center gap-3 w-full">
+            <span class="text-center md:text-right text-white font-bold text-lg md:text-lg leading-tight break-words w-full">
               {{ formatTeamName(match.homeTeam) }}
             </span>
             
-            <div class="bg-gray-900 px-3 py-2 rounded-lg border border-gray-700 shadow-inner min-w-[70px] text-center flex flex-col justify-center">
-              <span class="text-yellow-400 font-mono text-xl md:text-2xl font-bold tracking-widest">
+            <div class="bg-gray-900 px-4 py-2 rounded-lg border border-gray-700 shadow-inner min-w-[80px] text-center flex flex-col justify-center my-1 md:my-0">
+              <span class="text-yellow-400 font-mono text-2xl font-bold tracking-widest">
                 {{ match.score ? match.score.replace('-', ':') : 'vs' }}
               </span>
             </div>
 
-            <span class="text-left text-white font-bold text-sm md:text-lg leading-tight break-words">
+            <span class="text-center md:text-left text-white font-bold text-lg md:text-lg leading-tight break-words w-full">
               {{ formatTeamName(match.awayTeam) }}
             </span>
           </div>
