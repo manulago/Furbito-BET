@@ -249,7 +249,11 @@ function getRank(index) {
             <td class="px-4 py-2 font-bold">
               {{ getRank(index) }}
             </td>
-            <td class="px-4 py-2 text-white font-medium">{{ user.username }}</td>
+            <td class="px-4 py-2 text-white font-medium">
+              <router-link :to="'/user/' + user.id" class="hover:text-green-400 hover:underline transition">
+                {{ user.username }}
+              </router-link>
+            </td>
             <td class="px-4 py-2 text-right font-bold text-green-400">{{ user.balance }} €</td>
           </tr>
         </tbody>
