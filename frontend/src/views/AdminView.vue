@@ -1,5 +1,8 @@
 <script setup>
 import { ref, onMounted } from 'vue'
+import { useAuthStore } from '../stores/auth'
+
+const auth = useAuthStore()
 
 const activeTab = ref('events')
 const events = ref([])
