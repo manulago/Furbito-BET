@@ -41,11 +41,18 @@ public class EmailService {
 
     @Async
     public void sendSimpleMessage(String to, String subject, String text) {
+        System.out.println("Async sending simple email to: " + to);
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom("furbitobet@gmail.com");
         message.setTo(to);
         message.setSubject(subject);
         message.setText(text);
-        emailSender.send(message);
+        try {
+            emailSender.send(message);
+            System.out.println("Simple email sent successfully to: " + to);
+        } catch (Exception e) {
+            System.err.println("Failed to send simple email to " + to + ": " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 }

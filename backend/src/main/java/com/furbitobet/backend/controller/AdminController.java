@@ -192,9 +192,18 @@ public class AdminController {
     private com.furbitobet.backend.service.EmailService emailService;
 
     @PostMapping("/test-email")
-    public void testEmail(@RequestParam String to) {
-        emailService.sendSimpleMessage(to, "FurbitoBET Test Email",
-                "This is a test email from FurbitoBET admin panel.\n\nIf you receive this, email sending is working correctly!");
+    public org.springframework.http.ResponseEntity<?> testEmail(@RequestParam String to) {
+        try {
+            System.out.println("Received test-email request for: " + to);
+            emailService.sendSimpleMessage(to, "FurbitoBET Test Email",
+                    "This is a test email from FurbitoBET admin panel.\n\nIf you receive this, email sending is working correctly!");
+            return org.springframework.http.ResponseEntity.ok("Email request queued successfully");
+        } catch (Exception e) {
+            System.err.println("Error in test-email endpoint: " + e.getMessage());
+            e.printStackTrace();
+            return org.springframework.http.ResponseEntity.internalServerError()
+                    .body("Error sending email: " + e.getMessage());
+        }
     }
 
     @PutMapping("/users/{id}/balance")
