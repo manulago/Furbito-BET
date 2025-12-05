@@ -13,7 +13,7 @@ public class EmailService {
 
     public void sendWelcomeEmail(String to, String username, String password) {
         SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom("noreply@furbitobet.com");
+        message.setFrom("furbitobet@gmail.com");
         message.setTo(to);
         message.setSubject("Bienvenido a FurbitoBET - Confirmación de Registro");
         message.setText("Hola " + username + ",\n\n" +
@@ -31,7 +31,7 @@ public class EmailService {
 
     public void sendSimpleMessage(String to, String subject, String text) {
         SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom("noreply@furbitobet.com");
+        message.setFrom("furbitobet@gmail.com");
         message.setTo(to);
         message.setSubject(subject);
         message.setText(text);
