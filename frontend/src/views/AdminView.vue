@@ -216,7 +216,7 @@ async function updateOutcome() {
 
 async function updateBalance(userId) {
   if (!balanceAmount.value) return
-  await fetch(`${import.meta.env.VITE_API_URL}/api/users/${userId}/balance`, {
+  const res = await fetch(`${import.meta.env.VITE_API_URL}/api/users/${userId}/balance`, {
     method: 'PUT',
     headers: { 
         'Content-Type': 'application/json',
@@ -224,9 +224,16 @@ async function updateBalance(userId) {
     },
     body: balanceAmount.value
   })
-  balanceAmount.value = ''
-  fetchUsers()
-  alert('Balance updated!')
+  
+  if (res.ok) {
+      const updatedUser = await res.json()
+      if (selectedUser.value && selectedUser.value.id === userId) {
+          selectedUser.value = updatedUser
+      }
+      balanceAmount.value = ''
+      fetchUsers()
+      alert('Balance updated!')
+  }
 }
 
 async function resetPassword(userId) {
@@ -245,11 +252,25 @@ async function resetPassword(userId) {
 
 async function deleteUser(id) {
   if (!confirm('Delete this user? This action cannot be undone.')) return
-  await fetch(`${import.meta.env.VITE_API_URL}/api/users/${id}`, { 
+  const res = await fetch(`${import.meta.env.VITE_API_URL}/api/users/${id}`, { 
       method: 'DELETE',
       headers: { 'Authorization': `Bearer ${auth.token}` }
   })
-  fetchUsers()
+  
+  if (res.ok) {
+      if (selectedUser.value && selectedUser.value.id === id) {
+          selectedUser.value = null
+      }
+      fetchUsers()
+  } else {
+      const msg = await res.text()
+      try {
+          const json = JSON.parse(msg)
+          alert('Failed to delete user: ' + (json.message || json.error || msg))
+      } catch (e) {
+          alert('Failed to delete user: ' + msg)
+      }
+  }
 }
 
 async function deleteOutcome(id) {
@@ -497,47 +518,105 @@ onMounted(() => {
     </div>
 
     <!-- Users Tab -->
-    <div v-if="activeTab === 'users'" class="space-y-8">
-      <div class="bg-gray-800 p-6 rounded-lg shadow-lg border border-gray-700">
-        <h3 class="text-xl font-semibold mb-4 text-purple-400">User Management</h3>
-        <div class="overflow-x-auto">
-          <table class="w-full text-left text-gray-300">
-            <thead class="text-gray-400 uppercase bg-gray-700">
-              <tr>
-                <th class="px-4 py-2">ID</th>
-                <th class="px-4 py-2">Username</th>
-                <th class="px-4 py-2">Email</th>
-                <th class="px-4 py-2">Balance</th>
-                <th class="px-4 py-2">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="user in users" :key="user.id" class="border-b border-gray-700 hover:bg-gray-700">
-                <td class="px-4 py-2">{{ user.id }}</td>
-                <td class="px-4 py-2">{{ user.username }}</td>
-                <td class="px-4 py-2">{{ user.email }}</td>
-                <td class="px-4 py-2">{{ user.balance }} €</td>
-                <td class="px-4 py-2 flex gap-2">
-                  <div class="flex gap-2 items-center">
-                    <input v-model="balanceAmount" type="number" placeholder="New Balance"
-                      class="w-24 bg-gray-600 text-white p-1 rounded text-sm" />
-                    <button @click="updateBalance(user.id)"
-                      class="bg-purple-500 hover:bg-purple-600 px-2 py-1 rounded text-white text-xs">Set Balance</button>
-                  </div>
-                  <div class="flex gap-2 items-center">
-                    <input v-model="newPassword" type="text" placeholder="New Pass"
-                      class="w-24 bg-gray-600 text-white p-1 rounded text-sm" />
-                    <button @click="resetPassword(user.id)"
-                      class="bg-red-500 hover:bg-red-600 px-2 py-1 rounded text-white text-xs">Reset Pass</button>
-                  </div>
-                  <div class="flex gap-2 items-center">
-                    <button @click="deleteUser(user.id)"
-                      class="bg-red-700 hover:bg-red-800 px-2 py-1 rounded text-white text-xs">Delete</button>
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+    <div v-if="activeTab === 'users'" class="space-y-6">
+      
+      <!-- Top Actions -->
+      <div v-if="!selectedUser" class="flex justify-between items-center">
+        <h3 class="text-2xl font-bold text-white">Users</h3>
+        <!-- Search or Filter could go here -->
+      </div>
+
+      <!-- User List -->
+      <div v-if="!selectedUser" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div v-for="user in users" :key="user.id" 
+             @click="selectedUser = user"
+             class="bg-gray-800 p-4 rounded-lg border border-gray-700 hover:border-purple-500 cursor-pointer transition shadow-lg group relative overflow-hidden">
+          
+          <div class="absolute top-0 right-0 p-2 opacity-0 group-hover:opacity-100 transition">
+             <span class="text-xs text-purple-400">Click to Manage</span>
+          </div>
+
+          <div class="flex items-center gap-4 mb-3">
+            <div class="bg-purple-600 w-10 h-10 rounded-full flex items-center justify-center text-lg font-bold text-white uppercase shrink-0">
+              {{ user.username.charAt(0) }}
+            </div>
+            <div class="overflow-hidden">
+              <h4 class="text-lg font-bold text-white truncate">{{ user.username }}</h4>
+              <p class="text-xs text-gray-400 truncate">{{ user.email }}</p>
+            </div>
+          </div>
+          
+          <div class="flex justify-between items-center text-sm">
+             <span class="text-gray-400">Balance: <span class="text-green-400 font-bold">{{ user.balance }} €</span></span>
+             <span class="px-2 py-0.5 rounded text-xs uppercase font-bold" :class="{
+                'bg-purple-900 text-purple-300': user.role === 'ADMIN',
+                'bg-blue-900 text-blue-300': user.role === 'USER'
+             }">{{ user.role }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- User Detail View -->
+      <div v-if="selectedUser" class="bg-gray-800 rounded-lg shadow-xl border border-gray-700 overflow-hidden">
+        <!-- Header -->
+        <div class="bg-gray-900 p-6 border-b border-gray-700 flex justify-between items-start">
+          <div>
+            <button @click="selectedUser = null" class="text-gray-400 hover:text-white mb-2 flex items-center gap-1 text-sm">
+              &larr; Back to Users
+            </button>
+            <div class="flex items-center gap-4">
+               <div class="bg-purple-600 w-16 h-16 rounded-full flex items-center justify-center text-3xl font-bold text-white uppercase">
+                  {{ selectedUser.username.charAt(0) }}
+               </div>
+               <div>
+                  <h2 class="text-2xl font-bold text-white">{{ selectedUser.username }}</h2>
+                  <p class="text-gray-400">{{ selectedUser.email }}</p>
+               </div>
+            </div>
+          </div>
+          <div class="text-right">
+             <p class="text-sm text-gray-400">Role</p>
+             <span class="px-3 py-1 rounded text-sm uppercase font-bold" :class="{
+                'bg-purple-900 text-purple-300': selectedUser.role === 'ADMIN',
+                'bg-blue-900 text-blue-300': selectedUser.role === 'USER'
+             }">{{ selectedUser.role }}</span>
+          </div>
+        </div>
+
+        <!-- Actions Section -->
+        <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-8">
+           
+           <!-- Balance Management -->
+           <div class="bg-gray-700 p-6 rounded-lg border border-gray-600">
+              <h3 class="text-xl font-bold text-green-400 mb-4">Manage Balance</h3>
+              <p class="text-gray-300 mb-4">Current Balance: <span class="text-white font-bold text-2xl">{{ selectedUser.balance }} €</span></p>
+              
+              <div class="flex gap-2">
+                 <input v-model="balanceAmount" type="number" placeholder="Amount to Add" class="flex-1 bg-gray-600 text-white p-2 rounded border border-gray-500 focus:border-green-400 outline-none" />
+                 <button @click="updateBalance(selectedUser.id)" class="bg-green-600 hover:bg-green-500 text-white px-4 py-2 rounded font-bold">Add Funds</button>
+              </div>
+              <p class="text-xs text-gray-400 mt-2">Enter a negative amount to deduct funds.</p>
+           </div>
+
+           <!-- Security Management -->
+           <div class="bg-gray-700 p-6 rounded-lg border border-gray-600">
+              <h3 class="text-xl font-bold text-red-400 mb-4">Security & Danger Zone</h3>
+              
+              <div class="mb-6">
+                 <label class="block text-sm text-gray-300 mb-1">Reset Password</label>
+                 <div class="flex gap-2">
+                    <input v-model="newPassword" type="text" placeholder="New Password" class="flex-1 bg-gray-600 text-white p-2 rounded border border-gray-500 focus:border-red-400 outline-none" />
+                    <button @click="resetPassword(selectedUser.id)" class="bg-yellow-600 hover:bg-yellow-500 text-white px-4 py-2 rounded font-bold">Reset</button>
+                 </div>
+              </div>
+
+              <div class="border-t border-gray-600 pt-4 mt-4">
+                 <button @click="deleteUser(selectedUser.id)" class="w-full bg-red-700 hover:bg-red-600 text-white px-4 py-3 rounded font-bold flex items-center justify-center gap-2">
+                    <span>⚠️</span> Delete User Account
+                 </button>
+                 <p class="text-xs text-gray-400 mt-2 text-center">This action cannot be undone. Admin accounts cannot be deleted.</p>
+              </div>
+           </div>
         </div>
       </div>
     </div>
