@@ -129,24 +129,24 @@ function getRank(index) {
 
 <template>
   <div class="space-y-8">
-    <div class="flex justify-between items-center">
+    <div class="flex flex-col md:flex-row justify-between items-center gap-4 md:gap-0">
       <h2 class="text-3xl font-bold text-white">{{ langStore.t('ranking.title') }}</h2>
-      <div class="flex space-x-4 bg-gray-800 p-1 rounded-lg">
+      <div class="flex space-x-2 md:space-x-4 bg-gray-800 p-1 rounded-lg overflow-x-auto max-w-full">
         <button 
           @click="activeTab = 'standings'"
-          :class="['px-4 py-2 rounded-md transition', activeTab === 'standings' ? 'bg-green-500 text-white' : 'text-gray-400 hover:text-white']"
+          :class="['px-3 py-2 md:px-4 md:py-2 rounded-md transition whitespace-nowrap text-sm md:text-base', activeTab === 'standings' ? 'bg-green-500 text-white' : 'text-gray-400 hover:text-white']"
         >
           {{ langStore.t('ranking.tabs.standings') }}
         </button>
         <button 
           @click="activeTab = 'results'"
-          :class="['px-4 py-2 rounded-md transition', activeTab === 'results' ? 'bg-green-500 text-white' : 'text-gray-400 hover:text-white']"
+          :class="['px-3 py-2 md:px-4 md:py-2 rounded-md transition whitespace-nowrap text-sm md:text-base', activeTab === 'results' ? 'bg-green-500 text-white' : 'text-gray-400 hover:text-white']"
         >
           {{ langStore.t('ranking.tabs.results') }}
         </button>
         <button 
           @click="activeTab = 'users'"
-          :class="['px-4 py-2 rounded-md transition', activeTab === 'users' ? 'bg-green-500 text-white' : 'text-gray-400 hover:text-white']"
+          :class="['px-3 py-2 md:px-4 md:py-2 rounded-md transition whitespace-nowrap text-sm md:text-base', activeTab === 'users' ? 'bg-green-500 text-white' : 'text-gray-400 hover:text-white']"
         >
           {{ langStore.t('ranking.tabs.users') }}
         </button>
