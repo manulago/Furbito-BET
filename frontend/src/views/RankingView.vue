@@ -204,23 +204,31 @@ function getRank(index) {
 
       <div v-for="(group, gIndex) in groupedMatchResults" :key="gIndex" class="space-y-4">
         <h3 class="text-xl font-bold text-green-400 border-b border-gray-700 pb-2">{{ group.name }}</h3>
-        <div v-for="(match, index) in group.matches" :key="index" class="bg-gray-800 p-4 rounded-lg shadow border border-gray-700 flex flex-col md:flex-row justify-between items-center gap-4">
-          <div class="text-sm text-gray-400 font-mono bg-gray-900 px-2 py-1 rounded">
+        <div v-for="(match, index) in group.matches" :key="index" class="bg-gray-800 p-4 rounded-xl shadow-lg border border-gray-700 flex flex-col gap-3 transition hover:border-gray-600">
+          <div class="text-xs text-gray-500 font-mono uppercase tracking-wider text-center">
             {{ match.dateTime }}
           </div>
           
-          <div class="flex-1 flex justify-center items-center gap-4 text-lg font-bold">
-            <span class="text-right flex-1 text-white">{{ formatTeamName(match.homeTeam) }}</span>
-            <span class="bg-gray-700 px-3 py-1 rounded text-yellow-400 min-w-[80px] text-center">
-              {{ match.score || 'vs' }}
+          <div class="grid grid-cols-[1fr_auto_1fr] items-center gap-3 w-full">
+            <span class="text-right text-white font-bold text-sm md:text-lg leading-tight break-words">
+              {{ formatTeamName(match.homeTeam) }}
             </span>
-            <span class="text-left flex-1 text-white">{{ formatTeamName(match.awayTeam) }}</span>
+            
+            <div class="bg-gray-900 px-3 py-2 rounded-lg border border-gray-700 shadow-inner min-w-[70px] text-center flex flex-col justify-center">
+              <span class="text-yellow-400 font-mono text-xl md:text-2xl font-bold tracking-widest">
+                {{ match.score ? match.score.replace('-', ':') : 'vs' }}
+              </span>
+            </div>
+
+            <span class="text-left text-white font-bold text-sm md:text-lg leading-tight break-words">
+              {{ formatTeamName(match.awayTeam) }}
+            </span>
           </div>
           
           <button v-if="auth.user && auth.user.role === 'ADMIN'" 
                   @click="addEventFromMatch(match)"
-                  class="bg-blue-500 hover:bg-blue-600 text-white text-xs px-2 py-1 rounded ml-4">
-            + Event
+                  class="bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold px-4 py-2 rounded-full self-center shadow-md transition transform hover:scale-105">
+            + Create Event
           </button>
         </div>
       </div>
