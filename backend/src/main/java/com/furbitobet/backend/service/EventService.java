@@ -84,7 +84,27 @@ public class EventService {
         return outcomeRepository.save(outcome);
     }
 
+    @Autowired
+    private com.furbitobet.backend.repository.BetRepository betRepository;
+
+    @Autowired
+    private com.furbitobet.backend.service.UserService userService;
+
+    @org.springframework.transaction.annotation.Transactional
     public void deleteEvent(Long id) {
+        // 1. Find all bets associated with this event
+        List<com.furbitobet.backend.model.Bet> bets = betRepository.findDistinctByOutcomes_Event_Id(id);
+
+        // 2. Void bets and refund users if they were pending
+        for (com.furbitobet.backend.model.Bet bet : bets) {
+            if (bet.getStatus() == com.furbitobet.backend.model.Bet.BetStatus.PENDING) {
+                bet.setStatus(com.furbitobet.backend.model.Bet.BetStatus.VOID);
+                userService.updateBalance(bet.getUser().getId(), bet.getAmount());
+                betRepository.save(bet);
+            }
+        }
+
+        // 3. Delete the event (cascades to outcomes)
         eventRepository.deleteById(id);
     }
 

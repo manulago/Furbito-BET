@@ -188,6 +188,15 @@ public class AdminController {
         }
     }
 
+    @Autowired
+    private com.furbitobet.backend.service.EmailService emailService;
+
+    @PostMapping("/test-email")
+    public void testEmail(@RequestParam String to) {
+        emailService.sendSimpleMessage(to, "FurbitoBET Test Email",
+                "This is a test email from FurbitoBET admin panel.\n\nIf you receive this, email sending is working correctly!");
+    }
+
     @PutMapping("/users/{id}/balance")
     public User updateBalance(@PathVariable Long id, @RequestBody BigDecimal amount) {
         return userService.updateBalance(id, amount);

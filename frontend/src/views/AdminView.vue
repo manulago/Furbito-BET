@@ -145,6 +145,8 @@ async function deleteEvent(id) {
   fetchEvents()
 }
 
+const showCreateCategory = ref(false)
+
 async function createCategory() {
   if (!newCategoryName.value) return
   await fetch(`${import.meta.env.VITE_API_URL}/api/categories`, {
@@ -156,6 +158,7 @@ async function createCategory() {
     body: JSON.stringify({ name: newCategoryName.value })
   })
   newCategoryName.value = ''
+  showCreateCategory.value = false
   fetchCategories()
 }
 
@@ -166,6 +169,32 @@ async function deleteCategory(id) {
       headers: { 'Authorization': `Bearer ${auth.token}` }
   })
   fetchCategories()
+}
+
+async function initDefaultCategories() {
+    const defaults = [
+        "Ganador del Partido",
+        "Doble Oportunidad",
+        "Apuesta sin Empate",
+        "Goles - Más de",
+        "Goles - Menos de",
+        "Ambos Marcan"
+    ]
+    
+    for (const name of defaults) {
+        if (!categories.value.find(c => c.name === name)) {
+            await fetch(`${import.meta.env.VITE_API_URL}/api/categories`, {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${auth.token}`
+                },
+                body: JSON.stringify({ name })
+            })
+        }
+    }
+    fetchCategories()
+    alert('Default categories initialized!')
 }
 
 async function addOutcome() {
@@ -248,6 +277,21 @@ async function resetPassword(userId) {
   })
   newPassword.value = ''
   alert('Password reset!')
+}
+
+async function sendTestEmail(email) {
+  if (!confirm(`Send test email to ${email}?`)) return
+  const res = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/test-email?to=${encodeURIComponent(email)}`, {
+    method: 'POST',
+    headers: { 
+        'Authorization': `Bearer ${auth.token}`
+    }
+  })
+  if (res.ok) {
+      alert('Email sent successfully! Check inbox (and spam).')
+  } else {
+      alert('Failed to send email. Check backend logs.')
+  }
 }
 
 async function deleteUser(id) {
@@ -610,6 +654,14 @@ onMounted(() => {
                  </div>
               </div>
 
+              <div class="mb-6 border-t border-gray-600 pt-4">
+                 <h4 class="text-blue-300 font-bold mb-2">Email System</h4>
+                 <button @click="sendTestEmail(selectedUser.email)" class="w-full bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded font-bold flex items-center justify-center gap-2">
+                    <span>📧</span> Send Test Email to User
+                 </button>
+                 <p class="text-xs text-gray-400 mt-1 text-center">Sends a verification email to {{ selectedUser.email }}</p>
+              </div>
+
               <div class="border-t border-gray-600 pt-4 mt-4">
                  <button @click="deleteUser(selectedUser.id)" class="w-full bg-red-700 hover:bg-red-600 text-white px-4 py-3 rounded font-bold flex items-center justify-center gap-2">
                     <span>⚠️</span> Delete User Account
@@ -622,21 +674,48 @@ onMounted(() => {
     </div>
 
     <!-- Categories Tab -->
-    <div v-if="activeTab === 'categories'" class="space-y-8">
-      <div class="bg-gray-800 p-6 rounded-lg shadow-lg border border-gray-700">
-        <h3 class="text-xl font-semibold mb-4 text-yellow-400">Manage Categories</h3>
-        <div class="flex gap-4 mb-6">
-          <input v-model="newCategoryName" placeholder="Category Name (e.g. Match Winner)"
-            class="flex-1 bg-gray-700 text-white p-2 rounded" />
-          <button @click="createCategory"
-            class="bg-yellow-500 hover:bg-yellow-600 px-4 py-2 rounded text-white font-bold">Create</button>
+    <div v-if="activeTab === 'categories'" class="space-y-6">
+      
+      <!-- Top Actions -->
+      <div class="flex justify-between items-center">
+        <h3 class="text-2xl font-bold text-white">Categories</h3>
+        <div class="flex gap-2">
+           <button @click="initDefaultCategories" class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded font-bold shadow flex items-center gap-2">
+             <span>⚡</span> Init Defaults
+           </button>
+           <button @click="showCreateCategory = true" class="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded font-bold shadow flex items-center gap-2">
+             <span>+</span> New Category
+           </button>
         </div>
-        
-        <div class="grid gap-2">
-          <div v-for="category in categories" :key="category.id" class="bg-gray-700 p-3 rounded text-white flex justify-between items-center">
-            <span>{{ category.name }}</span>
-            <button @click="deleteCategory(category.id)" class="text-red-400 hover:text-red-300 font-bold">Delete</button>
+      </div>
+
+      <!-- Create Category Modal -->
+      <div v-if="showCreateCategory" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
+        <div class="bg-gray-800 p-6 rounded-lg shadow-xl border border-gray-700 w-full max-w-md">
+          <h3 class="text-xl font-bold mb-4 text-yellow-400">New Category</h3>
+          <div class="space-y-4">
+            <div>
+              <label class="block text-sm text-gray-400 mb-1">Category Name</label>
+              <input v-model="newCategoryName" placeholder="e.g. Match Winner" class="w-full bg-gray-700 text-white p-2 rounded border border-gray-600 focus:border-yellow-500 outline-none" />
+            </div>
+            <div class="flex justify-end gap-3 mt-6">
+              <button @click="showCreateCategory = false" class="px-4 py-2 text-gray-300 hover:text-white">Cancel</button>
+              <button @click="createCategory" class="bg-yellow-500 hover:bg-yellow-600 px-6 py-2 rounded text-white font-bold">Create</button>
+            </div>
           </div>
+        </div>
+      </div>
+
+      <!-- Categories List -->
+      <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        <div v-for="category in categories" :key="category.id" 
+             class="bg-gray-800 p-4 rounded-lg border border-gray-700 hover:border-yellow-500 transition shadow-lg flex justify-between items-center group">
+          
+          <span class="text-lg font-bold text-white">{{ category.name }}</span>
+          
+          <button @click="deleteCategory(category.id)" class="text-gray-500 hover:text-red-500 opacity-0 group-hover:opacity-100 transition">
+             <span class="text-xl">×</span>
+          </button>
         </div>
       </div>
     </div>
