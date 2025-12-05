@@ -170,11 +170,11 @@ function getRank(index) {
             <th class="px-4 py-2">{{ langStore.t('ranking.standings.team') }}</th>
             <th class="px-4 py-2">{{ langStore.t('ranking.standings.pts') }}</th>
             <th class="px-4 py-2">{{ langStore.t('ranking.standings.played') }}</th>
-            <th class="px-4 py-2">{{ langStore.t('ranking.standings.won') }}</th>
-            <th class="px-4 py-2">{{ langStore.t('ranking.standings.drawn') }}</th>
-            <th class="px-4 py-2">{{ langStore.t('ranking.standings.lost') }}</th>
-            <th class="px-4 py-2">{{ langStore.t('ranking.standings.gf') }}</th>
-            <th class="px-4 py-2">{{ langStore.t('ranking.standings.ga') }}</th>
+            <th class="px-4 py-2 hidden md:table-cell">{{ langStore.t('ranking.standings.won') }}</th>
+            <th class="px-4 py-2 hidden md:table-cell">{{ langStore.t('ranking.standings.drawn') }}</th>
+            <th class="px-4 py-2 hidden md:table-cell">{{ langStore.t('ranking.standings.lost') }}</th>
+            <th class="px-4 py-2 hidden md:table-cell">{{ langStore.t('ranking.standings.gf') }}</th>
+            <th class="px-4 py-2 hidden md:table-cell">{{ langStore.t('ranking.standings.ga') }}</th>
           </tr>
         </thead>
         <tbody>
@@ -183,11 +183,11 @@ function getRank(index) {
             <td class="px-4 py-2 text-white">{{ formatTeamName(team.team) }}</td>
             <td class="px-4 py-2 font-bold text-yellow-400">{{ team.points }}</td>
             <td class="px-4 py-2">{{ team.played }}</td>
-            <td class="px-4 py-2 text-green-400">{{ team.won }}</td>
-            <td class="px-4 py-2 text-gray-400">{{ team.drawn }}</td>
-            <td class="px-4 py-2 text-red-400">{{ team.lost }}</td>
-            <td class="px-4 py-2">{{ team.gf }}</td>
-            <td class="px-4 py-2">{{ team.ga }}</td>
+            <td class="px-4 py-2 text-green-400 hidden md:table-cell">{{ team.won }}</td>
+            <td class="px-4 py-2 text-gray-400 hidden md:table-cell">{{ team.drawn }}</td>
+            <td class="px-4 py-2 text-red-400 hidden md:table-cell">{{ team.lost }}</td>
+            <td class="px-4 py-2 hidden md:table-cell">{{ team.gf }}</td>
+            <td class="px-4 py-2 hidden md:table-cell">{{ team.ga }}</td>
           </tr>
         </tbody>
       </table>
