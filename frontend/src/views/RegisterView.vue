@@ -11,11 +11,16 @@ const password = ref('')
 const confirmPassword = ref('')
 const error = ref('')
 
+const loading = ref(false)
+
 const register = async () => {
     if (password.value !== confirmPassword.value) {
         error.value = langStore.t('auth.passwordsDoNotMatch')
         return
     }
+
+    loading.value = true
+    error.value = ''
 
     try {
         const res = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/register`, {
@@ -36,6 +41,8 @@ const register = async () => {
         }
     } catch (e) {
         error.value = langStore.t('auth.registrationFailed')
+    } finally {
+        loading.value = false
     }
 }
 </script>
@@ -66,9 +73,10 @@ const register = async () => {
                         class="w-full px-3 py-2 bg-gray-700 rounded border border-gray-600 focus:border-blue-500 focus:outline-none" />
                 </div>
                 <div v-if="error" class="text-red-500 text-sm text-center">{{ error }}</div>
-                <button type="submit"
-                    class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition">
-                    {{ langStore.t('auth.register') }}
+                <button type="submit" :disabled="loading"
+                    class="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-800 disabled:cursor-not-allowed text-white font-bold py-2 px-4 rounded transition flex justify-center items-center">
+                    <span v-if="loading" class="animate-spin h-5 w-5 mr-3 border-2 border-white border-t-transparent rounded-full"></span>
+                    {{ loading ? 'Processing...' : langStore.t('auth.register') }}
                 </button>
             </form>
             <div class="mt-4 text-center text-sm">
