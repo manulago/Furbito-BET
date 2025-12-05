@@ -18,15 +18,7 @@ onMounted(async () => {
 })
 
 function selectEvent(event) {
-  if (event.outcomes && event.outcomes.length > 0) {
-    // Logic to expand event or show outcomes
-    // For now, we can just toggle expansion if we had that UI, 
-    // but the current UI implies clicking adds to bet slip or shows details.
-    // Let's assume clicking adds the first outcome for now or does nothing if not implemented.
-    // Actually, the previous code didn't have selectEvent logic shown in the snippet, 
-    // but the template calls it. Let's just keep it simple.
-    console.log('Selected event:', event)
-  }
+  router.push({ name: 'event-detail', params: { id: event.id } })
 }
 </script>
 

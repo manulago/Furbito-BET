@@ -167,6 +167,7 @@ export const useLanguageStore = defineStore('language', () => {
                 finished: 'Finalizadas',
                 all: 'Todas',
                 status: {
+                    UPCOMING: 'Próximo',
                     COMPLETED: 'FINALIZADO',
                     PENDING: 'PENDIENTE',
                     LIVE: 'EN VIVO',
@@ -343,6 +344,7 @@ export const useLanguageStore = defineStore('language', () => {
                 finished: 'Finalizadas',
                 all: 'Todas',
                 status: {
+                    UPCOMING: 'Próximo',
                     COMPLETED: 'FINALIZADO',
                     PENDING: 'PENDENTE',
                     LIVE: 'EN VIVO',
@@ -519,6 +521,7 @@ export const useLanguageStore = defineStore('language', () => {
                 finished: 'Finished',
                 all: 'All',
                 status: {
+                    UPCOMING: 'Upcoming',
                     COMPLETED: 'COMPLETED',
                     PENDING: 'PENDING',
                     LIVE: 'LIVE',
