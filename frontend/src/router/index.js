@@ -57,6 +57,11 @@ router.beforeEach((to, from, next) => {
     const publicPages = ['/login', '/register']
     const authRequired = !publicPages.includes(to.path)
 
+    // If logged in and trying to access login/register, redirect to home
+    if (publicPages.includes(to.path) && auth.user) {
+        return next('/')
+    }
+
     if (authRequired && !auth.user) {
         next('/login')
     } else if (to.meta.requiresAdmin && auth.user?.role !== 'ADMIN') {
