@@ -88,7 +88,13 @@ onMounted(() => {
           </div>
           <div class="flex justify-between items-center text-sm border-t border-gray-700 pt-2 mt-2">
             <span class="text-gray-300">{{ langStore.t('profile.wager') }}: <span class="font-bold text-white">{{ bet.amount }} €</span></span>
-            <span class="text-gray-300">{{ langStore.t('profile.potWin') }}: <span class="font-bold text-green-400">{{ calculatePotentialWin(bet) }} €</span></span>
+            
+            <span v-if="bet.status === 'PENDING'" class="text-gray-300">
+              {{ langStore.t('profile.potWin') }}: <span class="font-bold text-green-400">{{ calculatePotentialWin(bet) }} €</span>
+            </span>
+            <span v-else class="text-gray-300">
+              Ganancia: <span class="font-bold text-green-400">{{ bet.winnings !== null ? bet.winnings : '0.00' }} €</span>
+            </span>
           </div>
         </div>
       </div>
@@ -97,3 +103,4 @@ onMounted(() => {
     <div v-else class="text-center text-red-400">{{ langStore.t('profile.notFound') }}</div>
   </div>
 </template>
+
