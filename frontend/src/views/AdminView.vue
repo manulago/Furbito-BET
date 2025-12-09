@@ -102,7 +102,7 @@ const updatePlayerStats = async () => {
 }
 
 const deletePlayer = async (id) => {
-  if (!confirm('Are you sure you want to delete this player?')) return
+  if (!confirm(langStore.t('admin.confirmDeletePlayer'))) return
   
   try {
     const response = await fetch(`http://localhost:8080/api/players/${id}`, {
@@ -494,7 +494,7 @@ onMounted(() => {
       </button>
       <button @click="activeTab = 'players'"
         :class="['px-4 py-2 font-medium', activeTab === 'players' ? 'text-yellow-400 border-b-2 border-yellow-400' : 'text-gray-400 hover:text-white']">
-        Jugadores
+        {{ langStore.t('admin.players') }}
       </button>
     </div>
 
@@ -851,73 +851,112 @@ onMounted(() => {
     <!-- Players Tab -->
     <div v-if="activeTab === 'players'" class="space-y-6">
       <div class="flex justify-between items-center">
-        <h3 class="text-2xl font-bold text-white">Jugadores Furbito FIC</h3>
+        <h3 class="text-2xl font-bold text-white">{{ langStore.t('admin.playersTitle') }}</h3>
         <button @click="showCreatePlayer = true" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded font-bold shadow flex items-center gap-2">
-          <span>+</span> Añadir Jugador
+          <span>+</span> {{ langStore.t('admin.addPlayer') }}
         </button>
       </div>
 
       <!-- Create/Edit Player Modal -->
       <div v-if="showCreatePlayer || editingPlayer" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
         <div class="bg-gray-800 p-6 rounded-lg shadow-xl border border-gray-700 w-full max-w-2xl">
-          <h3 class="text-xl font-bold mb-4 text-white">{{ editingPlayer ? 'Editar Jugador' : 'Nuevo Jugador' }}</h3>
+          <h3 class="text-xl font-bold mb-4 text-white">{{ editingPlayer ? langStore.t('admin.editPlayer') : langStore.t('admin.newPlayer') }}</h3>
           
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             <div>
-              <label class="block text-sm text-gray-400 mb-1">Nombre</label>
+              <label class="block text-sm text-gray-400 mb-1">{{ langStore.t('admin.playerName') }}</label>
               <input v-model="playerForm.name" class="w-full bg-gray-700 text-white p-2 rounded border border-gray-600 focus:border-green-500 outline-none" />
             </div>
             <div>
-              <label class="block text-sm text-gray-400 mb-1">Equipo</label>
+              <label class="block text-sm text-gray-400 mb-1">{{ langStore.t('admin.playerTeam') }}</label>
               <input v-model="playerForm.team" class="w-full bg-gray-700 text-white p-2 rounded border border-gray-600 focus:border-green-500 outline-none" />
             </div>
             <div>
-              <label class="block text-sm text-gray-400 mb-1">Goles</label>
+              <label class="block text-sm text-gray-400 mb-1">{{ langStore.t('admin.goals') }}</label>
               <input v-model="playerForm.goals" type="number" class="w-full bg-gray-700 text-white p-2 rounded border border-gray-600 focus:border-green-500 outline-none" />
             </div>
             <div>
-              <label class="block text-sm text-gray-400 mb-1">Asistencias</label>
+              <label class="block text-sm text-gray-400 mb-1">{{ langStore.t('admin.assists') }}</label>
               <input v-model="playerForm.assists" type="number" class="w-full bg-gray-700 text-white p-2 rounded border border-gray-600 focus:border-green-500 outline-none" />
             </div>
             <div>
-              <label class="block text-sm text-gray-400 mb-1">Partidos Jugados</label>
+              <label class="block text-sm text-gray-400 mb-1">{{ langStore.t('admin.matchesPlayed') }}</label>
               <input v-model="playerForm.matchesPlayed" type="number" class="w-full bg-gray-700 text-white p-2 rounded border border-gray-600 focus:border-green-500 outline-none" />
             </div>
             <div>
-              <label class="block text-sm text-gray-400 mb-1">Partidos Titular</label>
+              <label class="block text-sm text-gray-400 mb-1">{{ langStore.t('admin.matchesStarted') }}</label>
               <input v-model="playerForm.matchesStarted" type="number" class="w-full bg-gray-700 text-white p-2 rounded border border-gray-600 focus:border-green-500 outline-none" />
             </div>
             <div>
-              <label class="block text-sm text-gray-400 mb-1">Tarjetas Amarillas</label>
+              <label class="block text-sm text-gray-400 mb-1">{{ langStore.t('admin.yellowCards') }}</label>
               <input v-model="playerForm.yellowCards" type="number" class="w-full bg-gray-700 text-white p-2 rounded border border-gray-600 focus:border-green-500 outline-none" />
             </div>
             <div>
-              <label class="block text-sm text-gray-400 mb-1">Tarjetas Rojas</label>
+              <label class="block text-sm text-gray-400 mb-1">{{ langStore.t('admin.redCards') }}</label>
               <input v-model="playerForm.redCards" type="number" class="w-full bg-gray-700 text-white p-2 rounded border border-gray-600 focus:border-green-500 outline-none" />
             </div>
           </div>
 
           <div class="flex justify-end gap-3 mt-6">
-            <button @click="showCreatePlayer = false; editingPlayer = false; resetPlayerForm()" class="px-4 py-2 text-gray-300 hover:text-white">Cancelar</button>
+            <button @click="showCreatePlayer = false; editingPlayer = false; resetPlayerForm()" class="px-4 py-2 text-gray-300 hover:text-white">{{ langStore.t('admin.cancel') }}</button>
             <button @click="editingPlayer ? updatePlayerStats() : createPlayer()" class="bg-green-500 hover:bg-green-600 px-6 py-2 rounded text-white font-bold">
-              {{ editingPlayer ? 'Guardar Cambios' : 'Crear Jugador' }}
+              {{ editingPlayer ? langStore.t('admin.saveChanges') : langStore.t('admin.create') }}
             </button>
           </div>
         </div>
       </div>
 
-      <!-- Players List Table -->
+      <!-- Players List (Desktop Table / Mobile Cards) -->
       <div class="bg-gray-800 rounded-lg shadow-xl overflow-hidden border border-gray-700">
-        <table class="w-full text-left">
+        
+        <!-- Mobile Card View -->
+        <div class="block md:hidden">
+          <div v-for="player in players" :key="player.id" class="p-4 border-b border-gray-700 last:border-b-0 hover:bg-gray-750">
+            <div class="flex justify-between items-start mb-2">
+              <div>
+                <span class="text-white font-bold text-lg block">{{ player.name }}</span>
+                <span class="text-gray-400 text-sm">{{ player.team }}</span>
+              </div>
+              <div class="flex gap-2">
+                <button @click="startEditPlayer(player)" class="text-blue-400 hover:text-blue-300 text-sm font-bold border border-blue-400 px-2 py-1 rounded">{{ langStore.t('admin.edit') }}</button>
+                <button @click="deletePlayer(player.id)" class="text-red-400 hover:text-red-300 text-sm font-bold border border-red-400 px-2 py-1 rounded">{{ langStore.t('admin.delete') }}</button>
+              </div>
+            </div>
+            <div class="grid grid-cols-2 gap-2 text-sm">
+              <div class="flex justify-between bg-gray-900 p-2 rounded">
+                 <span class="text-gray-400">{{ langStore.t('admin.goals') }}</span>
+                 <span class="font-bold text-green-400">{{ player.goals }}</span>
+              </div>
+              <div class="flex justify-between bg-gray-900 p-2 rounded">
+                 <span class="text-gray-400">{{ langStore.t('admin.assists') }}</span>
+                 <span class="font-bold text-blue-400">{{ player.assists }}</span>
+              </div>
+              <div class="flex justify-between bg-gray-900 p-2 rounded">
+                 <span class="text-gray-400">{{ langStore.t('admin.matchesPlayed') }}</span>
+                 <span class="text-white">{{ player.matchesPlayed }} ({{ player.matchesStarted }})</span>
+              </div>
+              <div class="flex justify-between bg-gray-900 p-2 rounded">
+                 <span class="text-gray-400">Cards (Y/R)</span>
+                 <span><span class="text-yellow-400 font-bold">{{ player.yellowCards }}</span> / <span class="text-red-500 font-bold">{{ player.redCards }}</span></span>
+              </div>
+            </div>
+          </div>
+          <div v-if="players.length === 0" class="p-8 text-center text-gray-500">
+             {{ langStore.t('admin.noPlayers') }}
+          </div>
+        </div>
+
+        <!-- Desktop Table View -->
+        <table class="w-full text-left hidden md:table">
           <thead class="bg-gray-700 text-gray-400 uppercase text-xs">
             <tr>
-              <th class="p-3">Nombre</th>
-              <th class="p-3">Equipo</th>
-              <th class="p-3 text-center">Guls</th>
-              <th class="p-3 text-center">Asist</th>
-              <th class="p-3 text-center">PJ (Ti)</th>
-              <th class="p-3 text-center">T (A/R)</th>
-              <th class="p-3 text-right">Acciones</th>
+              <th class="p-3">{{ langStore.t('admin.playerName') }}</th>
+              <th class="p-3">{{ langStore.t('admin.playerTeam') }}</th>
+              <th class="p-3 text-center">{{ langStore.t('admin.goals') }}</th>
+              <th class="p-3 text-center">{{ langStore.t('admin.assists') }}</th>
+              <th class="p-3 text-center">{{ langStore.t('admin.matchesPlayed') }} ({{langStore.t('admin.matchesStarted')}})</th>
+              <th class="p-3 text-center">{{ langStore.t('admin.yellowCards') }} / {{ langStore.t('admin.redCards') }}</th>
+              <th class="p-3 text-right">{{ langStore.t('admin.actions') }}</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-gray-700">
@@ -931,12 +970,12 @@ onMounted(() => {
                 <span class="text-yellow-400">{{ player.yellowCards }}</span> / <span class="text-red-500">{{ player.redCards }}</span>
               </td>
               <td class="p-3 text-right">
-                <button @click="startEditPlayer(player)" class="text-blue-400 hover:text-blue-300 mr-3 font-bold">Editar</button>
-                <button @click="deletePlayer(player.id)" class="text-red-400 hover:text-red-300 font-bold">Eliminar</button>
+                <button @click="startEditPlayer(player)" class="text-blue-400 hover:text-blue-300 mr-3 font-bold">{{ langStore.t('admin.edit') }}</button>
+                <button @click="deletePlayer(player.id)" class="text-red-400 hover:text-red-300 font-bold">{{ langStore.t('admin.delete') }}</button>
               </td>
             </tr>
             <tr v-if="players.length === 0">
-              <td colspan="7" class="p-8 text-center text-gray-500">No hay jugadores registrados.</td>
+              <td colspan="7" class="p-8 text-center text-gray-500">{{ langStore.t('admin.noPlayers') }}</td>
             </tr>
           </tbody>
         </table>
