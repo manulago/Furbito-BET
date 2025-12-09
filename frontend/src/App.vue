@@ -37,6 +37,8 @@ function logout() {
           <!-- Public Links -->
           <router-link to="/" class="text-gray-300 hover:text-green-400 transition font-medium text-lg">{{ langStore.t('nav.home') }}</router-link>
           <RouterLink to="/ranking" class="text-gray-300 hover:text-green-400 transition font-medium text-lg">{{ langStore.t('nav.ranking') }}</RouterLink>
+          <router-link to="/statistics" class="text-gray-300 hover:text-green-400 transition font-medium text-lg">Estadísticas Furbito</router-link>
+          <router-link v-if="auth.isAdmin" to="/admin" class="text-gray-300 hover:text-yellow-400 transition font-medium text-lg">{{ langStore.t('nav.admin') }}</router-link>
           <!-- <RouterLink to="/results" class="text-gray-300 hover:text-green-400 transition font-medium text-lg">Results</RouterLink> -->
 
           <div v-if="auth.user" class="flex items-center gap-6">

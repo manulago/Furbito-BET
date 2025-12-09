@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import LoginView from '../views/LoginView.vue'
+import StatisticsView from '../views/StatisticsView.vue'
 import AdminView from '../views/AdminView.vue'
 import MyBetsView from '../views/MyBetsView.vue'
 import { useAuthStore } from '../stores/auth'
@@ -22,6 +23,11 @@ const router = createRouter({
             path: '/register',
             name: 'register',
             component: () => import('../views/RegisterView.vue')
+        },
+        {
+            path: '/statistics',
+            name: 'statistics',
+            component: StatisticsView
         },
         {
             path: '/admin',
@@ -49,21 +55,17 @@ const router = createRouter({
             name: 'event-detail',
             component: () => import('../views/EventDetailView.vue')
         },
-        {
-            path: '/ranking',
-            name: 'ranking',
-            component: () => import('../views/RankingView.vue')
-        }
     ]
 })
 
 router.beforeEach((to, from, next) => {
     const auth = useAuthStore()
-    const publicPages = ['/login', '/register']
+    const publicPages = ['/login', '/register', '/statistics']
+    const guestOnlyPages = ['/login', '/register']
     const authRequired = !publicPages.includes(to.path)
 
     // If logged in and trying to access login/register, redirect to home
-    if (publicPages.includes(to.path) && auth.user) {
+    if (guestOnlyPages.includes(to.path) && auth.user) {
         return next('/')
     }
 

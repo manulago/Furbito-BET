@@ -34,6 +34,7 @@ public class SecurityConfig {
                         .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/events/**").permitAll()
                         .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/league/**").permitAll()
                         .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/users/ranking").permitAll()
+                        .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/players/**").permitAll()
                         .requestMatchers(org.springframework.http.HttpMethod.DELETE, "/api/events/**").hasRole("ADMIN")
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/bets/**").authenticated()

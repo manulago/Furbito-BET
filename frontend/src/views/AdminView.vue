@@ -31,6 +31,113 @@ const editingEvent = ref(null) // For the modal/inline edit of event details
 const editEventName = ref('')
 const editEventDate = ref('')
 
+// Players Logic
+const players = ref([])
+const showCreatePlayer = ref(false)
+const editingPlayer = ref(null)
+const playerForm = ref({
+  name: '',
+  team: '',
+  goals: 0,
+  assists: 0,
+  matchesPlayed: 0,
+  matchesStarted: 0,
+  yellowCards: 0,
+  redCards: 0
+})
+
+const fetchPlayers = async () => {
+  try {
+    const response = await fetch('http://localhost:8080/api/players')
+    if (response.ok) {
+      players.value = await response.json()
+    }
+  } catch (error) {
+    console.error('Error fetching players:', error)
+  }
+}
+
+const createPlayer = async () => {
+  try {
+    const response = await fetch('http://localhost:8080/api/players', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${auth.token}`
+      },
+      body: JSON.stringify(playerForm.value)
+    })
+    
+    if (response.ok) {
+      showCreatePlayer.value = false
+      resetPlayerForm()
+      fetchPlayers()
+    }
+  } catch (error) {
+    console.error('Error creating player:', error)
+  }
+}
+
+const updatePlayerStats = async () => {
+  if (!editingPlayer.value) return
+  
+  try {
+    const response = await fetch(`http://localhost:8080/api/players/${editingPlayer.value.id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${auth.token}`
+      },
+      body: JSON.stringify(playerForm.value)
+    })
+    
+    if (response.ok) {
+      editingPlayer.value = null
+      resetPlayerForm()
+      fetchPlayers()
+    }
+  } catch (error) {
+    console.error('Error updating player:', error)
+  }
+}
+
+const deletePlayer = async (id) => {
+  if (!confirm('Are you sure you want to delete this player?')) return
+  
+  try {
+    const response = await fetch(`http://localhost:8080/api/players/${id}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${auth.token}`
+      }
+    })
+    
+    if (response.ok) {
+      fetchPlayers()
+    }
+  } catch (error) {
+    console.error('Error deleting player:', error)
+  }
+}
+
+const startEditPlayer = (player) => {
+  editingPlayer.value = player
+  playerForm.value = { ...player }
+}
+
+const resetPlayerForm = () => {
+  playerForm.value = {
+    name: '',
+    team: '',
+    goals: 0,
+    assists: 0,
+    matchesPlayed: 0,
+    matchesStarted: 0,
+    yellowCards: 0,
+    redCards: 0
+  }
+}
+
 const editingOutcome = ref(null)
 const editOutcomeDesc = ref('')
 const editOutcomeOdds = ref('')
@@ -363,6 +470,7 @@ onMounted(() => {
   fetchEvents()
   fetchUsers()
   fetchCategories()
+  fetchPlayers()
 })
 </script>
 
@@ -383,6 +491,10 @@ onMounted(() => {
       <button @click="activeTab = 'categories'"
         :class="['px-4 py-2 font-medium', activeTab === 'categories' ? 'text-yellow-400 border-b-2 border-yellow-400' : 'text-gray-400 hover:text-white']">
         {{ langStore.t('admin.categories') }}
+      </button>
+      <button @click="activeTab = 'players'"
+        :class="['px-4 py-2 font-medium', activeTab === 'players' ? 'text-yellow-400 border-b-2 border-yellow-400' : 'text-gray-400 hover:text-white']">
+        Jugadores
       </button>
     </div>
 
@@ -733,6 +845,101 @@ onMounted(() => {
              <span class="text-xl">×</span>
           </button>
         </div>
+      </div>
+    </div>
+
+    <!-- Players Tab -->
+    <div v-if="activeTab === 'players'" class="space-y-6">
+      <div class="flex justify-between items-center">
+        <h3 class="text-2xl font-bold text-white">Jugadores Furbito FIC</h3>
+        <button @click="showCreatePlayer = true" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded font-bold shadow flex items-center gap-2">
+          <span>+</span> Añadir Jugador
+        </button>
+      </div>
+
+      <!-- Create/Edit Player Modal -->
+      <div v-if="showCreatePlayer || editingPlayer" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
+        <div class="bg-gray-800 p-6 rounded-lg shadow-xl border border-gray-700 w-full max-w-2xl">
+          <h3 class="text-xl font-bold mb-4 text-white">{{ editingPlayer ? 'Editar Jugador' : 'Nuevo Jugador' }}</h3>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            <div>
+              <label class="block text-sm text-gray-400 mb-1">Nombre</label>
+              <input v-model="playerForm.name" class="w-full bg-gray-700 text-white p-2 rounded border border-gray-600 focus:border-green-500 outline-none" />
+            </div>
+            <div>
+              <label class="block text-sm text-gray-400 mb-1">Equipo</label>
+              <input v-model="playerForm.team" class="w-full bg-gray-700 text-white p-2 rounded border border-gray-600 focus:border-green-500 outline-none" />
+            </div>
+            <div>
+              <label class="block text-sm text-gray-400 mb-1">Goles</label>
+              <input v-model="playerForm.goals" type="number" class="w-full bg-gray-700 text-white p-2 rounded border border-gray-600 focus:border-green-500 outline-none" />
+            </div>
+            <div>
+              <label class="block text-sm text-gray-400 mb-1">Asistencias</label>
+              <input v-model="playerForm.assists" type="number" class="w-full bg-gray-700 text-white p-2 rounded border border-gray-600 focus:border-green-500 outline-none" />
+            </div>
+            <div>
+              <label class="block text-sm text-gray-400 mb-1">Partidos Jugados</label>
+              <input v-model="playerForm.matchesPlayed" type="number" class="w-full bg-gray-700 text-white p-2 rounded border border-gray-600 focus:border-green-500 outline-none" />
+            </div>
+            <div>
+              <label class="block text-sm text-gray-400 mb-1">Partidos Titular</label>
+              <input v-model="playerForm.matchesStarted" type="number" class="w-full bg-gray-700 text-white p-2 rounded border border-gray-600 focus:border-green-500 outline-none" />
+            </div>
+            <div>
+              <label class="block text-sm text-gray-400 mb-1">Tarjetas Amarillas</label>
+              <input v-model="playerForm.yellowCards" type="number" class="w-full bg-gray-700 text-white p-2 rounded border border-gray-600 focus:border-green-500 outline-none" />
+            </div>
+            <div>
+              <label class="block text-sm text-gray-400 mb-1">Tarjetas Rojas</label>
+              <input v-model="playerForm.redCards" type="number" class="w-full bg-gray-700 text-white p-2 rounded border border-gray-600 focus:border-green-500 outline-none" />
+            </div>
+          </div>
+
+          <div class="flex justify-end gap-3 mt-6">
+            <button @click="showCreatePlayer = false; editingPlayer = false; resetPlayerForm()" class="px-4 py-2 text-gray-300 hover:text-white">Cancelar</button>
+            <button @click="editingPlayer ? updatePlayerStats() : createPlayer()" class="bg-green-500 hover:bg-green-600 px-6 py-2 rounded text-white font-bold">
+              {{ editingPlayer ? 'Guardar Cambios' : 'Crear Jugador' }}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Players List Table -->
+      <div class="bg-gray-800 rounded-lg shadow-xl overflow-hidden border border-gray-700">
+        <table class="w-full text-left">
+          <thead class="bg-gray-700 text-gray-400 uppercase text-xs">
+            <tr>
+              <th class="p-3">Nombre</th>
+              <th class="p-3">Equipo</th>
+              <th class="p-3 text-center">Guls</th>
+              <th class="p-3 text-center">Asist</th>
+              <th class="p-3 text-center">PJ (Ti)</th>
+              <th class="p-3 text-center">T (A/R)</th>
+              <th class="p-3 text-right">Acciones</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-700">
+            <tr v-for="player in players" :key="player.id" class="hover:bg-gray-750">
+              <td class="p-3 font-bold text-white">{{ player.name }}</td>
+              <td class="p-3 text-gray-400">{{ player.team }}</td>
+              <td class="p-3 text-center text-green-400 font-bold">{{ player.goals }}</td>
+              <td class="p-3 text-center text-blue-400 font-bold">{{ player.assists }}</td>
+              <td class="p-3 text-center text-gray-300">{{ player.matchesPlayed }} ({{ player.matchesStarted }})</td>
+              <td class="p-3 text-center">
+                <span class="text-yellow-400">{{ player.yellowCards }}</span> / <span class="text-red-500">{{ player.redCards }}</span>
+              </td>
+              <td class="p-3 text-right">
+                <button @click="startEditPlayer(player)" class="text-blue-400 hover:text-blue-300 mr-3 font-bold">Editar</button>
+                <button @click="deletePlayer(player.id)" class="text-red-400 hover:text-red-300 font-bold">Eliminar</button>
+              </td>
+            </tr>
+            <tr v-if="players.length === 0">
+              <td colspan="7" class="p-8 text-center text-gray-500">No hay jugadores registrados.</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </div>
   </div>
