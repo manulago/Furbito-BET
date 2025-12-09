@@ -145,16 +145,19 @@ public class BetService {
 
             if (anyLost) {
                 bet.setStatus(Bet.BetStatus.LOST);
+                bet.setWinnings(BigDecimal.ZERO);
                 body = "Hola " + bet.getUser().getUsername() + ",\n\n" +
                         "Tu apuesta #" + bet.getId() + " ha sido resuelta como PERDIDA.\n" +
                         "Más suerte la próxima vez.\n\n" +
                         "FurbitoBET";
+
             } else {
                 // All won or void
                 if (anyVoid && totalOdds.compareTo(BigDecimal.ONE) == 0
                         && bet.getOutcomes().stream().allMatch(o -> o.getStatus() == Outcome.OutcomeStatus.VOID)) {
                     // All outcomes are VOID -> Refund
                     bet.setStatus(Bet.BetStatus.VOID);
+                    bet.setWinnings(bet.getAmount());
                     User user = bet.getUser();
                     user.setBalance(user.getBalance().add(bet.getAmount()));
                     userRepository.save(user);
@@ -163,9 +166,11 @@ public class BetService {
                             "Tu apuesta #" + bet.getId() + " ha sido ANULADA.\n" +
                             "Se te ha devuelto el importe de " + String.format("%.2f", bet.getAmount()) + "€.\n\n" +
                             "FurbitoBET";
+
                 } else {
                     bet.setStatus(Bet.BetStatus.WON);
                     BigDecimal winnings = bet.getAmount().multiply(totalOdds);
+                    bet.setWinnings(winnings);
                     User user = bet.getUser();
                     user.setBalance(user.getBalance().add(winnings));
                     userRepository.save(user);
@@ -175,6 +180,7 @@ public class BetService {
                             "Has ganado " + String.format("%.2f", winnings) + "€.\n" +
                             "Tu nuevo saldo es: " + String.format("%.2f", user.getBalance()) + "€.\n\n" +
                             "FurbitoBET";
+
                 }
             }
             betRepository.save(bet);

@@ -48,8 +48,30 @@ public class UserService implements UserDetailsService {
         return userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
     }
 
+    @Autowired
+    private com.furbitobet.backend.repository.BetRepository betRepository;
+
     public java.util.List<User> getRanking() {
-        return userRepository.findByRoleNotOrderByBalanceDesc(User.Role.ADMIN);
+        java.util.List<User> users = userRepository.findByRoleNotOrderByBalanceDesc(User.Role.ADMIN);
+        java.util.List<Object[]> stats = betRepository.findNetProfitStats();
+
+        java.util.Map<Long, BigDecimal> profits = new java.util.HashMap<>();
+        for (Object[] row : stats) {
+            Long userId = (Long) row[0];
+            BigDecimal winnings = (BigDecimal) row[1];
+            BigDecimal staked = (BigDecimal) row[2];
+            if (winnings == null)
+                winnings = BigDecimal.ZERO;
+            if (staked == null)
+                staked = BigDecimal.ZERO;
+            profits.put(userId, winnings.subtract(staked));
+        }
+
+        for (User user : users) {
+            user.setNetProfit(profits.getOrDefault(user.getId(), BigDecimal.ZERO));
+        }
+
+        return users;
     }
 
     public void deleteUser(Long id) {

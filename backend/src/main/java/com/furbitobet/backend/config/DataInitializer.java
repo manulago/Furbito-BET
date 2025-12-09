@@ -35,12 +35,8 @@ public class DataInitializer {
                 System.out.println("Admin user found. No password update required (env var not set).");
             }
 
-            // Default user creation disabled by request
-            // if (userService.findByUsername("user").isEmpty()) {
-            // userService.createUser("user", "user", "user@furbitobet.com",
-            // User.Role.USER);
-            // }
             System.out.println("DATA INITIALIZATION COMPLETE.");
+
         };
     }
 }

@@ -35,10 +35,13 @@ public class SecurityConfig {
                         .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/league/**").permitAll()
                         .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/users/ranking").permitAll()
                         .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/players/**").permitAll()
-                        .requestMatchers(org.springframework.http.HttpMethod.DELETE, "/api/events/**").hasRole("ADMIN")
+                        .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/players/**").hasRole("ADMIN")
+                        .requestMatchers(org.springframework.http.HttpMethod.PUT, "/api/players/**").hasRole("ADMIN")
+                        .requestMatchers(org.springframework.http.HttpMethod.DELETE, "/api/players/**").hasRole("ADMIN")
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/bets/**").authenticated()
-                        .requestMatchers("/api/users/**").authenticated()
+                        .requestMatchers("/api/users/**").hasRole("ADMIN") // Users management is for admins
+
                         .anyRequest().permitAll())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);

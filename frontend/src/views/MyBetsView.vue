@@ -53,6 +53,17 @@ async function cancelBet(betId) {
 }
 
 onMounted(fetchBets)
+
+function getNetProfitValue(bet) {
+  if (bet.status === 'WON') {
+    // If we had potentialWinnings in DTO we could use it, but calculating is consistent with PENDING view
+    const totalOdds = bet.outcomes.reduce((acc, curr) => acc * curr.odds, 1)
+    return (bet.amount * totalOdds) - bet.amount
+  } else if (bet.status === 'LOST') {
+    return -bet.amount
+  }
+  return 0
+}
 </script>
 
 <template>
@@ -107,6 +118,13 @@ onMounted(fetchBets)
           </p>
           <p v-if="bet.status === 'PENDING'" class="text-xs text-gray-500">
             {{ langStore.t('betSlip.potentialReturn') }}: {{ (bet.amount * bet.outcomes.reduce((acc, curr) => acc * curr.odds, 1)).toFixed(2) }} €
+          </p>
+          <p v-if="bet.status !== 'PENDING'" class="text-sm font-bold mt-1" :class="{
+             'text-green-400': getNetProfitValue(bet) > 0,
+             'text-red-500': getNetProfitValue(bet) < 0,
+             'text-gray-500': getNetProfitValue(bet) === 0
+          }">
+             {{ langStore.t('myBets.netProfit') }}: {{ getNetProfitValue(bet) > 0 ? '+' : '' }}{{ getNetProfitValue(bet).toFixed(2) }} €
           </p>
           <button v-if="bet.status === 'PENDING'" @click="cancelBet(bet.id)" class="mt-2 bg-red-500 hover:bg-red-600 text-white text-xs font-bold py-1 px-2 rounded transition">
             {{ langStore.t('myBets.cancel') }}

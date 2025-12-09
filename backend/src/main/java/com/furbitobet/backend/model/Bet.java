@@ -22,6 +22,8 @@ public class Bet {
 
     private BigDecimal amount;
 
+    private BigDecimal winnings;
+
     @Enumerated(EnumType.STRING)
     private BetStatus status;
 

@@ -8,7 +8,7 @@ const activeTab = ref('all')
 
 const fetchPlayers = async () => {
   try {
-    const response = await fetch('http://localhost:8080/api/players')
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/api/players`)
     if (response.ok) {
       players.value = await response.json()
     }

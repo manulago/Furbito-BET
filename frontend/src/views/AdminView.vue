@@ -48,7 +48,7 @@ const playerForm = ref({
 
 const fetchPlayers = async () => {
   try {
-    const response = await fetch('http://localhost:8080/api/players')
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/api/players`)
     if (response.ok) {
       players.value = await response.json()
     }
@@ -58,8 +58,12 @@ const fetchPlayers = async () => {
 }
 
 const createPlayer = async () => {
+  if (!playerForm.value.name) return alert(langStore.t('admin.playerName') + ' is required')
+  if (playerForm.value.goals < 0 || playerForm.value.assists < 0) return alert('Stats cannot be negative')
+
+
   try {
-    const response = await fetch('http://localhost:8080/api/players', {
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/api/players`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -72,17 +76,22 @@ const createPlayer = async () => {
       showCreatePlayer.value = false
       resetPlayerForm()
       fetchPlayers()
+    } else {
+      const err = await response.text()
+      alert('Error creating player: ' + err)
     }
   } catch (error) {
     console.error('Error creating player:', error)
+    alert('Error: ' + error.message)
   }
 }
 
 const updatePlayerStats = async () => {
   if (!editingPlayer.value) return
+  if (!playerForm.value.name) return alert(langStore.t('admin.playerName') + ' is required')
   
   try {
-    const response = await fetch(`http://localhost:8080/api/players/${editingPlayer.value.id}`, {
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/api/players/${editingPlayer.value.id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -95,9 +104,13 @@ const updatePlayerStats = async () => {
       editingPlayer.value = null
       resetPlayerForm()
       fetchPlayers()
+    } else {
+      const err = await response.text()
+      alert('Error updating player: ' + err)
     }
   } catch (error) {
     console.error('Error updating player:', error)
+    alert('Error: ' + error.message)
   }
 }
 
@@ -105,7 +118,7 @@ const deletePlayer = async (id) => {
   if (!confirm(langStore.t('admin.confirmDeletePlayer'))) return
   
   try {
-    const response = await fetch(`http://localhost:8080/api/players/${id}`, {
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/api/players/${id}`, {
       method: 'DELETE',
       headers: {
         'Authorization': `Bearer ${auth.token}`
@@ -144,18 +157,27 @@ const editOutcomeOdds = ref('')
 const editOutcomeGroup = ref('')
 
 async function fetchUsers() {
-  const res = await fetch(`${import.meta.env.VITE_API_URL}/api/users`, {
-    headers: { 'Authorization': `Bearer ${auth.token}` }
-  })
-  users.value = await res.json()
-  
-  // Refresh selected user if active
-  if (selectedUser.value) {
-      const updated = users.value.find(u => u.id === selectedUser.value.id)
-      if (updated) selectedUser.value = updated
-      else selectedUser.value = null
+  try {
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/api/users`, {
+      headers: { 'Authorization': `Bearer ${auth.token}` }
+    })
+    if (res.ok) {
+      users.value = await res.json()
+      
+      // Refresh selected user if active
+      if (selectedUser.value) {
+          const updated = users.value.find(u => u.id === selectedUser.value.id)
+          if (updated) selectedUser.value = updated
+          else selectedUser.value = null
+      }
+    } else {
+      console.error('Failed to fetch users:', res.status)
+    }
+  } catch (error) {
+    console.error('Error fetching users:', error)
   }
 }
+
 
 async function fetchEvents() {
   const res = await fetch(`${import.meta.env.VITE_API_URL}/api/events`)
@@ -859,8 +881,9 @@ onMounted(() => {
 
       <!-- Create/Edit Player Modal -->
       <div v-if="showCreatePlayer || editingPlayer" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
-        <div class="bg-gray-800 p-6 rounded-lg shadow-xl border border-gray-700 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+        <div class="bg-gray-800 p-6 rounded-lg shadow-xl border border-gray-700 w-full max-w-lg md:max-w-2xl max-h-[90vh] overflow-y-auto">
           <h3 class="text-xl font-bold mb-4 text-white">{{ editingPlayer ? langStore.t('admin.editPlayer') : langStore.t('admin.newPlayer') }}</h3>
+
           
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             <div>

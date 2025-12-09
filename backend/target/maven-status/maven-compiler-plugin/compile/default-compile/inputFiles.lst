@@ -1,9 +1,11 @@
 /home/manulago/Escritorio/FurbitoBET/backend/src/main/java/com/furbitobet/backend/controller/AuthController.java
 /home/manulago/Escritorio/FurbitoBET/backend/src/main/java/com/furbitobet/backend/model/Category.java
+/home/manulago/Escritorio/FurbitoBET/backend/src/main/java/com/furbitobet/backend/controller/PlayerController.java
 /home/manulago/Escritorio/FurbitoBET/backend/src/main/java/com/furbitobet/backend/config/DataInitializer.java
 /home/manulago/Escritorio/FurbitoBET/backend/src/main/java/com/furbitobet/backend/dto/WinningBetDTO.java
 /home/manulago/Escritorio/FurbitoBET/backend/src/main/java/com/furbitobet/backend/controller/LeagueController.java
 /home/manulago/Escritorio/FurbitoBET/backend/src/main/java/com/furbitobet/backend/security/JwtUtil.java
+/home/manulago/Escritorio/FurbitoBET/backend/src/main/java/com/furbitobet/backend/service/PlayerService.java
 /home/manulago/Escritorio/FurbitoBET/backend/src/main/java/com/furbitobet/backend/model/User.java
 /home/manulago/Escritorio/FurbitoBET/backend/src/main/java/com/furbitobet/backend/dto/EventResultDTO.java
 /home/manulago/Escritorio/FurbitoBET/backend/src/main/java/com/furbitobet/backend/service/BetService.java
@@ -25,6 +27,8 @@
 /home/manulago/Escritorio/FurbitoBET/backend/src/main/java/com/furbitobet/backend/controller/UserController.java
 /home/manulago/Escritorio/FurbitoBET/backend/src/main/java/com/furbitobet/backend/config/AppConfig.java
 /home/manulago/Escritorio/FurbitoBET/backend/src/main/java/com/furbitobet/backend/controller/AdminController.java
+/home/manulago/Escritorio/FurbitoBET/backend/src/main/java/com/furbitobet/backend/repository/PlayerRepository.java
+/home/manulago/Escritorio/FurbitoBET/backend/src/main/java/com/furbitobet/backend/model/Player.java
 /home/manulago/Escritorio/FurbitoBET/backend/src/main/java/com/furbitobet/backend/model/Outcome.java
 /home/manulago/Escritorio/FurbitoBET/backend/src/main/java/com/furbitobet/backend/service/ScraperService.java
 /home/manulago/Escritorio/FurbitoBET/backend/src/main/java/com/furbitobet/backend/service/UserService.java

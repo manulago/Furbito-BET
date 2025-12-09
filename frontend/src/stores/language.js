@@ -198,7 +198,8 @@ export const useLanguageStore = defineStore('language', () => {
             },
             myBets: {
                 noBets: 'No se encontraron apuestas.',
-                cancel: 'Cancelar Apuesta'
+                cancel: 'Cancelar Apuesta',
+                netProfit: 'Ganancia Neta'
             }
         },
         gl: {
@@ -394,7 +395,8 @@ export const useLanguageStore = defineStore('language', () => {
             },
             myBets: {
                 noBets: 'Non se atoparon apostas.',
-                cancel: 'Cancelar Aposta'
+                cancel: 'Cancelar Aposta',
+                netProfit: 'Ganancia Neta'
             }
         },
         en: {
@@ -590,7 +592,8 @@ export const useLanguageStore = defineStore('language', () => {
             },
             myBets: {
                 noBets: 'No bets found.',
-                cancel: 'Cancel Bet'
+                cancel: 'Cancel Bet',
+                netProfit: 'Net Profit'
             }
         }
     }

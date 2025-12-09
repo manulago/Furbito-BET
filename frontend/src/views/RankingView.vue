@@ -242,7 +242,9 @@ function getRank(index) {
             <th class="px-4 py-2">{{ langStore.t('ranking.users.pos') }}</th>
             <th class="px-4 py-2">{{ langStore.t('ranking.users.user') }}</th>
             <th class="px-4 py-2 text-right">{{ langStore.t('ranking.users.balance') }}</th>
+            <th class="px-4 py-2 text-right">Net Profit</th>
           </tr>
+
         </thead>
         <tbody>
           <tr v-for="(user, index) in userRanking" :key="user.id" class="border-b border-gray-700 hover:bg-gray-700">
@@ -255,7 +257,11 @@ function getRank(index) {
               </router-link>
             </td>
             <td class="px-4 py-2 text-right font-bold text-green-400">{{ user.balance }} €</td>
+            <td class="px-4 py-2 text-right font-bold" :class="user.netProfit >= 0 ? 'text-green-400' : 'text-red-400'">
+              {{ user.netProfit }} €
+            </td>
           </tr>
+
         </tbody>
       </table>
     </div>

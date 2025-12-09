@@ -37,6 +37,7 @@ com/furbitobet/backend/controller/AdminController.class
 com/furbitobet/backend/repository/BetRepository.class
 com/furbitobet/backend/service/EventSyncService.class
 com/furbitobet/backend/dto/WinningBetDTO.class
+com/furbitobet/backend/controller/PlayerController.class
 com/furbitobet/backend/model/Event$EventStatus.class
 com/furbitobet/backend/controller/AuthController$RegisterRequest.class
 com/furbitobet/backend/dto/EventResultDTO.class

@@ -10,4 +10,7 @@ public interface BetRepository extends JpaRepository<Bet, Long> {
     List<Bet> findByStatus(Bet.BetStatus status);
 
     List<Bet> findDistinctByOutcomes_Event_Id(Long eventId);
+
+    @org.springframework.data.jpa.repository.Query("SELECT b.user.id, SUM(b.winnings), SUM(b.amount) FROM Bet b WHERE b.status IN ('WON', 'LOST', 'VOID') GROUP BY b.user.id")
+    List<Object[]> findNetProfitStats();
 }
