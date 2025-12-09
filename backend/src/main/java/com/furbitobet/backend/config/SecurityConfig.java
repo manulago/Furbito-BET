@@ -40,6 +40,12 @@ public class SecurityConfig {
                         .requestMatchers(org.springframework.http.HttpMethod.DELETE, "/api/players/**").hasRole("ADMIN")
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/bets/**").authenticated()
+                        .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/users/**").authenticated() // Allow
+                                                                                                                   // users
+                                                                                                                   // to
+                                                                                                                   // see
+                                                                                                                   // their
+                                                                                                                   // balance
                         .requestMatchers("/api/users/**").hasRole("ADMIN") // Users management is for admins
 
                         .anyRequest().permitAll())
