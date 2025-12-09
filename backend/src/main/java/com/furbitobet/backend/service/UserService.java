@@ -64,11 +64,11 @@ public class UserService implements UserDetailsService {
                 winnings = BigDecimal.ZERO;
             if (staked == null)
                 staked = BigDecimal.ZERO;
-            profits.put(userId, winnings.subtract(staked));
+            profits.put(userId, winnings);
         }
 
         for (User user : users) {
-            user.setNetProfit(profits.getOrDefault(user.getId(), BigDecimal.ZERO));
+            user.setGrossProfit(profits.getOrDefault(user.getId(), BigDecimal.ZERO));
         }
 
         return users;

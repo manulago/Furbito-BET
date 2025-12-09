@@ -28,7 +28,7 @@ public class User {
     private BigDecimal balance = new BigDecimal("100.00");
 
     @Transient
-    private BigDecimal netProfit;
+    private BigDecimal grossProfit;
 
     public enum Role {
         ADMIN, USER
