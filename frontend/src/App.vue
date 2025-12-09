@@ -46,9 +46,10 @@ function logout() {
             <RouterLink v-if="auth.user.role === 'ADMIN'" to="/admin" class="text-gray-300 hover:text-green-400 transition font-medium text-lg">{{ langStore.t('nav.admin') }}</RouterLink>
             
             <div class="flex items-center gap-3 bg-gray-700 px-4 py-2 rounded-full border border-gray-600">
-              <span class="text-gray-300 text-sm">{{ langStore.t('nav.welcome') }}, <span class="font-bold text-white">{{ auth.user.username }}</span></span>
-              <span class="text-green-400 font-bold text-lg">{{ auth.user.balance }} €</span>
+              <span class="text-gray-300 text-sm">{{ langStore.t('nav.welcome') }}, <span class="font-bold text-white">{{ auth.user?.username }}</span></span>
+              <span class="text-green-400 font-bold text-lg">{{ auth.user?.balance !== undefined ? auth.user.balance : '...' }} €</span>
             </div>
+
 
             <button @click="logout" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition shadow-md">{{ langStore.t('nav.logout') }}</button>
           </div>
@@ -70,8 +71,9 @@ function logout() {
 
         <!-- Mobile Menu Button -->
         <div class="md:hidden flex items-center gap-4">
-           <span v-if="auth.user" class="text-green-400 font-bold text-sm bg-gray-700 px-2 py-1 rounded-full border border-gray-600">{{ auth.user.balance }} €</span>
+           <span v-if="auth.user" class="text-green-400 font-bold text-sm bg-gray-700 px-2 py-1 rounded-full border border-gray-600">{{ auth.user.balance !== undefined ? auth.user.balance : '...' }} €</span>
            <button @click="isMobileMenuOpen = !isMobileMenuOpen" class="text-gray-300 hover:text-white focus:outline-none p-2">
+
             <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path v-if="!isMobileMenuOpen" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
               <path v-else stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />

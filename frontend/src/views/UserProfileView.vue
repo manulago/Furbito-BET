@@ -93,8 +93,9 @@ onMounted(() => {
               {{ langStore.t('profile.potWin') }}: <span class="font-bold text-green-400">{{ calculatePotentialWin(bet) }} €</span>
             </span>
             <span v-else class="text-gray-300">
-              Ganancia: <span class="font-bold text-green-400">{{ bet.winnings !== null ? bet.winnings : '0.00' }} €</span>
+              Ganancia Total: <span class="font-bold text-green-400">{{ bet.winnings !== null ? bet.winnings : '0.00' }} €</span>
             </span>
+
           </div>
         </div>
       </div>
