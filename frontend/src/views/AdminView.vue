@@ -850,7 +850,7 @@ onMounted(() => {
 
     <!-- Players Tab -->
     <div v-if="activeTab === 'players'" class="space-y-6">
-      <div class="flex justify-between items-center">
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <h3 class="text-2xl font-bold text-white">{{ langStore.t('admin.playersTitle') }}</h3>
         <button @click="showCreatePlayer = true" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded font-bold shadow flex items-center gap-2">
           <span>+</span> {{ langStore.t('admin.addPlayer') }}
@@ -859,7 +859,7 @@ onMounted(() => {
 
       <!-- Create/Edit Player Modal -->
       <div v-if="showCreatePlayer || editingPlayer" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
-        <div class="bg-gray-800 p-6 rounded-lg shadow-xl border border-gray-700 w-full max-w-2xl">
+        <div class="bg-gray-800 p-6 rounded-lg shadow-xl border border-gray-700 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
           <h3 class="text-xl font-bold mb-4 text-white">{{ editingPlayer ? langStore.t('admin.editPlayer') : langStore.t('admin.newPlayer') }}</h3>
           
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">

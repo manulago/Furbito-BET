@@ -67,9 +67,55 @@ onMounted(() => {
       </button>
     </div>
 
-    <!-- Table -->
+    <!-- Statistics List (Desktop Table / Mobile Cards) -->
     <div class="bg-gray-800 rounded-lg shadow-xl overflow-hidden border border-gray-700">
-      <table class="w-full text-left">
+      
+      <!-- Mobile Card View -->
+      <div class="block md:hidden">
+        <div v-for="(player, index) in sortedPlayers" :key="player.id" class="p-4 border-b border-gray-700 last:border-b-0 hover:bg-gray-750">
+          <div class="flex justify-between items-start mb-3">
+             <div class="flex items-center gap-3">
+                <span class="text-gray-500 font-mono text-lg font-bold">#{{ index + 1 }}</span>
+                <div>
+                   <span class="text-white font-bold text-lg block leading-tight">{{ player.name }}</span>
+                   <span class="text-gray-400 text-sm">{{ player.team || '-' }}</span>
+                </div>
+             </div>
+          </div>
+          
+          <div class="grid grid-cols-2 gap-3 text-sm">
+             <div class="bg-gray-900/50 p-2 rounded flex justify-between items-center" :class="{'ring-1 ring-green-500/50': activeTab === 'goals'}">
+                <span class="text-gray-400">Goles</span>
+                <span class="font-bold text-white" :class="{'text-green-400 text-lg': activeTab === 'goals'}">{{ player.goals }}</span>
+             </div>
+             <div class="bg-gray-900/50 p-2 rounded flex justify-between items-center" :class="{'ring-1 ring-green-500/50': activeTab === 'assists'}">
+                <span class="text-gray-400">Asistencias</span>
+                <span class="font-bold text-white" :class="{'text-green-400 text-lg': activeTab === 'assists'}">{{ player.assists }}</span>
+             </div>
+             <div class="bg-gray-900/50 p-2 rounded flex justify-between items-center" :class="{'ring-1 ring-green-500/50': activeTab === 'matches'}">
+                <span class="text-gray-400">Partidos</span>
+                <span class="text-white">
+                  <span :class="{'text-green-400 font-bold': activeTab === 'matches'}">{{ player.matchesPlayed }}</span>
+                  <span class="text-gray-500 text-xs ml-1">({{ player.matchesStarted }})</span>
+                </span>
+             </div>
+             <div class="bg-gray-900/50 p-2 rounded flex justify-between items-center" :class="{'ring-1 ring-green-500/50': activeTab === 'cards'}">
+                <span class="text-gray-400">Tarjetas</span>
+                <span>
+                   <span class="text-yellow-400 font-bold">{{ player.yellowCards }}</span>
+                   <span class="text-gray-600 mx-1">/</span>
+                   <span class="text-red-500 font-bold">{{ player.redCards }}</span>
+                </span>
+             </div>
+          </div>
+        </div>
+        <div v-if="players.length === 0" class="p-8 text-center text-gray-500">
+           No hay estadísticas disponibles.
+        </div>
+      </div>
+
+      <!-- Desktop Table View -->
+      <table class="w-full text-left hidden md:table">
         <thead class="bg-gray-700 text-gray-400 uppercase text-sm">
           <tr>
             <th class="p-4">#</th>
