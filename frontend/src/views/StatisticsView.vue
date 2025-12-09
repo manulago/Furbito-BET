@@ -44,25 +44,25 @@ onMounted(() => {
     <h2 class="text-3xl font-bold text-white">{{ langStore.t('Estadísticas Furbito') || 'Estadísticas Furbito' }}</h2>
 
     <!-- Tabs -->
-    <div class="flex border-b border-gray-700">
+    <div class="flex border-b border-gray-700 overflow-x-auto scrollbar-hide">
       <button @click="activeTab = 'all'"
-        :class="['px-4 py-2 font-medium', activeTab === 'all' ? 'text-green-500 border-b-2 border-green-500' : 'text-gray-400 hover:text-white']">
+        :class="['px-4 py-2 font-medium whitespace-nowrap', activeTab === 'all' ? 'text-green-500 border-b-2 border-green-500' : 'text-gray-400 hover:text-white']">
         Todos
       </button>
       <button @click="activeTab = 'goals'"
-        :class="['px-4 py-2 font-medium', activeTab === 'goals' ? 'text-green-500 border-b-2 border-green-500' : 'text-gray-400 hover:text-white']">
+        :class="['px-4 py-2 font-medium whitespace-nowrap', activeTab === 'goals' ? 'text-green-500 border-b-2 border-green-500' : 'text-gray-400 hover:text-white']">
         Goles
       </button>
       <button @click="activeTab = 'assists'"
-        :class="['px-4 py-2 font-medium', activeTab === 'assists' ? 'text-green-500 border-b-2 border-green-500' : 'text-gray-400 hover:text-white']">
+        :class="['px-4 py-2 font-medium whitespace-nowrap', activeTab === 'assists' ? 'text-green-500 border-b-2 border-green-500' : 'text-gray-400 hover:text-white']">
         Asistencias
       </button>
       <button @click="activeTab = 'matches'"
-        :class="['px-4 py-2 font-medium', activeTab === 'matches' ? 'text-green-500 border-b-2 border-green-500' : 'text-gray-400 hover:text-white']">
+        :class="['px-4 py-2 font-medium whitespace-nowrap', activeTab === 'matches' ? 'text-green-500 border-b-2 border-green-500' : 'text-gray-400 hover:text-white']">
         Partidos
       </button>
       <button @click="activeTab = 'cards'"
-        :class="['px-4 py-2 font-medium', activeTab === 'cards' ? 'text-green-500 border-b-2 border-green-500' : 'text-gray-400 hover:text-white']">
+        :class="['px-4 py-2 font-medium whitespace-nowrap', activeTab === 'cards' ? 'text-green-500 border-b-2 border-green-500' : 'text-gray-400 hover:text-white']">
         Tarjetas
       </button>
     </div>
