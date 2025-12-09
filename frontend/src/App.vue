@@ -37,7 +37,7 @@ function logout() {
           <!-- Public Links -->
           <router-link to="/" class="text-gray-300 hover:text-green-400 transition font-medium text-lg">{{ langStore.t('nav.home') }}</router-link>
           <RouterLink to="/ranking" class="text-gray-300 hover:text-green-400 transition font-medium text-lg">{{ langStore.t('nav.ranking') }}</RouterLink>
-          <router-link to="/statistics" class="text-gray-300 hover:text-green-400 transition font-medium text-lg">Estadísticas Furbito</router-link>
+          <router-link to="/statistics" class="text-gray-300 hover:text-green-400 transition font-medium text-lg">{{ langStore.t('nav.statistics') }}</router-link>
           <router-link v-if="auth.isAdmin" to="/admin" class="text-gray-300 hover:text-yellow-400 transition font-medium text-lg">{{ langStore.t('nav.admin') }}</router-link>
           <!-- <RouterLink to="/results" class="text-gray-300 hover:text-green-400 transition font-medium text-lg">Results</RouterLink> -->
 
@@ -97,6 +97,7 @@ function logout() {
 
           <RouterLink to="/" @click="isMobileMenuOpen = false" class="block py-3 px-4 rounded-lg hover:bg-gray-700 text-white font-medium text-lg">{{ langStore.t('nav.home') }}</RouterLink>
           <RouterLink to="/ranking" @click="isMobileMenuOpen = false" class="block py-3 px-4 rounded-lg hover:bg-gray-700 text-white font-medium text-lg">{{ langStore.t('nav.ranking') }}</RouterLink>
+          <RouterLink to="/statistics" @click="isMobileMenuOpen = false" class="block py-3 px-4 rounded-lg hover:bg-gray-700 text-white font-medium text-lg">{{ langStore.t('nav.statistics') }}</RouterLink>
           <!-- <RouterLink to="/results" @click="isMobileMenuOpen = false" class="block py-3 px-4 rounded-lg hover:bg-gray-700 text-white font-medium text-lg">Results</RouterLink> -->
 
           <div v-if="auth.user" class="flex flex-col gap-2 border-t border-gray-700 pt-2">

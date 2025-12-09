@@ -12,7 +12,8 @@ export const useLanguageStore = defineStore('language', () => {
                 ranking: 'Clasificación',
                 admin: 'Admin',
                 logout: 'Cerrar Sesión',
-                welcome: 'Bienvenido'
+                welcome: 'Bienvenido',
+                statistics: 'Estadísticas Furbito'
             },
             ranking: {
                 title: 'Clasificación',
@@ -207,7 +208,8 @@ export const useLanguageStore = defineStore('language', () => {
                 ranking: 'Clasificación',
                 admin: 'Admin',
                 logout: 'Pechar Sesión',
-                welcome: 'Benvido'
+                welcome: 'Benvido',
+                statistics: 'Estatísticas Furbito'
             },
             ranking: {
                 title: 'Clasificación',
@@ -402,7 +404,8 @@ export const useLanguageStore = defineStore('language', () => {
                 ranking: 'Standings',
                 admin: 'Admin',
                 logout: 'Logout',
-                welcome: 'Welcome'
+                welcome: 'Welcome',
+                statistics: 'Furbito Statistics'
             },
             ranking: {
                 title: 'Standings',
