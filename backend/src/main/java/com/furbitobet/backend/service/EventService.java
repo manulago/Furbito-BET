@@ -21,7 +21,10 @@ public class EventService {
     @Autowired
     private com.furbitobet.backend.repository.PlayerRepository playerRepository;
 
-    public Event createEvent(String name, LocalDateTime date) {
+    @Autowired
+    private EmailService emailService;
+
+    public Event createEvent(String name, LocalDateTime date, boolean notifyUsers) {
         Event event = new Event();
         event.setName(name);
         event.setDate(date);
@@ -30,7 +33,31 @@ public class EventService {
 
         generatePlayerOdds(savedEvent);
 
+        if (notifyUsers) {
+            try {
+                java.util.List<com.furbitobet.backend.model.User> allUsers = userService.getAllUsers();
+                for (com.furbitobet.backend.model.User user : allUsers) {
+                    if (user.getEmail() != null && !user.getEmail().isEmpty()) {
+                        emailService.sendSimpleMessage(
+                                user.getEmail(),
+                                "Nuevo Evento en FurbitoBET: " + name,
+                                "Hola " + user.getUsername() + ",\n\n" +
+                                        "Se ha creado un nuevo evento: " + name + "\n" +
+                                        "Fecha: " + date.toString().replace("T", " ") + "\n\n" +
+                                        "¡Entra y haz tus apuestas!\n\n" +
+                                        "FurbitoBET Team");
+                    }
+                }
+            } catch (Exception e) {
+                System.err.println("Error creating event notifications: " + e.getMessage());
+            }
+        }
+
         return savedEvent;
+    }
+
+    public Event createEvent(String name, LocalDateTime date) {
+        return createEvent(name, date, false);
     }
 
     public void generatePlayerOdds(Event event) {

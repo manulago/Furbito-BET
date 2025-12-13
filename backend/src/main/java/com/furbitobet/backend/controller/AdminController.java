@@ -35,8 +35,38 @@ public class AdminController {
     private BetRepository betRepository;
 
     @PostMapping("/events")
-    public Event createEvent(@RequestBody Event event) {
-        return eventService.createEvent(event.getName(), event.getDate());
+    public Event createEvent(@RequestBody CreateEventRequest request) {
+        return eventService.createEvent(request.getName(), request.getDate(), request.isNotifyUsers());
+    }
+
+    public static class CreateEventRequest {
+        private String name;
+        private java.time.LocalDateTime date;
+        private boolean notifyUsers;
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public java.time.LocalDateTime getDate() {
+            return date;
+        }
+
+        public void setDate(java.time.LocalDateTime date) {
+            this.date = date;
+        }
+
+        public boolean isNotifyUsers() {
+            return notifyUsers;
+        }
+
+        public void setNotifyUsers(boolean notifyUsers) {
+            this.notifyUsers = notifyUsers;
+        }
     }
 
     @PutMapping("/events/{id}")

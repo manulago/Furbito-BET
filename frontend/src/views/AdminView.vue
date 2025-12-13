@@ -12,6 +12,7 @@ const eventName = ref('')
 const eventDate = ref('')
 const selectedEvent = ref(null) // The event currently being viewed/edited in detail
 const showCreateEvent = ref(false)
+const notifyEvent = ref(false)
 const showAddOutcome = ref(false)
 
 const outcomeDesc = ref('')
@@ -212,10 +213,11 @@ async function createEvent() {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${auth.token}`
     },
-    body: JSON.stringify({ name: eventName.value, date: eventDate.value })
+    body: JSON.stringify({ name: eventName.value, date: eventDate.value, notifyUsers: notifyEvent.value })
   })
   eventName.value = ''
   eventDate.value = ''
+  notifyEvent.value = false
   showCreateEvent.value = false
   fetchEvents()
 }
@@ -543,6 +545,10 @@ onMounted(() => {
             <div>
               <label class="block text-sm text-gray-400 mb-1">{{ langStore.t('admin.dateTime') }}</label>
               <input v-model="eventDate" type="datetime-local" class="w-full bg-gray-700 text-white p-2 rounded border border-gray-600 focus:border-green-500 outline-none" />
+            </div>
+            <div class="flex items-center gap-2">
+              <input type="checkbox" id="notifyEvent" v-model="notifyEvent" class="w-4 h-4 rounded border-gray-600 text-green-500 focus:ring-green-500 bg-gray-700" />
+              <label for="notifyEvent" class="text-sm text-gray-300">Notificar usuarios por email</label>
             </div>
             <div class="flex justify-end gap-3 mt-6">
               <button @click="showCreateEvent = false" class="px-4 py-2 text-gray-300 hover:text-white">{{ langStore.t('admin.cancel') }}</button>
