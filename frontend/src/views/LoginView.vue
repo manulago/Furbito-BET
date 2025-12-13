@@ -62,9 +62,9 @@ async function handleLogin() {
         <button type="submit" class="w-full bg-gradient-to-r from-green-500 to-blue-500 text-white font-bold py-2 rounded hover:opacity-90 transition">
           {{ langStore.t('auth.login') }}
         </button>
-        <div class="text-right mt-2">
-            <router-link to="/forgot-password" class="text-sm text-gray-400 hover:text-white">
-                {{ langStore.t('auth.forgotPassword') || '¿Olvidaste tu contraseña?' }}
+        <div class="text-center mt-4">
+            <router-link to="/forgot-password" class="text-sm text-gray-400 hover:text-white transition-colors duration-200">
+                {{ langStore.t('auth.forgotPassword') }}
             </router-link>
         </div>
       </form>

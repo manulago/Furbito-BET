@@ -64,7 +64,8 @@ export const useLanguageStore = defineStore('language', () => {
                 registerHere: 'Regístrate aquí',
                 loginHere: 'Inicia sesión aquí',
                 passwordsDoNotMatch: '¡Las contraseñas no coinciden!',
-                registrationFailed: 'Fallo en el registro'
+                registrationFailed: 'Fallo en el registro',
+                forgotPassword: '¿Has olvidado tu contraseña?'
             },
             home: {
                 liveEvents: 'Eventos en Vivo',
@@ -261,7 +262,8 @@ export const useLanguageStore = defineStore('language', () => {
                 registerHere: 'Rexístrate aquí',
                 loginHere: 'Inicia sesión aquí',
                 passwordsDoNotMatch: 'Os contrasinais non coinciden!',
-                registrationFailed: 'Fallo no rexistro'
+                registrationFailed: 'Fallo no rexistro',
+                forgotPassword: '¿Esqueciches o teu contrasinal?'
             },
             home: {
                 liveEvents: 'Eventos en Vivo',
@@ -458,7 +460,8 @@ export const useLanguageStore = defineStore('language', () => {
                 registerHere: 'Register here',
                 loginHere: 'Login here',
                 passwordsDoNotMatch: 'Passwords do not match!',
-                registrationFailed: 'Registration failed'
+                registrationFailed: 'Registration failed',
+                forgotPassword: 'Forgot your password?'
             },
             home: {
                 liveEvents: 'Live Events',
