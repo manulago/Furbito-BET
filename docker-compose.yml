@@ -22,6 +22,8 @@ services:
       MAIL_USERNAME: ${MAIL_USERNAME}
       MAIL_PASSWORD: ${MAIL_PASSWORD}
       ADMIN_PASSWORD: password123
+      BREVO_API_KEY: ${BREVO_API_KEY}
+      FRONTEND_URL: ${FRONTEND_URL}
     ports:
       - "8080:8080"
     depends_on:

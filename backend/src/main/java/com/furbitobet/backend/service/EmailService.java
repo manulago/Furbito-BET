@@ -21,6 +21,9 @@ public class EmailService {
     @Value("${brevo.api.key}")
     private String brevoApiKey;
 
+    @Value("${app.frontend.url}")
+    private String frontendUrl;
+
     private final RestTemplate restTemplate = new RestTemplate();
 
     @Async
@@ -53,7 +56,7 @@ public class EmailService {
                 "<p>Hola <strong>" + username + "</strong>,</p>" +
                 "<p>¡Gracias por registrarte en la mejor plataforma de apuestas deportivas!</p>" +
                 "<p>Tu cuenta ha sido creada exitosamente y ya estás listo para empezar a jugar.</p>" +
-                "<p style='text-align: center;'><a href='https://furbitobet.com' class='button'>Ir a FurbitoBET</a></p>"
+                "<p style='text-align: center;'><a href='" + frontendUrl + "' class='button'>Ir a FurbitoBET</a></p>"
                 +
                 "</div>" +
                 "<div class='footer'>" +
@@ -72,9 +75,7 @@ public class EmailService {
         System.out.println("Attempting to send reset password email via Brevo to: " + to);
         String subject = "FurbitoBET - Restablecer Contraseña";
 
-        // This link should point to the frontend route we will create
-        String resetLink = "http://localhost:5173/reset-password?token=" + token; // Ideally use environment variable
-                                                                                  // for frontend URL
+        String resetLink = frontendUrl + "/reset-password?token=" + token;
 
         String htmlContent = "<!DOCTYPE html>" +
                 "<html>" +
