@@ -125,6 +125,7 @@ public class EventSyncService {
                         // We need to pass ORIGINAL names for stats lookup, but FORMATTED names for
                         // outcome descriptions
                         createOutcomesForEvent(newEvent, homeTeam, awayTeam, formattedHome, formattedAway, standings);
+                        eventService.generatePlayerOdds(newEvent);
                     }
 
                 } catch (Exception e) {

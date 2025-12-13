@@ -25,6 +25,8 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    private String resetToken;
+
     private BigDecimal balance = new BigDecimal("100.00");
 
     @Transient

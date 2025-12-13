@@ -18,21 +18,86 @@ public class EventService {
     @Autowired
     private OutcomeRepository outcomeRepository;
 
+    @Autowired
+    private com.furbitobet.backend.repository.PlayerRepository playerRepository;
+
     public Event createEvent(String name, LocalDateTime date) {
         Event event = new Event();
         event.setName(name);
         event.setDate(date);
         event.setStatus(Event.EventStatus.UPCOMING);
-        return eventRepository.save(event);
+        Event savedEvent = eventRepository.save(event);
+
+        generatePlayerOdds(savedEvent);
+
+        return savedEvent;
+    }
+
+    public void generatePlayerOdds(Event event) {
+        try {
+            String[] teams = event.getName().split(" vs ");
+            if (teams.length != 2)
+                return;
+
+            java.util.List<com.furbitobet.backend.model.Player> homePlayers = playerRepository
+                    .findByTeam(teams[0].trim());
+            java.util.List<com.furbitobet.backend.model.Player> awayPlayers = playerRepository
+                    .findByTeam(teams[1].trim());
+
+            java.util.List<com.furbitobet.backend.model.Player> allPlayers = new java.util.ArrayList<>();
+            allPlayers.addAll(homePlayers);
+            allPlayers.addAll(awayPlayers);
+
+            for (com.furbitobet.backend.model.Player p : allPlayers) {
+                // Goal Odds Logic
+                double matches = p.getMatchesPlayed() > 0 ? p.getMatchesPlayed() : 1.0;
+                double goalProb = (double) p.getGoals() / matches;
+                // Normalize prob
+                goalProb = Math.max(0.1, Math.min(0.8, goalProb)); // Clamp between 10% and 80%
+                // Add a margin? If user wants simple stats based.
+                // Odds = 1 / Probability * Margin (e.g. 0.9 return to player) -> Odds = 0.9 /
+                // Prob ???
+                // Let's just do Odds = 1 / Prob for simplicity + small buffer for house edge
+                // (e.g. 1.05 / Prob would be generous, usually 1/Prob * 0.9)
+                // Let's assume Probability is accurate, Fair Odds = 1/P. House Odds = 1/P *
+                // 0.9.
+                // But typically for "will score", if players have 0 goals, odds should be high.
+                if (p.getGoals() == 0)
+                    goalProb = 0.1;
+
+                BigDecimal goalOdds = BigDecimal.valueOf(1.0 / goalProb).setScale(2, java.math.RoundingMode.HALF_UP);
+
+                addOutcome(event.getId(), "Gol de " + p.getName(), goalOdds, "Goleadores");
+
+                // Assist Odds Logic
+                double assistProb = (double) p.getAssists() / matches;
+                assistProb = Math.max(0.05, Math.min(0.7, assistProb));
+                if (p.getAssists() == 0)
+                    assistProb = 0.08;
+
+                BigDecimal assistOdds = BigDecimal.valueOf(1.0 / assistProb).setScale(2,
+                        java.math.RoundingMode.HALF_UP);
+
+                addOutcome(event.getId(), "Asistencia de " + p.getName(), assistOdds, "Asistencias");
+            }
+        } catch (Exception e) {
+            System.err.println("Error generating player odds: " + e.getMessage());
+            // Don't fail event creation
+        }
     }
 
     public Outcome addOutcome(Long eventId, String description, BigDecimal odds) {
+        return addOutcome(eventId, description, odds, "General");
+    }
+
+    public Outcome addOutcome(Long eventId, String description, BigDecimal odds, String group) {
         Event event = eventRepository.findById(eventId).orElseThrow();
         Outcome outcome = new Outcome();
         outcome.setEvent(event);
         outcome.setDescription(description);
         outcome.setOdds(odds);
         outcome.setStatus(Outcome.OutcomeStatus.PENDING);
+        outcome.setOutcomeGroup(group);
         return outcomeRepository.save(outcome);
     }
 

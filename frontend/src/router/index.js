@@ -25,6 +25,16 @@ const router = createRouter({
             component: () => import('../views/RegisterView.vue')
         },
         {
+            path: '/forgot-password',
+            name: 'forgot-password',
+            component: () => import('../views/ForgotPasswordView.vue')
+        },
+        {
+            path: '/reset-password',
+            name: 'reset-password',
+            component: () => import('../views/ResetPasswordView.vue')
+        },
+        {
             path: '/statistics',
             name: 'statistics',
             component: StatisticsView
@@ -60,7 +70,7 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
     const auth = useAuthStore()
-    const publicPages = ['/login', '/register', '/statistics']
+    const publicPages = ['/login', '/register', '/statistics', '/forgot-password', '/reset-password']
     const guestOnlyPages = ['/login', '/register']
     const authRequired = !publicPages.includes(to.path)
 

@@ -21,6 +21,7 @@ services:
       DB_PASSWORD: password
       MAIL_USERNAME: ${MAIL_USERNAME}
       MAIL_PASSWORD: ${MAIL_PASSWORD}
+      ADMIN_PASSWORD: password123
     ports:
       - "8080:8080"
     depends_on:

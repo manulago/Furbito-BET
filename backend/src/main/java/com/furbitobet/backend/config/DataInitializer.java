@@ -10,7 +10,8 @@ import org.springframework.context.annotation.Configuration;
 public class DataInitializer {
 
     @Bean
-    public CommandLineRunner initData(UserService userService) {
+    public CommandLineRunner initData(UserService userService,
+            com.furbitobet.backend.repository.PlayerRepository playerRepository) {
         return args -> {
             System.out.println("STARTING DATA INITIALIZATION...");
             String adminPassword = System.getenv("ADMIN_PASSWORD");
@@ -33,6 +34,37 @@ public class DataInitializer {
                 System.out.println("ADMIN PASSWORD UPDATED FROM ENV VAR");
             } else {
                 System.out.println("Admin user found. No password update required (env var not set).");
+            }
+
+            if (playerRepository.count() == 0) {
+                System.out.println("No players found. Adding dummy players for Furbito FIC...");
+                String teamName = "Furbito FIC";
+
+                com.furbitobet.backend.model.Player p1 = new com.furbitobet.backend.model.Player();
+                p1.setName("Manuel Lago");
+                p1.setTeam(teamName);
+                p1.setGoals(10);
+                p1.setAssists(5);
+                p1.setMatchesPlayed(8);
+                playerRepository.save(p1);
+
+                com.furbitobet.backend.model.Player p2 = new com.furbitobet.backend.model.Player();
+                p2.setName("Juan Pérez");
+                p2.setTeam(teamName);
+                p2.setGoals(2);
+                p2.setAssists(8);
+                p2.setMatchesPlayed(8);
+                playerRepository.save(p2);
+
+                com.furbitobet.backend.model.Player p3 = new com.furbitobet.backend.model.Player();
+                p3.setName("Carlos Lopez");
+                p3.setTeam(teamName);
+                p3.setGoals(5);
+                p3.setAssists(2);
+                p3.setMatchesPlayed(7);
+                playerRepository.save(p3);
+
+                System.out.println("Dummy players added.");
             }
 
             System.out.println("DATA INITIALIZATION COMPLETE.");

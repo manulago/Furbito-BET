@@ -40,13 +40,79 @@ public class AuthController {
         userRepository.save(user);
 
         try {
-            emailService.sendWelcomeEmail(request.getEmail(), request.getUsername(), request.getPassword());
+            emailService.sendWelcomeEmail(request.getEmail(), request.getUsername());
         } catch (Exception e) {
             // Log error but don't fail registration
             System.err.println("Error sending email: " + e.getMessage());
         }
 
         return ResponseEntity.ok("User registered successfully!");
+    }
+
+    @PostMapping("/forgot-password")
+    public ResponseEntity<?> forgotPassword(@RequestBody java.util.Map<String, String> request) {
+        String email = request.get("email");
+        if (email == null || email.isEmpty()) {
+            return ResponseEntity.badRequest().body("Email required");
+        }
+
+        java.util.Optional<User> userOpt = userRepository.findByEmail(email);
+        if (userOpt.isPresent()) {
+            User user = userOpt.get();
+            String token = java.util.UUID.randomUUID().toString();
+            user.setResetToken(token);
+            userRepository.save(user);
+            System.out.println("DEBUG_TOKEN: " + token);
+
+            try {
+                emailService.sendResetPasswordEmail(user.getEmail(), token);
+            } catch (Exception e) {
+                System.err.println("Error sending reset email: " + e.getMessage());
+                return ResponseEntity.status(500).body("Error sending email");
+            }
+        }
+        // Always return OK strictly for security (so people can't check which emails
+        // exist)
+        // But the user asked: "si hay algún usuario que exista con ese email en la base
+        // de datos, se le envíe un correo"
+        return ResponseEntity.ok("If that email exists, a reset link has been sent.");
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<?> resetPassword(@RequestBody ResetPasswordRequest request) {
+        java.util.Optional<User> userOpt = userRepository.findByResetToken(request.getToken());
+
+        if (userOpt.isEmpty()) {
+            return ResponseEntity.badRequest().body("Invalid or expired token");
+        }
+
+        User user = userOpt.get();
+        user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+        user.setResetToken(null);
+        userRepository.save(user);
+
+        return ResponseEntity.ok("Password has been reset successfully.");
+    }
+
+    public static class ResetPasswordRequest {
+        private String token;
+        private String newPassword;
+
+        public String getToken() {
+            return token;
+        }
+
+        public void setToken(String token) {
+            this.token = token;
+        }
+
+        public String getNewPassword() {
+            return newPassword;
+        }
+
+        public void setNewPassword(String newPassword) {
+            this.newPassword = newPassword;
+        }
     }
 
     @Autowired
