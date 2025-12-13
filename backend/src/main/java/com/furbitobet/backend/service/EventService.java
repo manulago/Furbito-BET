@@ -38,14 +38,11 @@ public class EventService {
                 java.util.List<com.furbitobet.backend.model.User> allUsers = userService.getAllUsers();
                 for (com.furbitobet.backend.model.User user : allUsers) {
                     if (user.getEmail() != null && !user.getEmail().isEmpty()) {
-                        emailService.sendSimpleMessage(
+                        emailService.sendNewEventEmail(
                                 user.getEmail(),
-                                "Nuevo Evento en FurbitoBET: " + name,
-                                "Hola " + user.getUsername() + ",\n\n" +
-                                        "Se ha creado un nuevo evento: " + name + "\n" +
-                                        "Fecha: " + date.toString().replace("T", " ") + "\n\n" +
-                                        "¡Entra y haz tus apuestas!\n\n" +
-                                        "FurbitoBET Team");
+                                user.getUsername(),
+                                name,
+                                date.toString().replace("T", " "));
                     }
                 }
             } catch (Exception e) {

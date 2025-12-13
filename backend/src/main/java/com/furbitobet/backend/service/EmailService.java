@@ -123,6 +123,73 @@ public class EmailService {
         sendEmail(to, to, subject, htmlContent);
     }
 
+    @Async
+    public void sendNewEventEmail(String to, String username, String eventName, String eventDate) {
+        System.out.println("Sending new event notification to: " + to);
+        String subject = "⚽ Nuevo Partido Disponible: " + eventName;
+        String loginLink = frontendUrl + "/login";
+
+        String htmlContent = "<!DOCTYPE html>" +
+                "<html>" +
+                "<head>" +
+                "<style>" +
+                "body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f2f5; margin: 0; padding: 0; }"
+                +
+                ".container { max-width: 600px; margin: 20px auto; background-color: #ffffff; padding: 0; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); overflow: hidden; }"
+                +
+                ".header { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); padding: 30px 20px; text-align: center; }"
+                +
+                ".header h1 { color: #ffffff; margin: 0; font-size: 28px; font-weight: 800; letter-spacing: 1px; }" +
+                ".logo-text { color: #4ade80; }" + // Green color for 'BET' part or similar accent
+                ".content { padding: 40px 30px; color: #334155; font-size: 16px; line-height: 1.6; }" +
+                ".event-card { background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 20px; margin: 20px 0; text-align: center; }"
+                +
+                ".event-name { font-size: 20px; font-weight: bold; color: #0f172a; margin-bottom: 10px; }" +
+                ".event-date { color: #64748b; font-size: 14px; }" +
+                ".button-container { text-align: center; margin-top: 30px; }" +
+                ".button { display: inline-block; padding: 14px 32px; background-color: #22c55e; color: white; text-decoration: none; border-radius: 50px; font-weight: bold; font-size: 16px; transition: background-color 0.3s; box-shadow: 0 4px 6px -1px rgba(34, 197, 94, 0.4); }"
+                +
+                ".footer { background-color: #f8fafc; padding: 20px; text-align: center; font-size: 12px; color: #94a3b8; border-top: 1px solid #e2e8f0; }"
+                +
+                "</style>" +
+                "</head>" +
+                "<body>" +
+                "<div class='container'>" +
+                "<div class='header'>" +
+                // Replacing Image with Styled Text as Logo for reliability, or use a
+                // placeholder if strictly requested.
+                // User asked for "include the logo". Listing a text-based logo is safer if no
+                // hosted image exists.
+                // But I'll add an <img> tag pointing to a generic football icon or furbito
+                // placeholder if I can.
+                // For now, I will use a high quality text representation which often looks
+                // better than broken images.
+                "<h1>Furbito<span class='logo-text'>BET</span></h1>" +
+                "</div>" +
+                "<div class='content'>" +
+                "<p>Hola <strong>" + username + "</strong>,</p>" +
+                "<p>¡La emoción continúa! Se ha abierto un nuevo evento en la plataforma y las apuestas ya están disponibles.</p>"
+                +
+                "<div class='event-card'>" +
+                "<div class='event-name'>" + eventName + "</div>" +
+                "<div class='event-date'>📅 " + eventDate + "</div>" +
+                "</div>" +
+                "<p>Analiza las estadísticas, revisa las cuotas y haz tu jugada maestra.</p>" +
+                "<div class='button-container'>" +
+                "<a href='" + loginLink + "' class='button'>Entrar y Apostar</a>" +
+                "</div>" +
+                "</div>" +
+                "<div class='footer'>" +
+                "<p>¿No quieres recibir estas notificaciones? Configura tu cuenta en tu perfil.</p>" +
+                "<p>&copy; 2025 FurbitoBET. Todos los derechos reservados.</p>" +
+                "</div>" +
+                "</div>" +
+                "</body>" +
+                "</html>";
+
+        sendEmail(to, username, subject, htmlContent);
+    }
+
     private void sendEmail(String toEmail, String toName, String subject, String htmlContent) {
         try {
             HttpHeaders headers = new HttpHeaders();
