@@ -490,6 +490,26 @@ async function resolveEvent() {
   alert(langStore.t('admin.eventResolved'))
 }
 
+async function syncEvents() {
+  if (!confirm('¿Forzar sincronización de eventos? Esto buscará nuevos partidos y generará cuotas y jugadores.')) return
+  
+  try {
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/sync-events`, {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${auth.token}` }
+    })
+    
+    if (res.ok) {
+        alert('Sincronización iniciada correctamente.')
+        fetchEvents()
+    } else {
+        alert('Error al iniciar sincronización.')
+    }
+  } catch (e) {
+    alert('Error de conexión.')
+  }
+}
+
 onMounted(() => {
   fetchEvents()
   fetchUsers()
@@ -528,9 +548,14 @@ onMounted(() => {
       <!-- Top Actions -->
       <div v-if="!selectedEvent" class="flex justify-between items-center">
         <h3 class="text-2xl font-bold text-white">{{ langStore.t('admin.events') }}</h3>
-        <button @click="showCreateEvent = true" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded font-bold shadow flex items-center gap-2">
-          <span>+</span> {{ langStore.t('admin.createEvent') }}
-        </button>
+        <div class="flex gap-2">
+            <button @click="syncEvents" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded font-bold shadow flex items-center gap-2">
+              <span>↻</span> Sincronizar
+            </button>
+            <button @click="showCreateEvent = true" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded font-bold shadow flex items-center gap-2">
+              <span>+</span> {{ langStore.t('admin.createEvent') }}
+            </button>
+        </div>
       </div>
 
       <!-- Create Event Modal -->

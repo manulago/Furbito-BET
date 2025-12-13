@@ -34,6 +34,18 @@ public class AdminController {
     @Autowired
     private BetRepository betRepository;
 
+    @Autowired
+    private com.furbitobet.backend.service.EventSyncService eventSyncService;
+
+    @PostMapping("/sync-events")
+    public void syncEvents() {
+        eventSyncService.syncEvents();
+        // Since we also want to ensure player odds are generated if missing,
+        // they should be handled by syncEvents logic if it detects new events.
+        // However, if the user deleted an event and wants it back, syncEvents handles
+        // it.
+    }
+
     @PostMapping("/events")
     public Event createEvent(@RequestBody CreateEventRequest request) {
         return eventService.createEvent(request.getName(), request.getDate(), request.isNotifyUsers());
