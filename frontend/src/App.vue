@@ -33,30 +33,32 @@ function logout() {
         </div>
 
         <!-- Desktop Menu -->
-        <div class="hidden md:flex items-center gap-4">
+        <!-- Desktop Menu -->
+        <div class="hidden md:flex items-center gap-2">
           <!-- Public Links -->
           <template v-if="auth.user">
-            <router-link to="/" class="px-3 py-2 rounded-lg text-gray-300 hover:text-white hover:bg-gray-700 transition font-medium text-lg" active-class="bg-gray-700 text-green-400">{{ langStore.t('nav.home') }}</router-link>
-            <RouterLink to="/ranking" class="px-3 py-2 rounded-lg text-gray-300 hover:text-white hover:bg-gray-700 transition font-medium text-lg" active-class="bg-gray-700 text-green-400">{{ langStore.t('nav.ranking') }}</RouterLink>
-            <RouterLink to="/user-ranking" class="px-3 py-2 rounded-lg text-gray-300 hover:text-white hover:bg-gray-700 transition font-medium text-lg" active-class="bg-gray-700 text-green-400">{{ langStore.t('nav.userRanking') || 'Usuarios' }}</RouterLink>
-            <router-link to="/statistics" class="px-3 py-2 rounded-lg text-gray-300 hover:text-white hover:bg-gray-700 transition font-medium text-lg" active-class="bg-gray-700 text-green-400">{{ langStore.t('nav.statistics') }}</router-link>
+            <router-link to="/" class="px-2 py-1.5 rounded-lg text-gray-300 hover:text-white hover:bg-gray-700 transition font-medium text-sm whitespace-nowrap" active-class="bg-gray-700 text-green-400">{{ langStore.t('nav.home') }}</router-link>
+            <RouterLink to="/ranking" class="px-2 py-1.5 rounded-lg text-gray-300 hover:text-white hover:bg-gray-700 transition font-medium text-sm whitespace-nowrap" active-class="bg-gray-700 text-green-400">{{ langStore.t('nav.ranking') }}</RouterLink>
+            <RouterLink to="/user-ranking" class="px-2 py-1.5 rounded-lg text-gray-300 hover:text-white hover:bg-gray-700 transition font-medium text-sm whitespace-nowrap" active-class="bg-gray-700 text-green-400">{{ langStore.t('nav.userRanking') || 'Usuarios' }}</RouterLink>
+            <router-link to="/statistics" class="px-2 py-1.5 rounded-lg text-gray-300 hover:text-white hover:bg-gray-700 transition font-medium text-sm whitespace-nowrap" active-class="bg-gray-700 text-green-400">{{ langStore.t('nav.statistics') }}</RouterLink>
           </template>
-          <router-link to="/help" class="px-3 py-2 rounded-lg text-gray-300 hover:text-white hover:bg-gray-700 transition font-medium text-lg" active-class="bg-gray-700 text-green-400">{{ langStore.t('nav.help') || 'Ayuda' }}</router-link>
-          <!-- <router-link v-if="auth.user" to="/roulette" class="text-2xl hover:scale-110 transition duration-300" title="Ruleta de la Suerte">🎰</router-link> -->
-          <router-link v-if="auth.isAdmin" to="/admin" class="px-3 py-2 rounded-lg text-gray-300 hover:text-yellow-400 hover:bg-gray-700 transition font-medium text-lg" active-class="bg-gray-700 text-yellow-500">{{ langStore.t('nav.admin') }}</router-link>
+          <router-link to="/help" class="px-2 py-1.5 rounded-lg text-gray-300 hover:text-white hover:bg-gray-700 transition font-medium text-sm whitespace-nowrap" active-class="bg-gray-700 text-green-400">{{ langStore.t('nav.help') || 'Ayuda' }}</router-link>
+          <!-- <router-link v-if="auth.user" to="/roulette" class="text-xl hover:scale-110 transition duration-300" title="Ruleta de la Suerte">🎰</router-link> -->
+          <router-link v-if="auth.isAdmin" to="/admin" class="px-2 py-1.5 rounded-lg text-gray-300 hover:text-yellow-400 hover:bg-gray-700 transition font-medium text-sm whitespace-nowrap" active-class="bg-gray-700 text-yellow-500">{{ langStore.t('nav.admin') }}</router-link>
 
-          <div v-if="auth.user" class="flex items-center gap-4">
-            <RouterLink to="/my-bets" class="px-3 py-2 rounded-lg text-gray-300 hover:text-white hover:bg-gray-700 transition font-medium text-lg" active-class="bg-gray-700 text-green-400">{{ langStore.t('nav.myBets') }}</RouterLink>
-            <RouterLink to="/profile/settings" class="px-3 py-2 rounded-lg text-gray-300 hover:text-white hover:bg-gray-700 transition font-medium text-lg" active-class="bg-gray-700 text-green-400">{{ langStore.t('nav.profile') || 'Gestionar Perfil' }}</RouterLink>
-            <RouterLink v-if="auth.user.role === 'ADMIN'" to="/admin" class="px-3 py-2 rounded-lg text-gray-300 hover:text-white hover:bg-gray-700 transition font-medium text-lg" active-class="bg-gray-700 text-green-400">{{ langStore.t('nav.admin') }}</RouterLink>
+          <div v-if="auth.user" class="flex items-center gap-2 ml-2">
+            <RouterLink to="/my-bets" class="px-2 py-1.5 rounded-lg text-gray-300 hover:text-white hover:bg-gray-700 transition font-medium text-sm whitespace-nowrap" active-class="bg-gray-700 text-green-400">{{ langStore.t('nav.myBets') }}</RouterLink>
+            <RouterLink to="/profile/settings" class="px-2 py-1.5 rounded-lg text-gray-300 hover:text-white hover:bg-gray-700 transition font-medium text-sm whitespace-nowrap" active-class="bg-gray-700 text-green-400">{{ langStore.t('nav.profile') || 'Perfil' }}</RouterLink>
+            <RouterLink v-if="auth.user.role === 'ADMIN'" to="/admin" class="px-2 py-1.5 rounded-lg text-gray-300 hover:text-white hover:bg-gray-700 transition font-medium text-sm whitespace-nowrap" active-class="bg-gray-700 text-green-400">{{ langStore.t('nav.admin') }}</RouterLink>
             
-            <div class="flex items-center gap-3 bg-gray-700 px-4 py-2 rounded-full border border-gray-600">
-              <span class="text-gray-300 text-sm">{{ langStore.t('nav.welcome') }}, <span class="font-bold text-white">{{ auth.user?.username }}</span></span>
-              <span class="text-green-400 font-bold text-lg">{{ auth.user?.balance !== undefined ? auth.user.balance : '...' }} €</span>
+            <div class="flex items-center gap-2 bg-gray-700 px-3 py-1.5 rounded-full border border-gray-600 whitespace-nowrap">
+              <span class="text-gray-300 text-xs hidden lg:inline">{{ langStore.t('nav.welcome') }},</span>
+              <span class="font-bold text-white text-sm">{{ auth.user?.username }}</span>
+              <span class="text-green-400 font-bold text-sm ml-1">{{ auth.user?.balance !== undefined ? auth.user.balance : '...' }} €</span>
             </div>
 
 
-            <button @click="logout" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition shadow-md">{{ langStore.t('nav.logout') }}</button>
+            <button @click="logout" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1.5 rounded-lg transition shadow-md text-sm whitespace-nowrap">{{ langStore.t('nav.logout') }}</button>
           </div>
           <div v-else class="flex items-center gap-4">
              <RouterLink to="/login" class="bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded-lg transition font-bold shadow-lg shadow-green-500/20">Login</RouterLink>
