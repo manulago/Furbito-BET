@@ -233,6 +233,112 @@ public class AdminController {
     @Autowired
     private com.furbitobet.backend.service.EmailService emailService;
 
+    @Autowired
+    private com.furbitobet.backend.service.AppConfigService appConfigService;
+
+    @GetMapping("/news-modal-status")
+    public org.springframework.http.ResponseEntity<?> getNewsModalStatus() {
+        boolean enabled = appConfigService.isNewsModalEnabled();
+        return org.springframework.http.ResponseEntity.ok(
+                java.util.Map.of("enabled", enabled));
+    }
+
+    @PostMapping("/disable-news-modal")
+    public org.springframework.http.ResponseEntity<?> disableNewsModal() {
+        appConfigService.setNewsModalEnabled(false);
+        System.out.println("📢 News modal has been disabled globally by admin");
+        return org.springframework.http.ResponseEntity.ok(
+                java.util.Map.of(
+                        "success", true,
+                        "message", "News modal disabled successfully"));
+    }
+
+    @PostMapping("/enable-news-modal")
+    public org.springframework.http.ResponseEntity<?> enableNewsModal() {
+        appConfigService.setNewsModalEnabled(true);
+        System.out.println("📢 News modal has been enabled globally by admin");
+        return org.springframework.http.ResponseEntity.ok(
+                java.util.Map.of(
+                        "success", true,
+                        "message", "News modal enabled successfully"));
+    }
+
+    @PostMapping("/send-news-email")
+    public org.springframework.http.ResponseEntity<?> sendNewsEmail() {
+        try {
+            System.out.println("📧 Starting news email send to all users...");
+
+            java.util.List<User> allUsers = userService.getAllUsers();
+            int successCount = 0;
+            int failCount = 0;
+
+            String subject = "🎉 ¡Novedades en FurbitoBET!";
+            String message = buildNewsEmailMessage();
+
+            for (User user : allUsers) {
+                // Skip admin users
+                if (user.getRole() == User.Role.ADMIN) {
+                    continue;
+                }
+
+                try {
+                    emailService.sendSimpleMessage(user.getEmail(), subject, message);
+                    successCount++;
+                    System.out.println("✅ News email sent to: " + user.getEmail());
+                } catch (Exception e) {
+                    failCount++;
+                    System.err.println("❌ Failed to send news email to " + user.getEmail() + ": " + e.getMessage());
+                }
+
+                // Small delay to avoid overwhelming the email service
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt();
+                }
+            }
+
+            String responseMessage = String.format(
+                    "News emails sent! Success: %d, Failed: %d, Total: %d",
+                    successCount, failCount, successCount + failCount);
+
+            System.out.println("📊 " + responseMessage);
+            return org.springframework.http.ResponseEntity.ok(responseMessage);
+
+        } catch (Exception e) {
+            System.err.println("❌ Error sending news emails: " + e.getMessage());
+            e.printStackTrace();
+            return org.springframework.http.ResponseEntity.internalServerError()
+                    .body("Error sending news emails: " + e.getMessage());
+        }
+    }
+
+    private String buildNewsEmailMessage() {
+        return "¡Hola!\\n\\n" +
+                "Tenemos grandes novedades en FurbitoBET que queremos compartir contigo:\\n\\n" +
+                "📱 ¡INSTALA LA APP!\\n" +
+                "Ahora puedes instalar FurbitoBET en tu móvil o PC como una aplicación.\\n" +
+                "Acceso rápido desde tu pantalla de inicio, sin abrir el navegador.\\n\\n" +
+                "🔹 En Android: Busca el botón \\\"Instalar App\\\" en la página\\n" +
+                "🔹 En iPhone: Toca Compartir → \\\"Añadir a pantalla de inicio\\\"\\n\\n" +
+                "📱 MEJORA MÓVIL\\n" +
+                "Experiencia 100% optimizada para tu teléfono.\\n" +
+                "Navegación más fluida y accesible.\\n\\n" +
+                "❓ NUEVA PÁGINA DE AYUDA\\n" +
+                "¿Dudas? Visita nuestra sección de ayuda para aprender cómo funciona todo.\\n\\n" +
+                "⚙️ GESTIÓN DE PERFIL\\n" +
+                "Control total sobre tu cuenta.\\n" +
+                "Actualiza tus datos y preferencias fácilmente.\\n\\n" +
+                "👀 ESPÍA A LOS MEJORES\\n" +
+                "Visita el perfil de otros usuarios desde el ranking.\\n" +
+                "Ve su historial de apuestas y estrategias.\\n\\n" +
+                "---\\n\\n" +
+                "¡Entra ahora y descubre todas las mejoras!\\n" +
+                "https://furbitobet.vercel.app\\n\\n" +
+                "Saludos,\\n" +
+                "El equipo de FurbitoBET 🎰";
+    }
+
     @PostMapping("/test-email")
     public org.springframework.http.ResponseEntity<?> testEmail(@RequestParam String to) {
         try {

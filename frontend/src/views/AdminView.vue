@@ -592,11 +592,87 @@ async function confirmSendNewsletter() {
   }
 }
 
+// News Modal Settings
+const newsModalEnabled = ref(true)
+const loadingNewsStatus = ref(false)
+
+async function fetchNewsModalStatus() {
+  loadingNewsStatus.value = true
+  try {
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/news-modal-status`, {
+      headers: { 'Authorization': `Bearer ${auth.token}` }
+    })
+    if (res.ok) {
+      const data = await res.json()
+      newsModalEnabled.value = data.enabled
+    }
+  } catch (e) {
+    console.error('Error fetching news modal status:', e)
+  } finally {
+    loadingNewsStatus.value = false
+  }
+}
+
+async function toggleNewsModal() {
+  const action = newsModalEnabled.value ? 'disable' : 'enable'
+  const endpoint = newsModalEnabled.value 
+    ? `${import.meta.env.VITE_API_URL}/api/admin/disable-news-modal`
+    : `${import.meta.env.VITE_API_URL}/api/admin/enable-news-modal`
+  
+  const confirmMsg = newsModalEnabled.value
+    ? '¿Desactivar el modal de novedades para TODOS los usuarios?\n\nEsto evitará que el modal aparezca al iniciar sesión.'
+    : '¿Reactivar el modal de novedades?\n\nLos usuarios volverán a ver el modal al iniciar sesión (hasta 5 veces).'
+  
+  if (!confirm(confirmMsg)) return
+  
+  try {
+    const res = await fetch(endpoint, {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${auth.token}` }
+    })
+    
+    if (res.ok) {
+      newsModalEnabled.value = !newsModalEnabled.value
+      alert(`✅ Modal de novedades ${newsModalEnabled.value ? 'activado' : 'desactivado'} correctamente`)
+    } else {
+      alert('❌ Error al cambiar el estado del modal')
+    }
+  } catch (e) {
+    alert(`❌ Error: ${e.message}`)
+  }
+}
+
+async function sendNewsEmail() {
+  const confirmMsg = '📧 ¿Enviar email de NOVEDADES a todos los usuarios?\n\n' +
+                     'Esto enviará un correo con las últimas novedades de FurbitoBET.\n\n' +
+                     '⚠️ Esta acción no se puede deshacer.'
+  
+  if (!confirm(confirmMsg)) return
+  
+  try {
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/send-news-email`, {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${auth.token}` }
+    })
+    
+    if (res.ok) {
+      const message = await res.text()
+      alert(`✅ ${message}\n\nRevisa la consola del backend para más detalles.`)
+    } else {
+      const error = await res.text()
+      alert(`❌ Error al enviar emails:\n${error}`)
+    }
+  } catch (e) {
+    alert(`❌ Error de conexión:\n${e.message}`)
+  }
+}
+
 onMounted(() => {
   fetchEvents()
   fetchUsers()
   fetchCategories()
   fetchPlayers()
+  fetchNewsModalStatus()
 })
 </script>
 
@@ -621,6 +697,10 @@ onMounted(() => {
       <button @click="activeTab = 'players'"
         :class="['px-3 md:px-4 py-2 font-medium text-sm md:text-base whitespace-nowrap', activeTab === 'players' ? 'text-yellow-400 border-b-2 border-yellow-400' : 'text-gray-400 hover:text-white']">
         {{ langStore.t('admin.players') }}
+      </button>
+      <button @click="activeTab = 'settings'"
+        :class="['px-3 md:px-4 py-2 font-medium text-sm md:text-base whitespace-nowrap', activeTab === 'settings' ? 'text-purple-400 border-b-2 border-purple-400' : 'text-gray-400 hover:text-white']">
+        ⚙️ Configuración
       </button>
     </div>
 
@@ -1119,6 +1199,128 @@ onMounted(() => {
             </tr>
           </tbody>
         </table>
+      </div>
+    </div>
+
+    <!-- Settings Tab -->
+    <div v-if="activeTab === 'settings'" class="space-y-6">
+      <h3 class="text-2xl font-bold text-white mb-6">⚙️ Configuración de la Aplicación</h3>
+
+      <!-- News Modal Settings Card -->
+      <div class="bg-gray-800 rounded-lg p-6 border border-gray-700">
+        <div class="flex items-center gap-3 mb-4">
+          <span class="text-3xl">📢</span>
+          <div>
+            <h4 class="text-xl font-bold text-white">Modal de Novedades</h4>
+            <p class="text-sm text-gray-400">Controla si los usuarios ven el modal de novedades al iniciar sesión</p>
+          </div>
+        </div>
+
+        <div class="bg-gray-900 p-4 rounded-lg mb-4">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-white font-medium">Estado Actual:</p>
+              <p class="text-sm text-gray-400 mt-1">
+                {{ newsModalEnabled ? '✅ Activado - Los usuarios verán el modal (hasta 5 veces)' : '❌ Desactivado - El modal no se mostrará a ningún usuario' }}
+              </p>
+            </div>
+            <div v-if="loadingNewsStatus" class="text-gray-400">
+              Cargando...
+            </div>
+            <div v-else class="flex items-center gap-2">
+              <span :class="newsModalEnabled ? 'text-green-400' : 'text-red-400'" class="text-2xl">
+                {{ newsModalEnabled ? '●' : '○' }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex gap-3">
+          <button 
+            @click="toggleNewsModal"
+            :disabled="loadingNewsStatus"
+            :class="[
+              'flex-1 px-4 py-3 rounded-lg font-bold transition',
+              newsModalEnabled 
+                ? 'bg-red-600 hover:bg-red-700 text-white' 
+                : 'bg-green-600 hover:bg-green-700 text-white',
+              loadingNewsStatus ? 'opacity-50 cursor-not-allowed' : ''
+            ]"
+          >
+            {{ newsModalEnabled ? '🚫 Desactivar Modal' : '✅ Activar Modal' }}
+          </button>
+        </div>
+
+        <div class="mt-4 p-3 bg-blue-900/20 border border-blue-700 rounded-lg">
+          <p class="text-xs text-blue-300">
+            <strong>ℹ️ Nota:</strong> Cuando el modal está desactivado, ningún usuario lo verá al iniciar sesión, 
+            independientemente de cuántas veces lo hayan visto antes. Esto es útil cuando las novedades ya no son relevantes.
+          </p>
+        </div>
+      </div>
+
+      <!-- Send News Email Card -->
+      <div class="bg-gray-800 rounded-lg p-6 border border-gray-700">
+        <div class="flex items-center gap-3 mb-4">
+          <span class="text-3xl">📧</span>
+          <div>
+            <h4 class="text-xl font-bold text-white">Enviar Email de Novedades</h4>
+            <p class="text-sm text-gray-400">Envía un correo con las últimas novedades a todos los usuarios</p>
+          </div>
+        </div>
+
+        <div class="bg-gray-900 p-4 rounded-lg mb-4">
+          <p class="text-white font-medium mb-2">📝 Contenido del Email:</p>
+          <ul class="text-sm text-gray-400 space-y-1 ml-4">
+            <li>• 📱 Instalación de la App (PWA)</li>
+            <li>• 📱 Mejoras en la versión móvil</li>
+            <li>• ❓ Nueva página de ayuda</li>
+            <li>• ⚙️ Gestión de perfil</li>
+            <li>• 👀 Perfiles públicos de usuarios</li>
+          </ul>
+        </div>
+
+        <button 
+          @click="sendNewsEmail"
+          class="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white px-6 py-3 rounded-lg font-bold transition shadow-lg"
+        >
+          📧 Enviar Email de Novedades a Todos
+        </button>
+
+        <div class="mt-4 p-3 bg-yellow-900/20 border border-yellow-700 rounded-lg">
+          <p class="text-xs text-yellow-300">
+            <strong>⚠️ Advertencia:</strong> Este email se enviará a TODOS los usuarios registrados (excepto admins). 
+            Úsalo solo cuando haya novedades importantes que comunicar. El contenido del email está predefinido con las últimas mejoras de FurbitoBET.
+          </p>
+        </div>
+      </div>
+
+      <!-- Newsletter Card (Custom) -->
+      <div class="bg-gray-800 rounded-lg p-6 border border-gray-700">
+        <div class="flex items-center gap-3 mb-4">
+          <span class="text-3xl">✉️</span>
+          <div>
+            <h4 class="text-xl font-bold text-white">Newsletter Personalizado</h4>
+            <p class="text-sm text-gray-400">Envía un email personalizado a todos los usuarios</p>
+          </div>
+        </div>
+
+        <div class="bg-gray-900 p-4 rounded-lg mb-4">
+          <p class="text-white font-medium mb-2">✏️ Características:</p>
+          <ul class="text-sm text-gray-400 space-y-1 ml-4">
+            <li>• Personaliza el asunto del email</li>
+            <li>• Escribe tu propio mensaje</li>
+            <li>• Vista previa antes de enviar</li>
+            <li>• Envío a todos los usuarios</li>
+          </ul>
+        </div>
+
+        <button 
+          @click="sendNewsletter"
+          class="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white px-6 py-3 rounded-lg font-bold transition shadow-lg"
+        >
+          ✉️ Crear Newsletter Personalizado
+        </button>
       </div>
     </div>
 

@@ -68,16 +68,39 @@ function checkNews() {
   const seenThisSession = sessionStorage.getItem(sessionKey)
 
   if (!seenThisSession) {
-      let count = parseInt(localStorage.getItem(storageKey) || '0')
-      
-      if (count < 5) {
-          currentNewsCount.value = count
-          showNewsModal.value = true
+      // Check if news modal is globally enabled
+      fetch(`${import.meta.env.VITE_API_URL}/api/admin/news-modal-status`)
+        .then(res => res.json())
+        .then(data => {
+          if (!data.enabled) {
+            console.log('📢 News modal is disabled globally by admin')
+            return
+          }
+
+          let count = parseInt(localStorage.getItem(storageKey) || '0')
           
-          // Increment count and mark session as seen
-          localStorage.setItem(storageKey, (count + 1).toString())
-          sessionStorage.setItem(sessionKey, 'true')
-      }
+          if (count < 5) {
+              currentNewsCount.value = count
+              showNewsModal.value = true
+              
+              // Increment count and mark session as seen
+              localStorage.setItem(storageKey, (count + 1).toString())
+              sessionStorage.setItem(sessionKey, 'true')
+          }
+        })
+        .catch(err => {
+          console.error('Error checking news modal status:', err)
+          // If error, show modal anyway (default behavior)
+          let count = parseInt(localStorage.getItem(storageKey) || '0')
+          
+          if (count < 5) {
+              currentNewsCount.value = count
+              showNewsModal.value = true
+              
+              localStorage.setItem(storageKey, (count + 1).toString())
+              sessionStorage.setItem(sessionKey, 'true')
+          }
+        })
   }
 }
 
