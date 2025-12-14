@@ -4,6 +4,7 @@
 /home/manulago/Escritorio/FurbitoBET/backend/src/main/java/com/furbitobet/backend/config/DataInitializer.java
 /home/manulago/Escritorio/FurbitoBET/backend/src/main/java/com/furbitobet/backend/dto/WinningBetDTO.java
 /home/manulago/Escritorio/FurbitoBET/backend/src/main/java/com/furbitobet/backend/controller/LeagueController.java
+/home/manulago/Escritorio/FurbitoBET/backend/src/main/java/com/furbitobet/backend/controller/RewardController.java
 /home/manulago/Escritorio/FurbitoBET/backend/src/main/java/com/furbitobet/backend/security/JwtUtil.java
 /home/manulago/Escritorio/FurbitoBET/backend/src/main/java/com/furbitobet/backend/service/PlayerService.java
 /home/manulago/Escritorio/FurbitoBET/backend/src/main/java/com/furbitobet/backend/model/User.java

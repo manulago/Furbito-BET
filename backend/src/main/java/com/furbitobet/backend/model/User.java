@@ -38,6 +38,7 @@ public class User {
     private String pendingPassword;
     private String confirmationToken;
     private java.time.LocalDateTime tokenExpiry;
+    private java.time.LocalDateTime lastSpinTime;
 
     /**
      * null = legacy enabled (true)
