@@ -510,6 +510,31 @@ async function syncEvents() {
   }
 }
 
+async function sendNewsletter() {
+  const confirmMessage = '¿Enviar email con las novedades a TODOS los usuarios?\n\n' +
+                        'Esto enviará un correo a cada usuario registrado (excepto admins).\n\n' +
+                        '⚠️ Esta acción no se puede deshacer.'
+  
+  if (!confirm(confirmMessage)) return
+  
+  try {
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/send-newsletter`, {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${auth.token}` }
+    })
+    
+    if (res.ok) {
+        const message = await res.text()
+        alert(`✅ ${message}\n\nRevisa la consola del backend para más detalles.`)
+    } else {
+        const error = await res.text()
+        alert(`❌ Error al enviar newsletter:\n${error}`)
+    }
+  } catch (e) {
+    alert(`❌ Error de conexión:\n${e.message}`)
+  }
+}
+
 onMounted(() => {
   fetchEvents()
   fetchUsers()
@@ -748,9 +773,11 @@ onMounted(() => {
     <div v-if="activeTab === 'users'" class="space-y-6">
       
       <!-- Top Actions -->
-      <div v-if="!selectedUser" class="flex justify-between items-center">
+      <div v-if="!selectedUser" class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
         <h3 class="text-xl md:text-2xl font-bold text-white">{{ langStore.t('admin.users') }}</h3>
-        <!-- Search or Filter could go here -->
+        <button @click="sendNewsletter" class="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white px-4 py-2 rounded font-bold shadow flex items-center gap-2 text-sm md:text-base">
+          <span>📧</span> Enviar Novedades por Email
+        </button>
       </div>
 
       <!-- User List -->

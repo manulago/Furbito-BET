@@ -64,3 +64,7 @@
 4:03:56 [vite] (client) hmr update /src/style.css
 4:04:25 [vite] (client) hmr update /src/App.vue, /src/style.css
 4:04:25 [vite] (client) hmr update /src/style.css
+4:08:31 [vite] (client) hmr update /src/views/AdminView.vue, /src/style.css
+4:08:31 [vite] (client) hmr update /src/style.css
+4:08:52 [vite] (client) hmr update /src/views/AdminView.vue, /src/style.css
+4:08:52 [vite] (client) hmr update /src/style.css

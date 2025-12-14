@@ -252,4 +252,80 @@ public class AdminController {
     public User updateBalance(@PathVariable Long id, @RequestBody BigDecimal amount) {
         return userService.updateBalance(id, amount);
     }
+
+    @PostMapping("/send-newsletter")
+    public org.springframework.http.ResponseEntity<?> sendNewsletterToAllUsers() {
+        try {
+            System.out.println("📧 Starting newsletter send to all users...");
+
+            java.util.List<User> allUsers = userService.getAllUsers();
+            int successCount = 0;
+            int failCount = 0;
+
+            String subject = "🎉 ¡Novedades en FurbitoBET!";
+            String message = buildNewsletterMessage();
+
+            for (User user : allUsers) {
+                // Skip admin users
+                if (user.getRole() == User.Role.ADMIN) {
+                    continue;
+                }
+
+                try {
+                    emailService.sendSimpleMessage(user.getEmail(), subject, message);
+                    successCount++;
+                    System.out.println("✅ Email sent to: " + user.getEmail());
+                } catch (Exception e) {
+                    failCount++;
+                    System.err.println("❌ Failed to send email to " + user.getEmail() + ": " + e.getMessage());
+                }
+
+                // Small delay to avoid overwhelming the email service
+                try {
+                    Thread.sleep(100); // 100ms delay between emails
+                } catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt();
+                }
+            }
+
+            String responseMessage = String.format(
+                    "Newsletter sent! Success: %d, Failed: %d, Total: %d",
+                    successCount, failCount, successCount + failCount);
+
+            System.out.println("📊 " + responseMessage);
+            return org.springframework.http.ResponseEntity.ok(responseMessage);
+
+        } catch (Exception e) {
+            System.err.println("❌ Error sending newsletter: " + e.getMessage());
+            e.printStackTrace();
+            return org.springframework.http.ResponseEntity.internalServerError()
+                    .body("Error sending newsletter: " + e.getMessage());
+        }
+    }
+
+    private String buildNewsletterMessage() {
+        return "¡Hola!\n\n" +
+                "Tenemos grandes novedades en FurbitoBET que queremos compartir contigo:\n\n" +
+                "📱 ¡INSTALA LA APP!\n" +
+                "Ahora puedes instalar FurbitoBET en tu móvil o PC como una aplicación.\n" +
+                "Acceso rápido desde tu pantalla de inicio, sin abrir el navegador.\n\n" +
+                "🔹 En Android: Busca el botón \"Instalar App\" en la página\n" +
+                "🔹 En iPhone: Toca Compartir → \"Añadir a pantalla de inicio\"\n\n" +
+                "📱 MEJORA MÓVIL\n" +
+                "Experiencia 100% optimizada para tu teléfono.\n" +
+                "Navegación más fluida y accesible.\n\n" +
+                "❓ NUEVA PÁGINA DE AYUDA\n" +
+                "¿Dudas? Visita nuestra sección de ayuda para aprender cómo funciona todo.\n\n" +
+                "⚙️ GESTIÓN DE PERFIL\n" +
+                "Control total sobre tu cuenta.\n" +
+                "Actualiza tus datos y preferencias fácilmente.\n\n" +
+                "👀 ESPÍA A LOS MEJORES\n" +
+                "Visita el perfil de otros usuarios desde el ranking.\n" +
+                "Ve su historial de apuestas y estrategias.\n\n" +
+                "---\n\n" +
+                "¡Entra ahora y descubre todas las mejoras!\n" +
+                "https://furbitobet.vercel.app\n\n" +
+                "Saludos,\n" +
+                "El equipo de FurbitoBET 🎰";
+    }
 }
