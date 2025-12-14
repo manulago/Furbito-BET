@@ -278,48 +278,50 @@ function logout() {
     </main>
 
     <!-- Bet Slip -->
-    <div v-if="betStore.selectedOutcomes.length > 0" class="fixed bottom-0 left-0 right-0 bg-gray-800 border-t border-gray-700 p-4 shadow-2xl z-50">
-      <div class="container mx-auto flex flex-col lg:flex-row justify-between items-center gap-4">
-        <!-- Selected Outcomes -->
-        <div class="flex-1 w-full lg:w-auto">
-          <div class="flex justify-between items-center mb-2 lg:mb-2">
-            <h3 class="text-lg font-bold text-white">{{ langStore.t('betSlip.title') }} ({{ betStore.selectedOutcomes.length }})</h3>
-            <button @click="betStore.clearSlip" class="text-xs text-red-400 hover:text-red-300 underline lg:hidden">Limpiar</button>
+    <transition name="slide-up">
+      <div v-if="betStore.selectedOutcomes.length > 0" class="fixed bottom-0 left-0 right-0 bg-gray-800 border-t border-gray-700 p-4 shadow-2xl z-50">
+        <div class="container mx-auto flex flex-col lg:flex-row justify-between items-center gap-4">
+          <!-- Selected Outcomes -->
+          <div class="flex-1 w-full lg:w-auto">
+            <div class="flex justify-between items-center mb-2 lg:mb-2">
+              <h3 class="text-lg font-bold text-white animate-fade-in">{{ langStore.t('betSlip.title') }} ({{ betStore.selectedOutcomes.length }})</h3>
+              <button @click="betStore.clearSlip" class="text-xs text-red-400 hover:text-red-300 underline lg:hidden transition-colors">Limpiar</button>
+            </div>
+            <div class="flex flex-wrap gap-2 max-h-32 overflow-y-auto lg:max-h-none">
+              <span v-for="outcome in betStore.selectedOutcomes" :key="outcome.id" class="bg-gray-700 text-xs text-gray-300 px-2 py-1 rounded border border-gray-600 flex items-center gap-2 animate-scale-in hover-scale transition-all">
+                <span class="truncate max-w-[150px]">{{ outcome.description }}</span>
+                <span class="text-green-400">@{{ outcome.odds }}</span>
+                <button @click="betStore.removeOutcome(outcome.id)" class="text-red-400 hover:text-red-300 font-bold bg-gray-600 rounded-full w-4 h-4 flex items-center justify-center leading-none transition-colors hover-scale">&times;</button>
+              </span>
+            </div>
           </div>
-          <div class="flex flex-wrap gap-2 max-h-32 overflow-y-auto lg:max-h-none">
-            <span v-for="outcome in betStore.selectedOutcomes" :key="outcome.id" class="bg-gray-700 text-xs text-gray-300 px-2 py-1 rounded border border-gray-600 flex items-center gap-2">
-              <span class="truncate max-w-[150px]">{{ outcome.description }}</span>
-              <span class="text-green-400">@{{ outcome.odds }}</span>
-              <button @click="betStore.removeOutcome(outcome.id)" class="text-red-400 hover:text-red-300 font-bold bg-gray-600 rounded-full w-4 h-4 flex items-center justify-center leading-none">&times;</button>
-            </span>
+          
+          <!-- Bet Actions -->
+          <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 w-full lg:w-auto border-t lg:border-t-0 border-gray-700 pt-4 lg:pt-0">
+            <div class="flex justify-between sm:justify-end items-center gap-6 flex-1">
+               <div class="text-right animate-fade-in-left">
+                 <div class="text-xs text-gray-400">{{ langStore.t('betSlip.totalOdds') }}</div>
+                 <div class="text-xl font-bold text-yellow-400">{{ betStore.totalOdds }}</div>
+               </div>
+               
+               <div class="animate-fade-in-up delay-100">
+                  <label class="block text-xs text-gray-400 mb-1 text-right">{{ langStore.t('betSlip.amount') }}</label>
+                  <input v-model="betStore.betAmount" type="number" min="1" class="w-full sm:w-24 bg-gray-900 text-white p-2 rounded border border-gray-600 focus:border-green-500 outline-none text-right transition-all" />
+               </div>
+   
+               <div class="text-right animate-fade-in-right">
+                  <div class="text-xs text-gray-400">{{ langStore.t('betSlip.potentialReturn') }}</div>
+                  <div class="text-xl font-bold text-green-400">{{ betStore.potentialReturn }} €</div>
+               </div>
+            </div>
+   
+            <button @click="betStore.placeBet" class="w-full sm:w-auto bg-gradient-to-r from-green-500 to-green-600 hover:from-green-400 hover:to-green-500 text-white font-bold py-3 px-6 rounded-lg shadow-lg shadow-green-500/20 transition-all hover-scale animate-pulse whitespace-nowrap">
+              {{ langStore.t('betSlip.placeBet') }}
+            </button>
           </div>
-        </div>
-        
-        <!-- Bet Actions -->
-        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 w-full lg:w-auto border-t lg:border-t-0 border-gray-700 pt-4 lg:pt-0">
-          <div class="flex justify-between sm:justify-end items-center gap-6 flex-1">
-             <div class="text-right">
-               <div class="text-xs text-gray-400">{{ langStore.t('betSlip.totalOdds') }}</div>
-               <div class="text-xl font-bold text-yellow-400">{{ betStore.totalOdds }}</div>
-             </div>
-             
-             <div>
-                <label class="block text-xs text-gray-400 mb-1 text-right">{{ langStore.t('betSlip.amount') }}</label>
-                <input v-model="betStore.betAmount" type="number" min="1" class="w-full sm:w-24 bg-gray-900 text-white p-2 rounded border border-gray-600 focus:border-green-500 outline-none text-right" />
-             </div>
-  
-             <div class="text-right">
-                <div class="text-xs text-gray-400">{{ langStore.t('betSlip.potentialReturn') }}</div>
-                <div class="text-xl font-bold text-green-400">{{ betStore.potentialReturn }} €</div>
-             </div>
-          </div>
-  
-          <button @click="betStore.placeBet" class="w-full sm:w-auto bg-gradient-to-r from-green-500 to-green-600 hover:from-green-400 hover:to-green-500 text-white font-bold py-3 px-6 rounded-lg shadow-lg shadow-green-500/20 transition transform hover:-translate-y-0.5 whitespace-nowrap">
-            {{ langStore.t('betSlip.placeBet') }}
-          </button>
         </div>
       </div>
-    </div>
+    </transition>
 
     <!-- News Modal -->
     <div v-if="showNewsModal" class="fixed inset-0 bg-black bg-opacity-90 z-[60] flex items-center justify-center p-4 animate-fade-in-up">
@@ -497,5 +499,21 @@ function logout() {
 .scrollbar-hide {
   -ms-overflow-style: none;
   scrollbar-width: none;
+}
+
+/* Slide-up transition for bet slip */
+.slide-up-enter-active,
+.slide-up-leave-active {
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.slide-up-enter-from {
+  opacity: 0;
+  transform: translateY(100%);
+}
+
+.slide-up-leave-to {
+  opacity: 0;
+  transform: translateY(100%);
 }
 </style>
