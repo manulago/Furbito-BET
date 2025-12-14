@@ -254,7 +254,8 @@ public class AdminController {
     }
 
     @PostMapping("/send-newsletter")
-    public org.springframework.http.ResponseEntity<?> sendNewsletterToAllUsers() {
+    public org.springframework.http.ResponseEntity<?> sendNewsletterToAllUsers(
+            @RequestBody(required = false) NewsletterRequest request) {
         try {
             System.out.println("📧 Starting newsletter send to all users...");
 
@@ -262,8 +263,14 @@ public class AdminController {
             int successCount = 0;
             int failCount = 0;
 
-            String subject = "🎉 ¡Novedades en FurbitoBET!";
-            String message = buildNewsletterMessage();
+            // Use custom subject and message if provided, otherwise use defaults
+            String subject = (request != null && request.getSubject() != null)
+                    ? request.getSubject()
+                    : "🎉 ¡Novedades en FurbitoBET!";
+
+            String message = (request != null && request.getMessage() != null)
+                    ? request.getMessage()
+                    : buildNewsletterMessage();
 
             for (User user : allUsers) {
                 // Skip admin users
@@ -300,6 +307,27 @@ public class AdminController {
             e.printStackTrace();
             return org.springframework.http.ResponseEntity.internalServerError()
                     .body("Error sending newsletter: " + e.getMessage());
+        }
+    }
+
+    public static class NewsletterRequest {
+        private String subject;
+        private String message;
+
+        public String getSubject() {
+            return subject;
+        }
+
+        public void setSubject(String subject) {
+            this.subject = subject;
+        }
+
+        public String getMessage() {
+            return message;
+        }
+
+        public void setMessage(String message) {
+            this.message = message;
         }
     }
 

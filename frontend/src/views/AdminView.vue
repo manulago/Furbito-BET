@@ -47,6 +47,43 @@ const playerForm = ref({
   redCards: 0
 })
 
+// Newsletter Logic
+const showNewsletterModal = ref(false)
+const newsletterSubject = ref('🎉 ¡Novedades en FurbitoBET!')
+const newsletterMessage = ref(`¡Hola!
+
+Tenemos grandes novedades en FurbitoBET que queremos compartir contigo:
+
+📱 ¡INSTALA LA APP!
+Ahora puedes instalar FurbitoBET en tu móvil o PC como una aplicación.
+Acceso rápido desde tu pantalla de inicio, sin abrir el navegador.
+
+🔹 En Android: Busca el botón "Instalar App" en la página
+🔹 En iPhone: Toca Compartir → "Añadir a pantalla de inicio"
+
+📱 MEJORA MÓVIL
+Experiencia 100% optimizada para tu teléfono.
+Navegación más fluida y accesible.
+
+❓ NUEVA PÁGINA DE AYUDA
+¿Dudas? Visita nuestra sección de ayuda para aprender cómo funciona todo.
+
+⚙️ GESTIÓN DE PERFIL
+Control total sobre tu cuenta.
+Actualiza tus datos y preferencias fácilmente.
+
+👀 ESPÍA A LOS MEJORES
+Visita el perfil de otros usuarios desde el ranking.
+Ve su historial de apuestas y estrategias.
+
+---
+
+¡Entra ahora y descubre todas las mejoras!
+https://furbitobet.vercel.app
+
+Saludos,
+El equipo de FurbitoBET 🎰`)
+
 const fetchPlayers = async () => {
   try {
     const response = await fetch(`${import.meta.env.VITE_API_URL}/api/players`)
@@ -511,16 +548,36 @@ async function syncEvents() {
 }
 
 async function sendNewsletter() {
-  const confirmMessage = '¿Enviar email con las novedades a TODOS los usuarios?\n\n' +
-                        'Esto enviará un correo a cada usuario registrado (excepto admins).\n\n' +
-                        '⚠️ Esta acción no se puede deshacer.'
+  // Open modal to customize message
+  showNewsletterModal.value = true
+}
+
+async function confirmSendNewsletter() {
+  if (!newsletterSubject.value.trim() || !newsletterMessage.value.trim()) {
+    alert('⚠️ El asunto y el mensaje no pueden estar vacíos.')
+    return
+  }
+
+  const confirmMessage = `¿Enviar email a TODOS los usuarios?\n\n` +
+                        `Asunto: ${newsletterSubject.value}\n\n` +
+                        `Esto enviará un correo a cada usuario registrado (excepto admins).\n\n` +
+                        `⚠️ Esta acción no se puede deshacer.`
   
   if (!confirm(confirmMessage)) return
+  
+  showNewsletterModal.value = false
   
   try {
     const res = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/send-newsletter`, {
       method: 'POST',
-      headers: { 'Authorization': `Bearer ${auth.token}` }
+      headers: { 
+        'Authorization': `Bearer ${auth.token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        subject: newsletterSubject.value,
+        message: newsletterMessage.value
+      })
     })
     
     if (res.ok) {
@@ -1062,6 +1119,66 @@ onMounted(() => {
             </tr>
           </tbody>
         </table>
+      </div>
+    </div>
+
+    <!-- Newsletter Modal -->
+    <div v-if="showNewsletterModal" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
+      <div class="bg-gray-800 p-6 rounded-lg shadow-xl border border-purple-500 w-full max-w-3xl max-h-[90vh] overflow-y-auto">
+        <div class="flex justify-between items-center mb-4">
+          <h3 class="text-2xl font-bold text-purple-400">📧 Personalizar Newsletter</h3>
+          <button @click="showNewsletterModal = false" class="text-gray-400 hover:text-white text-2xl">&times;</button>
+        </div>
+
+        <div class="space-y-4">
+          <!-- Subject -->
+          <div>
+            <label class="block text-sm text-gray-400 mb-2">Asunto del Email</label>
+            <input 
+              v-model="newsletterSubject" 
+              type="text"
+              placeholder="Ej: 🎉 ¡Novedades en FurbitoBET!"
+              class="w-full bg-gray-700 text-white p-3 rounded border border-gray-600 focus:border-purple-500 outline-none"
+            />
+          </div>
+
+          <!-- Message -->
+          <div>
+            <label class="block text-sm text-gray-400 mb-2">Mensaje del Email</label>
+            <textarea 
+              v-model="newsletterMessage" 
+              rows="15"
+              placeholder="Escribe el mensaje que se enviará a todos los usuarios..."
+              class="w-full bg-gray-700 text-white p-3 rounded border border-gray-600 focus:border-purple-500 outline-none font-mono text-sm"
+            ></textarea>
+            <p class="text-xs text-gray-500 mt-1">💡 Tip: Usa emojis y saltos de línea para hacer el mensaje más atractivo</p>
+          </div>
+
+          <!-- Preview -->
+          <div class="bg-gray-900 p-4 rounded border border-gray-700">
+            <h4 class="text-sm font-bold text-gray-400 mb-2">Vista Previa:</h4>
+            <div class="bg-white text-black p-4 rounded text-sm whitespace-pre-wrap">
+              <div class="font-bold mb-2">{{ newsletterSubject }}</div>
+              <div>{{ newsletterMessage }}</div>
+            </div>
+          </div>
+
+          <!-- Actions -->
+          <div class="flex justify-end gap-3 pt-4 border-t border-gray-700">
+            <button 
+              @click="showNewsletterModal = false" 
+              class="px-6 py-2 text-gray-300 hover:text-white border border-gray-600 rounded"
+            >
+              Cancelar
+            </button>
+            <button 
+              @click="confirmSendNewsletter" 
+              class="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white px-6 py-2 rounded font-bold"
+            >
+              Enviar a Todos los Usuarios
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
