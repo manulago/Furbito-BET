@@ -716,7 +716,8 @@ onMounted(() => {
                   <span class="ml-2 px-2 py-0.5 rounded text-xs uppercase font-bold" :class="{
                     'bg-yellow-900 text-yellow-400': outcome.status === 'PENDING',
                     'bg-green-900 text-green-400': outcome.status === 'WON',
-                    'bg-red-900 text-red-400': outcome.status === 'LOST'
+                    'bg-red-900 text-red-400': outcome.status === 'LOST',
+                    'bg-gray-700 text-gray-300': outcome.status === 'VOID'
                   }">{{ outcome.status }}</span>
                 </div>
               </div>
@@ -733,6 +734,7 @@ onMounted(() => {
                    <div v-if="outcome.status === 'PENDING'" class="flex gap-1 ml-2 border-l border-gray-600 pl-2">
                       <button @click="settleOutcome(outcome.id, 'WON')" class="bg-green-700 hover:bg-green-600 text-white px-2 py-1 rounded text-xs" title="Mark as Won">W</button>
                       <button @click="settleOutcome(outcome.id, 'LOST')" class="bg-red-700 hover:bg-red-600 text-white px-2 py-1 rounded text-xs" title="Mark as Lost">L</button>
+                      <button @click="settleOutcome(outcome.id, 'VOID')" class="bg-gray-600 hover:bg-gray-500 text-white px-2 py-1 rounded text-xs" title="Mark as Void(Anular)">V</button>
                    </div>
                 </template>
               </div>

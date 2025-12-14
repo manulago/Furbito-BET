@@ -116,6 +116,47 @@ public class EmailService {
     }
 
     @Async
+    public void sendProfileUpdateConfirmation(String to, String token) {
+        System.out.println("Sending profile update confirmation to: " + to);
+        String subject = "FurbitoBET - Confirmar Cambios de Perfil";
+        String confirmLink = frontendUrl + "/profile/confirm?token=" + token;
+
+        String htmlContent = "<!DOCTYPE html>" +
+                "<html>" +
+                "<head>" +
+                "<style>" +
+                "body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f4f4; margin: 0; padding: 0; }"
+                +
+                ".container { max-width: 600px; margin: 20px auto; background-color: #ffffff; padding: 40px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }"
+                +
+                ".header { text-align: center; border-bottom: 2px solid #2196F3; padding-bottom: 20px; margin-bottom: 20px; }"
+                +
+                ".header h1 { color: #333; margin: 0; font-size: 28px; }" +
+                ".content { color: #555; font-size: 16px; line-height: 1.6; }" +
+                ".button { display: inline-block; padding: 12px 24px; background-color: #2196F3; color: white; text-decoration: none; border-radius: 5px; font-weight: bold; margin-top: 20px; }"
+                +
+                "</style>" +
+                "</head>" +
+                "<body>" +
+                "<div class='container'>" +
+                "<div class='header'><h1>Confirmar Cambios</h1></div>" +
+                "<div class='content'>" +
+                "<p>Hola,</p>" +
+                "<p>Has solicitado actualizar tu perfil (nombre de usuario, email o contraseña).</p>" +
+                "<p>Para confirmar y aplicar estos cambios, por favor haz clic en el siguiente enlace:</p>" +
+                "<p style='text-align: center;'><a href='" + confirmLink + "' class='button'>Confirmar Cambios</a></p>"
+                +
+                "<p>El enlace expirará en 24 horas.</p>" +
+                "<p>Si no has realizado esta solicitud, ignora este correo.</p>" +
+                "</div>" +
+                "</div>" +
+                "</body>" +
+                "</html>";
+
+        sendEmail(to, to, subject, htmlContent);
+    }
+
+    @Async
     public void sendSimpleMessage(String to, String subject, String text) {
         System.out.println("Async sending simple email via Brevo to: " + to);
         // Convert text to simple HTML

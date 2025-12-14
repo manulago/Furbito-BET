@@ -54,6 +54,22 @@ async function cancelBet(betId) {
 
 onMounted(fetchBets)
 
+onMounted(fetchBets)
+
+function isBetCancellable(bet) {
+  if (bet.status !== 'PENDING') return false
+  const now = new Date()
+  // Check if ANY outcome event has started
+  return !bet.outcomes.some(o => {
+      // Assuming event date is available in outcome.event.date
+      // The backend DTO usually contains the full Event object in Outcome
+      if (o.event && o.event.date) {
+          return new Date(o.event.date) < now
+      }
+      return false
+  })
+}
+
 function getNetProfitValue(bet) {
   if (bet.status === 'WON') {
     // If we had potentialWinnings in DTO we could use it, but calculating is consistent with PENDING view
@@ -96,39 +112,44 @@ function getNetProfitValue(bet) {
     </div>
 
     <div v-else class="grid gap-4">
-      <div v-for="bet in filteredBets" :key="bet.id" class="bg-gray-800 p-6 rounded-lg shadow-lg border border-gray-700 flex justify-between items-center">
-        <div>
-          <div v-for="outcome in bet.outcomes" :key="outcome.id" class="mb-2">
-            <h3 class="text-lg font-bold text-green-400">{{ outcome.description }}</h3>
-            <p class="text-gray-400 text-sm">{{ outcome.event.name }} <span class="text-gray-500">@ {{ outcome.odds }}</span></p>
+      <div v-for="bet in filteredBets" :key="bet.id" class="bg-gray-800 p-6 rounded-lg shadow-lg border border-gray-700 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div class="w-full">
+          <div v-for="outcome in bet.outcomes" :key="outcome.id" class="mb-2 last:mb-0 border-b md:border-b-0 border-gray-700 pb-2 md:pb-0 last:border-0 last:pb-0">
+            <h3 class="text-lg font-bold text-green-400 leading-tight">{{ outcome.description }}</h3>
+            <p class="text-gray-400 text-sm">{{ outcome.event.name }} <span class="text-gray-500 block sm:inline">@ {{ outcome.odds }}</span></p>
           </div>
         </div>
-        <div class="text-right">
-          <p class="text-white font-bold text-lg">{{ bet.amount }} €</p>
-          <p class="text-sm font-bold uppercase" :class="{
-            'text-yellow-400': bet.status === 'PENDING',
-            'text-green-500': bet.status === 'WON',
-            'text-red-500': bet.status === 'LOST',
-            'text-gray-500': bet.status === 'CANCELLED' || bet.status === 'VOID'
-          }">
-            {{ langStore.t('common.status.' + bet.status) }}
-          </p>
-          <p v-if="bet.status === 'PENDING'" class="text-xs text-gray-500">
-            {{ langStore.t('betSlip.totalOdds') }}: {{ bet.outcomes.reduce((acc, curr) => acc * curr.odds, 1).toFixed(2) }}
-          </p>
-          <p v-if="bet.status === 'PENDING'" class="text-xs text-gray-500">
-            {{ langStore.t('betSlip.potentialReturn') }}: {{ (bet.amount * bet.outcomes.reduce((acc, curr) => acc * curr.odds, 1)).toFixed(2) }} €
-          </p>
-          <p v-if="bet.status !== 'PENDING'" class="text-sm font-bold mt-1" :class="{
-             'text-green-400': getNetProfitValue(bet) > 0,
-             'text-red-500': getNetProfitValue(bet) < 0,
-             'text-gray-500': getNetProfitValue(bet) === 0
-          }">
-             {{ langStore.t('myBets.netProfit') }}: {{ getNetProfitValue(bet) > 0 ? '+' : '' }}{{ getNetProfitValue(bet).toFixed(2) }} €
-          </p>
-          <button v-if="bet.status === 'PENDING'" @click="cancelBet(bet.id)" class="mt-2 bg-red-500 hover:bg-red-600 text-white text-xs font-bold py-1 px-2 rounded transition">
-            {{ langStore.t('myBets.cancel') }}
-          </button>
+        <div class="w-full md:w-auto text-left md:text-right border-t md:border-t-0 border-gray-700 pt-4 md:pt-0 mt-2 md:mt-0 flex flex-row md:flex-col justify-between items-center md:items-end gap-x-4 flex-wrap">
+          <div class="flex flex-col md:items-end"> 
+              <p class="text-white font-bold text-lg">{{ bet.amount }} €</p>
+              <p class="text-sm font-bold uppercase" :class="{
+                'text-yellow-400': bet.status === 'PENDING',
+                'text-green-500': bet.status === 'WON',
+                'text-red-500': bet.status === 'LOST',
+                'text-gray-500': bet.status === 'CANCELLED' || bet.status === 'VOID'
+              }">
+                {{ langStore.t('common.status.' + bet.status) }}
+              </p>
+          </div>
+          
+          <div class="flex flex-col md:items-end">
+              <p v-if="bet.status === 'PENDING'" class="text-xs text-gray-500 text-right md:text-right">
+                {{ langStore.t('betSlip.totalOdds') }}: {{ bet.outcomes.reduce((acc, curr) => acc * curr.odds, 1).toFixed(2) }}
+              </p>
+              <p v-if="bet.status === 'PENDING'" class="text-xs text-gray-500 text-right md:text-right">
+                {{ langStore.t('betSlip.potentialReturn') }}: {{ (bet.amount * bet.outcomes.reduce((acc, curr) => acc * curr.odds, 1)).toFixed(2) }} €
+              </p>
+              <p v-if="bet.status !== 'PENDING'" class="text-sm font-bold mt-1 text-right md:text-right" :class="{
+                 'text-green-400': getNetProfitValue(bet) > 0,
+                 'text-red-500': getNetProfitValue(bet) < 0,
+                 'text-gray-500': getNetProfitValue(bet) === 0
+              }">
+                 {{ langStore.t('myBets.netProfit') }}: {{ getNetProfitValue(bet) > 0 ? '+' : '' }}{{ getNetProfitValue(bet).toFixed(2) }} €
+              </p>
+              <button v-if="isBetCancellable(bet)" @click="cancelBet(bet.id)" class="mt-2 bg-red-500 hover:bg-red-600 text-white text-xs font-bold py-1 px-3 rounded transition self-end">
+                {{ langStore.t('myBets.cancel') }}
+              </button>
+          </div>
         </div>
       </div>
     </div>

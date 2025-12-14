@@ -65,6 +65,21 @@ const router = createRouter({
             name: 'event-detail',
             component: () => import('../views/EventDetailView.vue')
         },
+        {
+            path: '/user/:id',
+            name: 'user-profile',
+            component: () => import('../views/UserProfileView.vue')
+        },
+        {
+            path: '/profile/settings',
+            name: 'profile-settings',
+            component: () => import('../views/ProfileSettingsView.vue')
+        },
+        {
+            path: '/profile/confirm',
+            name: 'profile-confirm',
+            component: () => import('../views/ProfileConfirmationView.vue')
+        },
     ]
 })
 

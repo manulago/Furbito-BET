@@ -18,4 +18,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     java.util.List<User> findAllByOrderByBalanceDesc();
 
     java.util.List<User> findByRoleNotOrderByBalanceDesc(User.Role role);
+
+    Optional<User> findByConfirmationToken(String confirmationToken);
 }

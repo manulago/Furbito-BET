@@ -32,6 +32,13 @@ public class User {
     @Transient
     private BigDecimal grossProfit;
 
+    // Fields for profile updates
+    private String pendingUsername;
+    private String pendingEmail;
+    private String pendingPassword;
+    private String confirmationToken;
+    private java.time.LocalDateTime tokenExpiry;
+
     public enum Role {
         ADMIN, USER
     }

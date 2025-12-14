@@ -13,7 +13,8 @@ export const useLanguageStore = defineStore('language', () => {
                 admin: 'Admin',
                 logout: 'Cerrar Sesión',
                 welcome: 'Bienvenido',
-                statistics: 'Estadísticas Furbito'
+                statistics: 'Estadísticas Furbito',
+                profile: 'Gestionar Perfil'
             },
             ranking: {
                 title: 'Clasificación',
@@ -211,7 +212,8 @@ export const useLanguageStore = defineStore('language', () => {
                 admin: 'Admin',
                 logout: 'Pechar Sesión',
                 welcome: 'Benvido',
-                statistics: 'Estatísticas Furbito'
+                statistics: 'Estatísticas Furbito',
+                profile: 'Xestionar Perfil'
             },
             ranking: {
                 title: 'Clasificación',
@@ -224,10 +226,11 @@ export const useLanguageStore = defineStore('language', () => {
                     pos: 'Pos',
                     team: 'Equipo',
                     pts: 'Pts',
-                    played: 'XX',
-                    won: 'XG',
-                    drawn: 'XE',
-                    lost: 'XP',
+                    pts: 'Pts',
+                    played: 'PX',
+                    won: 'PG',
+                    drawn: 'PE',
+                    lost: 'PP',
                     gf: 'GF',
                     ga: 'GC'
                 },
@@ -257,8 +260,8 @@ export const useLanguageStore = defineStore('language', () => {
                 email: 'Correo Electrónico',
                 password: 'Contrasinal',
                 confirmPassword: 'Confirmar Contrasinal',
-                noAccount: 'Non tes conta?',
-                hasAccount: 'Xa tes conta?',
+                noAccount: '¿Non tes conta?',
+                hasAccount: '¿Xa tes conta?',
                 registerHere: 'Rexístrate aquí',
                 loginHere: 'Inicia sesión aquí',
                 passwordsDoNotMatch: 'Os contrasinais non coinciden!',
@@ -351,7 +354,7 @@ export const useLanguageStore = defineStore('language', () => {
                 emailFailed: 'Fallo ao enviar email.',
                 createEventBtn: '+ Crear Evento',
                 confirmCreate: '¿Crear evento para',
-                success: 'Evento creado con éxito!',
+                success: '¡Evento creado con éxito!',
                 fail: 'Fallo ao crear o evento.',
                 selectCategory: 'Seleccionar Categoría',
                 playersTitle: 'Xogadores Furbito FIC',
@@ -409,7 +412,8 @@ export const useLanguageStore = defineStore('language', () => {
                 admin: 'Admin',
                 logout: 'Logout',
                 welcome: 'Welcome',
-                statistics: 'Furbito Statistics'
+                statistics: 'Furbito Statistics',
+                profile: 'Manage Profile'
             },
             ranking: {
                 title: 'Standings',

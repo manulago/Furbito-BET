@@ -31,12 +31,18 @@ public class BetService {
             throw new RuntimeException("No outcomes selected");
         }
 
-        // Check if any event is completed or cancelled
+        java.time.LocalDateTime now = java.time.LocalDateTime.now();
+
+        // Check if any event is completed, cancelled, or ALREADY STARTED
         for (Outcome outcome : outcomes) {
             if (outcome.getEvent().getStatus() == com.furbitobet.backend.model.Event.EventStatus.COMPLETED ||
                     outcome.getEvent().getStatus() == com.furbitobet.backend.model.Event.EventStatus.CANCELLED) {
                 throw new RuntimeException(
                         "Cannot place bet on completed or cancelled event: " + outcome.getEvent().getName());
+            }
+            if (outcome.getEvent().getDate().isBefore(now)) {
+                throw new RuntimeException(
+                        "Cannot place bet on started event: " + outcome.getEvent().getName());
             }
         }
 
@@ -91,11 +97,12 @@ public class BetService {
                     if (outcome.getEvent() == null) {
                         return false;
                     }
-                    return outcome.getEvent().getDate().isAfter(now.plusHours(1));
+                    // Allow cancel until the event starts (was plusHours(1))
+                    return outcome.getEvent().getDate().isAfter(now);
                 });
 
         if (!canCancel) {
-            throw new RuntimeException("Too late to cancel");
+            throw new RuntimeException("Too late to cancel (event started)");
         }
 
         User user = bet.getUser();
