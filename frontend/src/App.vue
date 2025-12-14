@@ -211,26 +211,34 @@ function logout() {
 
         <div class="space-y-4 text-gray-200 mb-8">
            <div class="flex items-start gap-4 p-3 bg-gray-700/50 rounded-lg">
-              <span class="text-3xl">🎰</span>
-              <div>
-                <h3 class="font-bold text-green-400">Nueva Ruleta de la Suerte</h3>
-                <p class="text-sm text-gray-300">Gira la ruleta cada 12 horas y gana saldo gratis al instante. ¡Premios de hasta 50€!</p>
-              </div>
-           </div>
-
-           <div class="flex items-start gap-4 p-3 bg-gray-700/50 rounded-lg">
               <span class="text-3xl">📱</span>
               <div>
                 <h3 class="font-bold text-blue-400">Mejora Móvil</h3>
-                <p class="text-sm text-gray-300">Navegación optimizada para móviles. Accede a todo más rápido.</p>
+                <p class="text-sm text-gray-300">Disfruta de una experiencia 100% optimizada para tu teléfono. Navegación más fluida y accesible.</p>
               </div>
            </div>
 
            <div class="flex items-start gap-4 p-3 bg-gray-700/50 rounded-lg">
-              <span class="text-3xl">🚀</span>
+              <span class="text-3xl">❓</span>
               <div>
-                <h3 class="font-bold text-yellow-400">Más Rápido</h3>
-                <p class="text-sm text-gray-300">Hemos mejorado la interfaz de escritorio para que sea más clara y compacta.</p>
+                <h3 class="font-bold text-green-400">Nueva Ayuda</h3>
+                <p class="text-sm text-gray-300">¿Dudas? Visita nuestra nueva sección de ayuda para aprender cómo funciona todo.</p>
+              </div>
+           </div>
+
+           <div class="flex items-start gap-4 p-3 bg-gray-700/50 rounded-lg">
+              <span class="text-3xl">⚙️</span>
+              <div>
+                <h3 class="font-bold text-yellow-400">Gestión de Perfil</h3>
+                <p class="text-sm text-gray-300">Ahora tienes control total sobre tu cuenta. Actualiza tus datos y preferencias fácilmente.</p>
+              </div>
+           </div>
+
+           <div class="flex items-start gap-4 p-3 bg-gray-700/50 rounded-lg">
+              <span class="text-3xl">👀</span>
+              <div>
+                <h3 class="font-bold text-purple-400">Espía a los Mejores</h3>
+                <p class="text-sm text-gray-300">Visita el perfil de otros usuarios desde el ranking para ver su historial de apuestas y estrategias.</p>
               </div>
            </div>
         </div>
