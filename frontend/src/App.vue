@@ -130,25 +130,59 @@ watch(() => auth.user, (newUser) => {
     }
 })
 
+// Navigation direction tracking for app-like transitions
+const navigationHistory = ref([])
+const transitionName = ref('fade')
+const isNavigatingBack = ref(false)
+
+router.beforeEach((to, from) => {
+  // Determine if navigating back
+  const toDepth = to.path.split('/').length
+  const fromDepth = from.path.split('/').length
+  
+  // Check if user clicked browser back button
+  const lastPath = navigationHistory.value[navigationHistory.value.length - 1]
+  if (lastPath === to.path) {
+    // Going back
+    isNavigatingBack.value = true
+    navigationHistory.value.pop()
+    transitionName.value = 'slide-right'
+  } else {
+    // Going forward
+    isNavigatingBack.value = false
+    navigationHistory.value.push(from.path)
+    transitionName.value = 'slide-left'
+  }
+})
+
 // Page transition handlers
 function onBeforeEnter(el) {
-  el.style.opacity = 0
-  el.style.transform = 'translateY(20px)'
+  if (isNavigatingBack.value) {
+    el.style.opacity = 0
+    el.style.transform = 'translateX(-30px)'
+  } else {
+    el.style.opacity = 0
+    el.style.transform = 'translateX(30px)'
+  }
 }
 
 function onEnter(el, done) {
   el.offsetHeight // trigger reflow
-  el.style.transition = 'opacity 0.3s ease, transform 0.3s ease'
+  el.style.transition = 'opacity 0.3s ease, transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
   el.style.opacity = 1
-  el.style.transform = 'translateY(0)'
+  el.style.transform = 'translateX(0)'
   setTimeout(done, 300)
 }
 
 function onLeave(el, done) {
-  el.style.transition = 'opacity 0.2s ease, transform 0.2s ease'
+  el.style.transition = 'opacity 0.25s ease, transform 0.25s cubic-bezier(0.4, 0, 0.2, 1)'
   el.style.opacity = 0
-  el.style.transform = 'translateY(-10px)'
-  setTimeout(done, 200)
+  if (isNavigatingBack.value) {
+    el.style.transform = 'translateX(30px)'
+  } else {
+    el.style.transform = 'translateX(-30px)'
+  }
+  setTimeout(done, 250)
 }
 
 function logout() {
@@ -515,5 +549,37 @@ function logout() {
 .slide-up-leave-to {
   opacity: 0;
   transform: translateY(100%);
+}
+
+/* Slide-left transition (forward navigation) */
+.slide-left-enter-active,
+.slide-left-leave-active {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.slide-left-enter-from {
+  opacity: 0;
+  transform: translateX(30px);
+}
+
+.slide-left-leave-to {
+  opacity: 0;
+  transform: translateX(-30px);
+}
+
+/* Slide-right transition (back navigation) */
+.slide-right-enter-active,
+.slide-right-leave-active {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.slide-right-enter-from {
+  opacity: 0;
+  transform: translateX(-30px);
+}
+
+.slide-right-leave-to {
+  opacity: 0;
+  transform: translateX(30px);
 }
 </style>
