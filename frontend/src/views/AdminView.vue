@@ -519,41 +519,41 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="space-y-8">
-    <h2 class="text-3xl font-bold text-white">{{ langStore.t('admin.dashboard') }}</h2>
+  <div class="space-y-6 md:space-y-8">
+    <h2 class="text-2xl md:text-3xl font-bold text-white">{{ langStore.t('admin.dashboard') }}</h2>
 
     <!-- Tabs -->
-    <div class="flex border-b border-gray-700">
+    <div class="flex border-b border-gray-700 overflow-x-auto scrollbar-hide">
       <button @click="activeTab = 'events'"
-        :class="['px-4 py-2 font-medium', activeTab === 'events' ? 'text-green-400 border-b-2 border-green-400' : 'text-gray-400 hover:text-white']">
+        :class="['px-3 md:px-4 py-2 font-medium text-sm md:text-base whitespace-nowrap', activeTab === 'events' ? 'text-green-400 border-b-2 border-green-400' : 'text-gray-400 hover:text-white']">
         {{ langStore.t('admin.events') }}
       </button>
       <button @click="activeTab = 'users'"
-        :class="['px-4 py-2 font-medium', activeTab === 'users' ? 'text-blue-400 border-b-2 border-blue-400' : 'text-gray-400 hover:text-white']">
+        :class="['px-3 md:px-4 py-2 font-medium text-sm md:text-base whitespace-nowrap', activeTab === 'users' ? 'text-blue-400 border-b-2 border-blue-400' : 'text-gray-400 hover:text-white']">
         {{ langStore.t('admin.users') }}
       </button>
       <button @click="activeTab = 'categories'"
-        :class="['px-4 py-2 font-medium', activeTab === 'categories' ? 'text-yellow-400 border-b-2 border-yellow-400' : 'text-gray-400 hover:text-white']">
+        :class="['px-3 md:px-4 py-2 font-medium text-sm md:text-base whitespace-nowrap', activeTab === 'categories' ? 'text-yellow-400 border-b-2 border-yellow-400' : 'text-gray-400 hover:text-white']">
         {{ langStore.t('admin.categories') }}
       </button>
       <button @click="activeTab = 'players'"
-        :class="['px-4 py-2 font-medium', activeTab === 'players' ? 'text-yellow-400 border-b-2 border-yellow-400' : 'text-gray-400 hover:text-white']">
+        :class="['px-3 md:px-4 py-2 font-medium text-sm md:text-base whitespace-nowrap', activeTab === 'players' ? 'text-yellow-400 border-b-2 border-yellow-400' : 'text-gray-400 hover:text-white']">
         {{ langStore.t('admin.players') }}
       </button>
     </div>
 
     <!-- Events Tab -->
-    <div v-if="activeTab === 'events'" class="space-y-6">
+    <div v-if="activeTab === 'events'" class="space-y-4 md:space-y-6">
       
       <!-- Top Actions -->
-      <div v-if="!selectedEvent" class="flex justify-between items-center">
-        <h3 class="text-2xl font-bold text-white">{{ langStore.t('admin.events') }}</h3>
-        <div class="flex gap-2">
-            <button @click="syncEvents" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded font-bold shadow flex items-center gap-2">
-              <span>↻</span> Sincronizar
+      <div v-if="!selectedEvent" class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+        <h3 class="text-xl md:text-2xl font-bold text-white">{{ langStore.t('admin.events') }}</h3>
+        <div class="flex gap-2 w-full sm:w-auto">
+            <button @click="syncEvents" class="flex-1 sm:flex-none bg-blue-600 hover:bg-blue-700 text-white px-3 md:px-4 py-2 rounded font-bold shadow flex items-center justify-center gap-2 text-sm md:text-base">
+              <span>↻</span> <span class="hidden sm:inline">Sincronizar</span>
             </button>
-            <button @click="showCreateEvent = true" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded font-bold shadow flex items-center gap-2">
-              <span>+</span> {{ langStore.t('admin.createEvent') }}
+            <button @click="showCreateEvent = true" class="flex-1 sm:flex-none bg-green-500 hover:bg-green-600 text-white px-3 md:px-4 py-2 rounded font-bold shadow flex items-center justify-center gap-2 text-sm md:text-base">
+              <span>+</span> <span class="hidden sm:inline">{{ langStore.t('admin.createEvent') }}</span>
             </button>
         </div>
       </div>
@@ -638,20 +638,20 @@ onMounted(() => {
       <!-- Event Editor (Detail View) -->
       <div v-if="selectedEvent" class="bg-gray-800 rounded-lg shadow-xl border border-gray-700 overflow-hidden">
         <!-- Header -->
-        <div class="bg-gray-900 p-6 border-b border-gray-700 flex justify-between items-start">
-          <div>
+        <div class="bg-gray-900 p-4 md:p-6 border-b border-gray-700 flex flex-col md:flex-row justify-between items-start gap-4">
+          <div class="flex-1">
             <button @click="selectedEvent = null" class="text-gray-400 hover:text-white mb-2 flex items-center gap-1 text-sm">
               &larr; {{ langStore.t('admin.backToEvents') }}
             </button>
-            <h2 class="text-2xl font-bold text-white flex items-center gap-3">
-              {{ selectedEvent.name }}
-              <span class="text-sm font-normal bg-gray-700 px-2 py-1 rounded text-gray-300">{{ selectedEvent.status }}</span>
+            <h2 class="text-xl md:text-2xl font-bold text-white flex flex-wrap items-center gap-2 md:gap-3">
+              <span class="break-words">{{ selectedEvent.name }}</span>
+              <span class="text-xs md:text-sm font-normal bg-gray-700 px-2 py-1 rounded text-gray-300 whitespace-nowrap">{{ selectedEvent.status }}</span>
             </h2>
-            <p class="text-gray-400 text-sm mt-1">{{ new Date(selectedEvent.date).toLocaleString() }}</p>
+            <p class="text-gray-400 text-xs md:text-sm mt-1">{{ new Date(selectedEvent.date).toLocaleString() }}</p>
           </div>
-          <div class="flex gap-2">
-             <button @click="startEditEvent(selectedEvent)" class="bg-blue-600 hover:bg-blue-500 text-white px-3 py-1 rounded text-sm font-bold">{{ langStore.t('admin.editDetails') }}</button>
-             <button v-if="selectedEvent.status === 'UPCOMING'" @click="startResolveEvent(selectedEvent)" class="bg-green-600 hover:bg-green-500 text-white px-3 py-1 rounded text-sm font-bold">{{ langStore.t('admin.simulateResult') }}</button>
+          <div class="flex gap-2 w-full md:w-auto">
+             <button @click="startEditEvent(selectedEvent)" class="flex-1 md:flex-none bg-blue-600 hover:bg-blue-500 text-white px-2 md:px-3 py-1 rounded text-xs md:text-sm font-bold">{{ langStore.t('admin.editDetails') }}</button>
+             <button v-if="selectedEvent.status === 'UPCOMING'" @click="startResolveEvent(selectedEvent)" class="flex-1 md:flex-none bg-green-600 hover:bg-green-500 text-white px-2 md:px-3 py-1 rounded text-xs md:text-sm font-bold whitespace-nowrap">{{ langStore.t('admin.simulateResult') }}</button>
           </div>
         </div>
 
@@ -665,9 +665,9 @@ onMounted(() => {
           </div>
 
           <!-- Add Outcome Form (Inline) -->
-          <div v-if="showAddOutcome" class="bg-gray-700 p-4 rounded-lg mb-6 border border-blue-500 animate-fade-in">
-            <h4 class="text-blue-300 font-bold mb-3">{{ langStore.t('admin.newOutcome') }}</h4>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+          <div v-if="showAddOutcome" class="bg-gray-700 p-3 md:p-4 rounded-lg mb-4 md:mb-6 border border-blue-500 animate-fade-in">
+            <h4 class="text-blue-300 font-bold mb-3 text-sm md:text-base">{{ langStore.t('admin.newOutcome') }}</h4>
+            <div class="grid grid-cols-1 gap-3 md:gap-4 mb-4">
               <div>
                 <label class="block text-xs text-gray-400 mb-1">{{ langStore.t('admin.description') }}</label>
                 <input v-model="outcomeDesc" placeholder="e.g. Home Win" class="w-full bg-gray-600 text-white p-2 rounded border border-gray-500 focus:border-blue-400 outline-none" />
@@ -749,12 +749,12 @@ onMounted(() => {
       
       <!-- Top Actions -->
       <div v-if="!selectedUser" class="flex justify-between items-center">
-        <h3 class="text-2xl font-bold text-white">{{ langStore.t('admin.users') }}</h3>
+        <h3 class="text-xl md:text-2xl font-bold text-white">{{ langStore.t('admin.users') }}</h3>
         <!-- Search or Filter could go here -->
       </div>
 
       <!-- User List -->
-      <div v-if="!selectedUser" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div v-if="!selectedUser" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
         <div v-for="user in users" :key="user.id" 
              @click="selectedUser = user"
              class="bg-gray-800 p-4 rounded-lg border border-gray-700 hover:border-purple-500 cursor-pointer transition shadow-lg group relative overflow-hidden">
@@ -860,9 +860,9 @@ onMounted(() => {
     <div v-if="activeTab === 'categories'" class="space-y-6">
       
       <!-- Top Actions -->
-      <div class="flex justify-between items-center">
-        <h3 class="text-2xl font-bold text-white">{{ langStore.t('admin.categories') }}</h3>
-        <div class="flex gap-2">
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+        <h3 class="text-xl md:text-2xl font-bold text-white">{{ langStore.t('admin.categories') }}</h3>
+        <div class="flex gap-2 w-full sm:w-auto">
            <button @click="initDefaultCategories" class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded font-bold shadow flex items-center gap-2">
              <span>⚡</span> {{ langStore.t('admin.initDefaults') }}
            </button>
@@ -890,7 +890,7 @@ onMounted(() => {
       </div>
 
       <!-- Categories List -->
-      <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
         <div v-for="category in categories" :key="category.id" 
              class="bg-gray-800 p-4 rounded-lg border border-gray-700 hover:border-yellow-500 transition shadow-lg flex justify-between items-center group">
           
