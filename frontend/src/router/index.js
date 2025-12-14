@@ -43,17 +43,19 @@ const router = createRouter({
             path: '/admin',
             name: 'admin',
             component: AdminView,
-            meta: { requiresAdmin: true }
+            meta: { requiresAdmin: true, transition: 'scale' }
         },
         {
             path: '/my-bets',
             name: 'my-bets',
-            component: MyBetsView
+            component: MyBetsView,
+            meta: { transition: 'slide' }
         },
         {
             path: '/ranking',
             name: 'ranking',
-            component: () => import('../views/RankingView.vue')
+            component: () => import('../views/RankingView.vue'),
+            meta: { transition: 'slide' }
         },
         {
             path: '/results',
@@ -63,17 +65,20 @@ const router = createRouter({
         {
             path: '/event/:id',
             name: 'event-detail',
-            component: () => import('../views/EventDetailView.vue')
+            component: () => import('../views/EventDetailView.vue'),
+            meta: { transition: 'scale' }
         },
         {
             path: '/user/:id',
             name: 'user-profile',
-            component: () => import('../views/UserProfileView.vue')
+            component: () => import('../views/UserProfileView.vue'),
+            meta: { transition: 'scale' }
         },
         {
             path: '/profile/settings',
             name: 'profile-settings',
-            component: () => import('../views/ProfileSettingsView.vue')
+            component: () => import('../views/ProfileSettingsView.vue'),
+            meta: { transition: 'scale' }
         },
         {
             path: '/profile/confirm',
@@ -88,17 +93,20 @@ const router = createRouter({
         {
             path: '/user-ranking',
             name: 'user-ranking',
-            component: () => import('../views/UserRankingView.vue')
+            component: () => import('../views/UserRankingView.vue'),
+            meta: { transition: 'slide' }
         },
         {
             path: '/help',
             name: 'help',
-            component: () => import('../views/HelpView.vue')
+            component: () => import('../views/HelpView.vue'),
+            meta: { transition: 'slide' }
         },
         {
             path: '/roulette',
             name: 'roulette',
-            component: () => import('../views/RouletteView.vue')
+            component: () => import('../views/RouletteView.vue'),
+            meta: { transition: 'scale' }
         },
     ]
 })

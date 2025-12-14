@@ -130,6 +130,27 @@ watch(() => auth.user, (newUser) => {
     }
 })
 
+// Page transition handlers
+function onBeforeEnter(el) {
+  el.style.opacity = 0
+  el.style.transform = 'translateY(20px)'
+}
+
+function onEnter(el, done) {
+  el.offsetHeight // trigger reflow
+  el.style.transition = 'opacity 0.3s ease, transform 0.3s ease'
+  el.style.opacity = 1
+  el.style.transform = 'translateY(0)'
+  setTimeout(done, 300)
+}
+
+function onLeave(el, done) {
+  el.style.transition = 'opacity 0.2s ease, transform 0.2s ease'
+  el.style.opacity = 0
+  el.style.transform = 'translateY(-10px)'
+  setTimeout(done, 200)
+}
+
 function logout() {
   if (inactivityTimer) {
     clearTimeout(inactivityTimer)
@@ -243,7 +264,17 @@ function logout() {
       </div>
     </nav>
     <main class="container mx-auto p-4">
-      <router-view></router-view>
+      <router-view v-slot="{ Component, route }">
+        <transition 
+          :name="route.meta.transition || 'fade'" 
+          mode="out-in"
+          @before-enter="onBeforeEnter"
+          @enter="onEnter"
+          @leave="onLeave"
+        >
+          <component :is="Component" :key="route.path" />
+        </transition>
+      </router-view>
     </main>
 
     <!-- Bet Slip -->
@@ -355,3 +386,116 @@ function logout() {
     <InstallPrompt />
   </div>
 </template>
+
+<style scoped>
+/* Page Transition Styles */
+
+/* Fade transition (default) */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.fade-enter-from {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.fade-leave-to {
+  opacity: 0;
+  transform: translateY(-10px);
+}
+
+/* Slide transition */
+.slide-enter-active,
+.slide-leave-active {
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.slide-enter-from {
+  opacity: 0;
+  transform: translateX(30px);
+}
+
+.slide-leave-to {
+  opacity: 0;
+  transform: translateX(-30px);
+}
+
+/* Scale transition */
+.scale-enter-active,
+.scale-leave-active {
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.scale-enter-from {
+  opacity: 0;
+  transform: scale(0.95);
+}
+
+.scale-leave-to {
+  opacity: 0;
+  transform: scale(1.05);
+}
+
+/* Fade-in-down animation for mobile menu */
+@keyframes fade-in-down {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-down {
+  animation: fade-in-down 0.3s ease-out;
+}
+
+/* Fade-in-up animation for modals */
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Custom scrollbar for news modal */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(34, 197, 94, 0.5);
+  border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(34, 197, 94, 0.7);
+}
+
+/* Hide scrollbar for mobile menu */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+</style>
