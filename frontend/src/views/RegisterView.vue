@@ -12,6 +12,8 @@ const confirmPassword = ref('')
 const showPassword = ref(false)
 const showConfirmPassword = ref(false)
 const successMessage = ref('')
+const loading = ref(false)
+const error = ref('')
 
 const register = async () => {
     if (password.value !== confirmPassword.value) {
