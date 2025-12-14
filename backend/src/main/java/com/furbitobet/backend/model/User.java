@@ -39,6 +39,13 @@ public class User {
     private String confirmationToken;
     private java.time.LocalDateTime tokenExpiry;
 
+    /**
+     * null = legacy enabled (true)
+     * true = enabled
+     * false = disabled (pending verification)
+     */
+    private Boolean enabled;
+
     public enum Role {
         ADMIN, USER
     }

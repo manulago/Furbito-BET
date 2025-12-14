@@ -35,11 +35,13 @@ function logout() {
         <!-- Desktop Menu -->
         <div class="hidden md:flex items-center gap-6">
           <!-- Public Links -->
+          <!-- Public Links -->
           <router-link to="/" class="text-gray-300 hover:text-green-400 transition font-medium text-lg">{{ langStore.t('nav.home') }}</router-link>
           <RouterLink to="/ranking" class="text-gray-300 hover:text-green-400 transition font-medium text-lg">{{ langStore.t('nav.ranking') }}</RouterLink>
+          <RouterLink to="/user-ranking" class="text-gray-300 hover:text-green-400 transition font-medium text-lg">{{ langStore.t('nav.userRanking') || 'Usuarios' }}</RouterLink>
           <router-link to="/statistics" class="text-gray-300 hover:text-green-400 transition font-medium text-lg">{{ langStore.t('nav.statistics') }}</router-link>
+          <router-link to="/help" class="text-gray-300 hover:text-green-400 transition font-medium text-lg">{{ langStore.t('nav.help') || 'Ayuda' }}</router-link>
           <router-link v-if="auth.isAdmin" to="/admin" class="text-gray-300 hover:text-yellow-400 transition font-medium text-lg">{{ langStore.t('nav.admin') }}</router-link>
-          <!-- <RouterLink to="/results" class="text-gray-300 hover:text-green-400 transition font-medium text-lg">Results</RouterLink> -->
 
           <div v-if="auth.user" class="flex items-center gap-6">
             <RouterLink to="/my-bets" class="text-gray-300 hover:text-green-400 transition font-medium text-lg">{{ langStore.t('nav.myBets') }}</RouterLink>

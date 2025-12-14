@@ -11,9 +11,7 @@ const password = ref('')
 const confirmPassword = ref('')
 const showPassword = ref(false)
 const showConfirmPassword = ref(false)
-const error = ref('')
-
-const loading = ref(false)
+const successMessage = ref('')
 
 const register = async () => {
     if (password.value !== confirmPassword.value) {
@@ -23,6 +21,7 @@ const register = async () => {
 
     loading.value = true
     error.value = ''
+    successMessage.value = ''
 
     try {
         const res = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/register`, {
@@ -36,7 +35,9 @@ const register = async () => {
         })
 
         if (res.ok) {
-            router.push('/login')
+            // Success
+            const msg = await res.text()
+            successMessage.value = msg || langStore.t('auth.registrationSuccess') // Need to add trans key or use raw string
         } else {
             const msg = await res.text()
             error.value = msg
@@ -53,7 +54,18 @@ const register = async () => {
     <div class="min-h-screen flex items-center justify-center bg-gray-900 text-white">
         <div class="bg-gray-800 p-8 rounded-lg shadow-lg w-96">
             <h1 class="text-2xl font-bold mb-6 text-center">{{ langStore.t('auth.register') }}</h1>
-            <form @submit.prevent="register" class="space-y-4">
+            
+            <div v-if="successMessage" class="text-center animate-fade-in">
+                <div class="mb-6 text-green-400 font-bold bg-green-900 bg-opacity-30 p-4 rounded border border-green-800">
+                    <span class="text-3xl block mb-2">✉️</span>
+                    {{ successMessage }}
+                </div>
+                <router-link to="/login" class="block w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition text-center">
+                    {{ langStore.t('auth.loginHere') }}
+                </router-link>
+            </div>
+
+            <form v-else @submit.prevent="register" class="space-y-4">
                 <div>
                     <label class="block text-sm font-medium mb-1">{{ langStore.t('auth.username') }}</label>
                     <input v-model="username" type="text" required
@@ -103,7 +115,7 @@ const register = async () => {
                     {{ loading ? 'Processing...' : langStore.t('auth.register') }}
                 </button>
             </form>
-            <div class="mt-4 text-center text-sm">
+            <div v-if="!successMessage" class="mt-4 text-center text-sm">
                 <span class="text-gray-400">{{ langStore.t('auth.hasAccount') }}</span>
                 <router-link to="/login" class="text-blue-400 hover:underline ml-1">{{ langStore.t('auth.loginHere') }}</router-link>
             </div>

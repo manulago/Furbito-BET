@@ -24,7 +24,14 @@ public class BetService {
 
     @Transactional
     public Bet placeBet(Long userId, java.util.List<Long> outcomeIds, BigDecimal amount) {
-        User user = userRepository.findById(userId).orElseThrow();
+        if (userId == null)
+            throw new IllegalArgumentException("User ID cannot be null");
+        if (outcomeIds == null)
+            throw new IllegalArgumentException("Outcome IDs cannot be null");
+        if (amount == null)
+            throw new IllegalArgumentException("Amount cannot be null");
+
+        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
         java.util.List<Outcome> outcomes = outcomeRepository.findAllById(outcomeIds);
 
         if (outcomes.isEmpty()) {
@@ -75,6 +82,8 @@ public class BetService {
     }
 
     public java.util.List<Bet> getBetsByUserId(Long userId) {
+        if (userId == null)
+            throw new IllegalArgumentException("User ID cannot be null");
         return betRepository.findByUserId(userId);
     }
 

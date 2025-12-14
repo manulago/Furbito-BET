@@ -27,6 +27,7 @@ public class UserService implements UserDetailsService {
         user.setPassword(passwordEncoder.encode(password));
         user.setEmail(email);
         user.setRole(role);
+        user.setEnabled(true); // Default users created by admin/init are enabled
         return userRepository.save(user);
     }
 
@@ -74,11 +75,17 @@ public class UserService implements UserDetailsService {
         return users;
     }
 
+    @org.springframework.transaction.annotation.Transactional
     public void deleteUser(Long id) {
         User user = getUserById(id);
         if ("admin".equals(user.getUsername()) || user.getRole() == User.Role.ADMIN) {
             throw new RuntimeException("Cannot delete admin user");
         }
+
+        // Delete all bets associated with the user first
+        java.util.List<com.furbitobet.backend.model.Bet> userBets = betRepository.findByUserId(id);
+        betRepository.deleteAll(userBets);
+
         userRepository.deleteById(id);
     }
 
@@ -93,9 +100,15 @@ public class UserService implements UserDetailsService {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
 
+        boolean enabled = user.getEnabled() == null || user.getEnabled();
+
         return new org.springframework.security.core.userdetails.User(
                 user.getUsername(),
                 user.getPassword(),
+                enabled, // enabled
+                true, // accountNonExpired
+                true, // credentialsNonExpired
+                true, // accountNonLocked
                 Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + user.getRole().name())));
     }
 

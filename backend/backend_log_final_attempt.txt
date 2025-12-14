@@ -109,3 +109,47 @@ org.springframework.web.client.HttpClientErrorException$Unauthorized: 401 Unauth
 2025-12-13T19:22:27.319+01:00  INFO 27810 --- [backend] [   scheduling-1] c.f.backend.service.ScraperService       : Document Title: UDC Xest - Liga
 2025-12-13T19:22:27.320+01:00  INFO 27810 --- [backend] [   scheduling-1] c.f.backend.service.ScraperService       : Found rows: 10
 2025-12-13T19:22:27.336+01:00  INFO 27810 --- [backend] [   scheduling-1] c.f.backend.service.EventSyncService     : Event synchronization completed.
+2025-12-14T01:23:39.889+01:00  INFO 27810 --- [backend] [nio-8080-exec-5] c.f.backend.service.ScraperService       : Scraping URL: https://udcxest.udc.gal/xest/publica/liga/grupo/clasificacion.xhtml?idobjsel=749
+2025-12-14T01:23:39.899+01:00  INFO 27810 --- [backend] [nio-8080-exec-5] c.f.backend.service.ScraperService       : Document Title: UDC Xest - Liga
+2025-12-14T01:23:39.900+01:00  INFO 27810 --- [backend] [nio-8080-exec-5] c.f.backend.service.ScraperService       : Found rows: 10
+2025-12-14T01:23:44.826+01:00  INFO 27810 --- [backend] [nio-8080-exec-9] c.f.backend.service.ScraperService       : Scraping URL: https://udcxest.udc.gal/xest/publica/liga/grupo/clasificacion.xhtml?idobjsel=749
+2025-12-14T01:23:44.826+01:00  INFO 27810 --- [backend] [nio-8080-exec-9] c.f.backend.service.ScraperService       : Document Title: UDC Xest - Liga
+2025-12-14T01:23:44.827+01:00  INFO 27810 --- [backend] [nio-8080-exec-9] c.f.backend.service.ScraperService       : Found rows: 10
+Attempting to send welcome email via Brevo to: manulagotielas@gmail.com
+Failed to send email via Brevo to manulagotielas@gmail.com: 401 Unauthorized: [no body]
+org.springframework.web.client.HttpClientErrorException$Unauthorized: 401 Unauthorized: [no body]
+	at org.springframework.web.client.HttpClientErrorException.create(HttpClientErrorException.java:106)
+	at org.springframework.web.client.DefaultResponseErrorHandler.handleError(DefaultResponseErrorHandler.java:183)
+	at org.springframework.web.client.DefaultResponseErrorHandler.handleError(DefaultResponseErrorHandler.java:137)
+	at org.springframework.web.client.ResponseErrorHandler.handleError(ResponseErrorHandler.java:63)
+	at org.springframework.web.client.RestTemplate.handleResponse(RestTemplate.java:942)
+	at org.springframework.web.client.RestTemplate.doExecute(RestTemplate.java:891)
+	at org.springframework.web.client.RestTemplate.execute(RestTemplate.java:790)
+	at org.springframework.web.client.RestTemplate.postForEntity(RestTemplate.java:538)
+	at com.furbitobet.backend.service.EmailService.sendEmail(EmailService.java:147)
+	at com.furbitobet.backend.service.EmailService.sendWelcomeEmail(EmailService.java:67)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:351)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.invokeJoinpoint(ReflectiveMethodInvocation.java:196)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:163)
+	at org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.proceed(CglibAopProxy.java:765)
+	at org.springframework.aop.interceptor.AsyncExecutionInterceptor.lambda$invoke$0(AsyncExecutionInterceptor.java:113)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:317)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+2025-12-14T01:24:24.327+01:00  INFO 27810 --- [backend] [nio-8080-exec-2] c.f.backend.service.ScraperService       : Scraping URL: https://udcxest.udc.gal/xest/publica/liga/grupo/clasificacion.xhtml?idobjsel=749
+2025-12-14T01:24:24.327+01:00  INFO 27810 --- [backend] [nio-8080-exec-2] c.f.backend.service.ScraperService       : Document Title: UDC Xest - Liga
+2025-12-14T01:24:24.328+01:00  INFO 27810 --- [backend] [nio-8080-exec-2] c.f.backend.service.ScraperService       : Found rows: 10
+2025-12-14T01:29:37.972+01:00  INFO 27810 --- [backend] [   scheduling-1] c.f.backend.service.EventSyncService     : Starting event synchronization for team: INFORMÁTICA-1
+2025-12-14T01:29:38.836+01:00  INFO 27810 --- [backend] [   scheduling-1] c.f.backend.service.ScraperService       : Scraping URL: https://udcxest.udc.gal/xest/publica/liga/grupo/clasificacion.xhtml?idobjsel=749
+2025-12-14T01:29:38.836+01:00  INFO 27810 --- [backend] [   scheduling-1] c.f.backend.service.ScraperService       : Document Title: UDC Xest - Liga
+2025-12-14T01:29:38.836+01:00  INFO 27810 --- [backend] [   scheduling-1] c.f.backend.service.ScraperService       : Found rows: 10
+2025-12-14T01:29:38.852+01:00  INFO 27810 --- [backend] [   scheduling-1] c.f.backend.service.EventSyncService     : Event synchronization completed.
+2025-12-14T01:31:34.048+01:00  INFO 27810 --- [backend] [nio-8080-exec-9] c.f.backend.service.ScraperService       : Scraping URL: https://udcxest.udc.gal/xest/publica/liga/grupo/clasificacion.xhtml?idobjsel=749
+2025-12-14T01:31:34.048+01:00  INFO 27810 --- [backend] [nio-8080-exec-9] c.f.backend.service.ScraperService       : Document Title: UDC Xest - Liga
+2025-12-14T01:31:34.049+01:00  INFO 27810 --- [backend] [nio-8080-exec-9] c.f.backend.service.ScraperService       : Found rows: 10
+2025-12-14T01:34:56.276+01:00  INFO 27810 --- [backend] [ionShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-12-14T01:34:56.290+01:00  INFO 27810 --- [backend] [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2025-12-14T01:34:56.295+01:00  INFO 27810 --- [backend] [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.

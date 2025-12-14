@@ -7,9 +7,8 @@ const langStore = useLanguageStore()
 const auth = useAuthStore()
 const standings = ref([])
 const matchResults = ref([])
-const userRanking = ref([])
 const loading = ref(true)
-const activeTab = ref('standings') // 'standings', 'results', 'users'
+const activeTab = ref('standings') // 'standings', 'results'
 const onlyFurbitoFic = ref(false)
 
 const error = ref(null)
@@ -19,22 +18,19 @@ async function fetchData() {
   loading.value = true
   error.value = null
   try {
-    const [standingsRes, resultsRes, usersRes] = await Promise.all([
+    const [standingsRes, resultsRes] = await Promise.all([
       fetch(`${import.meta.env.VITE_API_URL}/api/league/standings`),
-      fetch(`${import.meta.env.VITE_API_URL}/api/league/results`),
-      fetch(`${import.meta.env.VITE_API_URL}/api/users/ranking`)
+      fetch(`${import.meta.env.VITE_API_URL}/api/league/results`)
     ])
 
-    console.log('Responses received', standingsRes.status, resultsRes.status, usersRes.status)
+    console.log('Responses received', standingsRes.status, resultsRes.status)
 
     if (!resultsRes.ok) throw new Error('Failed to fetch results')
     if (!standingsRes.ok) throw new Error('Failed to fetch standings')
-    if (!usersRes.ok) throw new Error('Failed to fetch users')
 
     standings.value = await standingsRes.json()
     matchResults.value = await resultsRes.json() || [] 
-    userRanking.value = await usersRes.json()
-    console.log('Data loaded', standings.value.length, matchResults.value.length, userRanking.value.length)
+    console.log('Data loaded', standings.value.length, matchResults.value.length)
   } catch (e) {
     console.error('Error fetching data:', e)
     error.value = langStore.t('ranking.error') + ' (' + e.message + ')'
@@ -109,22 +105,6 @@ const groupedMatchResults = computed(() => {
 onMounted(() => {
   fetchData()
 })
-
-function getRank(index) {
-  if (index === 0) return 1
-  const currentUser = userRanking.value[index]
-  const prevUser = userRanking.value[index - 1]
-  
-  if (currentUser.balance === prevUser.balance) {
-    // Recursive check to find the first user with this balance
-    let i = index - 1
-    while (i >= 0 && userRanking.value[i].balance === currentUser.balance) {
-      i--
-    }
-    return i + 2 // i is the index of the user with DIFFERENT balance, so i+1 is the first user with SAME balance. Rank is 1-based.
-  }
-  return index + 1
-}
 </script>
 
 <template>
@@ -143,12 +123,6 @@ function getRank(index) {
           :class="['px-3 py-2 md:px-4 md:py-2 rounded-md transition whitespace-nowrap text-sm md:text-base', activeTab === 'results' ? 'bg-green-500 text-white' : 'text-gray-400 hover:text-white']"
         >
           {{ langStore.t('ranking.tabs.results') }}
-        </button>
-        <button 
-          @click="activeTab = 'users'"
-          :class="['px-3 py-2 md:px-4 md:py-2 rounded-md transition whitespace-nowrap text-sm md:text-base', activeTab === 'users' ? 'bg-green-500 text-white' : 'text-gray-400 hover:text-white']"
-        >
-          {{ langStore.t('ranking.tabs.users') }}
         </button>
       </div>
     </div>
@@ -232,38 +206,6 @@ function getRank(index) {
           </button>
         </div>
       </div>
-    </div>
-
-    <!-- User Ranking -->
-    <div v-else class="bg-gray-800 p-6 rounded-lg shadow-lg border border-gray-700 overflow-x-auto">
-      <table class="w-full text-left text-gray-300">
-        <thead class="text-gray-400 uppercase bg-gray-700">
-          <tr>
-            <th class="px-4 py-2">{{ langStore.t('ranking.users.pos') }}</th>
-            <th class="px-4 py-2">{{ langStore.t('ranking.users.user') }}</th>
-            <th class="px-4 py-2 text-right">{{ langStore.t('ranking.users.balance') }}</th>
-            <th class="px-4 py-2 text-right">Ganancia</th>
-          </tr>
-
-        </thead>
-        <tbody>
-          <tr v-for="(user, index) in userRanking" :key="user.id" class="border-b border-gray-700 hover:bg-gray-700">
-            <td class="px-4 py-2 font-bold">
-              {{ getRank(index) }}
-            </td>
-            <td class="px-4 py-2 text-white font-medium">
-              <router-link :to="'/user/' + user.id" class="hover:text-green-400 hover:underline transition">
-                {{ user.username }}
-              </router-link>
-            </td>
-            <td class="px-4 py-2 text-right font-bold text-green-400">{{ user.balance }} €</td>
-            <td class="px-4 py-2 text-right font-bold text-green-400">
-              {{ user.grossProfit }} €
-            </td>
-          </tr>
-
-        </tbody>
-      </table>
     </div>
   </div>
 </template>

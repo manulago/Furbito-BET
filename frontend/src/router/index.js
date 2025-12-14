@@ -80,12 +80,27 @@ const router = createRouter({
             name: 'profile-confirm',
             component: () => import('../views/ProfileConfirmationView.vue')
         },
+        {
+            path: '/confirm-account',
+            name: 'confirm-account',
+            component: () => import('../views/AccountConfirmationView.vue')
+        },
+        {
+            path: '/user-ranking',
+            name: 'user-ranking',
+            component: () => import('../views/UserRankingView.vue')
+        },
+        {
+            path: '/help',
+            name: 'help',
+            component: () => import('../views/HelpView.vue')
+        },
     ]
 })
 
 router.beforeEach((to, from, next) => {
     const auth = useAuthStore()
-    const publicPages = ['/login', '/register', '/statistics', '/forgot-password', '/reset-password']
+    const publicPages = ['/login', '/register', '/statistics', '/forgot-password', '/reset-password', '/confirm-account', '/help']
     const guestOnlyPages = ['/login', '/register']
     const authRequired = !publicPages.includes(to.path)
 

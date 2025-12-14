@@ -36,17 +36,47 @@ public class AuthController {
         user.setEmail(request.getEmail());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setRole(User.Role.USER);
+        user.setEnabled(false); // Account disabled until confirmed
+
+        String token = java.util.UUID.randomUUID().toString();
+        user.setConfirmationToken(token);
+        user.setTokenExpiry(java.time.LocalDateTime.now().plusHours(24));
 
         userRepository.save(user);
 
         try {
-            emailService.sendWelcomeEmail(request.getEmail(), request.getUsername());
+            emailService.sendAccountConfirmationEmail(request.getEmail(), token);
         } catch (Exception e) {
-            // Log error but don't fail registration
+            // If email fails, we should probably rollback or warn.
+            // For now, logging error. In production, transactional rollback might be better
+            // but we'll stick to simple handling.
             System.err.println("Error sending email: " + e.getMessage());
+            return ResponseEntity.status(500)
+                    .body("User registered but failed to send confirmation email. Please contact support.");
         }
 
-        return ResponseEntity.ok("User registered successfully!");
+        return ResponseEntity.ok("User registered successfully! Please check your email to confirm your account.");
+    }
+
+    @GetMapping("/confirm-account")
+    public ResponseEntity<?> confirmAccount(@RequestParam("token") String token) {
+        java.util.Optional<User> userOpt = userRepository.findByConfirmationToken(token);
+
+        if (userOpt.isEmpty()) {
+            return ResponseEntity.badRequest().body("Invalid or expired token");
+        }
+
+        User user = userOpt.get();
+        if (user.getTokenExpiry() != null && user.getTokenExpiry().isBefore(java.time.LocalDateTime.now())) {
+            return ResponseEntity.badRequest().body("Token has expired");
+        }
+
+        user.setEnabled(true);
+        user.setConfirmationToken(null);
+        user.setTokenExpiry(null);
+        userRepository.save(user);
+
+        return ResponseEntity.ok("Account confirmed successfully! You can now login.");
     }
 
     @PostMapping("/forgot-password")
@@ -73,7 +103,8 @@ public class AuthController {
         }
         // Always return OK strictly for security (so people can't check which emails
         // exist)
-        // But the user asked: "si hay algún usuario que exista con ese email en la base
+        // But the user asked: "si hay algún usuario que exista cnonsense email en la
+        // base
         // de datos, se le envíe un correo"
         return ResponseEntity.ok("If that email exists, a reset link has been sent.");
     }

@@ -66,7 +66,15 @@ export const useLanguageStore = defineStore('language', () => {
                 loginHere: 'Inicia sesión aquí',
                 passwordsDoNotMatch: '¡Las contraseñas no coinciden!',
                 registrationFailed: 'Fallo en el registro',
-                forgotPassword: '¿Has olvidado tu contraseña?'
+                forgotPassword: '¿Has olvidado tu contraseña?',
+                registrationSuccess: '¡Registro exitoso! Por favor revisa tu correo para confirmar tu cuenta.',
+                invalidToken: 'Token inválido o expirado.',
+                confirmationFailed: 'Error al confirmar la cuenta.',
+                verifying: 'Verificando cuenta...',
+                accountVerified: '¡Cuenta Verificada!',
+                accountVerifiedDesc: 'Tu cuenta ha sido activada con éxito. Ya puedes iniciar sesión y empezar a apostar.',
+                loginNow: 'Iniciar Sesión Ahora',
+                error: 'Error'
             },
             home: {
                 liveEvents: 'Eventos en Vivo',
@@ -266,7 +274,15 @@ export const useLanguageStore = defineStore('language', () => {
                 loginHere: 'Inicia sesión aquí',
                 passwordsDoNotMatch: 'Os contrasinais non coinciden!',
                 registrationFailed: 'Fallo no rexistro',
-                forgotPassword: '¿Esqueciches o teu contrasinal?'
+                forgotPassword: '¿Esqueciches o teu contrasinal?',
+                registrationSuccess: 'Rexistro exitoso! Por favor revisa o teu correo para confirmar a túa conta.',
+                invalidToken: 'Token inválido ou expirado.',
+                confirmationFailed: 'Erro ao confirmar a conta.',
+                verifying: 'Verificando conta...',
+                accountVerified: 'Conta Verificada!',
+                accountVerifiedDesc: 'A túa conta activouse con éxito. Xa podes iniciar sesión e comezar a apostar.',
+                loginNow: 'Iniciar Sesión Agora',
+                error: 'Erro'
             },
             home: {
                 liveEvents: 'Eventos en Vivo',
