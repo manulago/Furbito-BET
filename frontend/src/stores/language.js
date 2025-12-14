@@ -13,8 +13,54 @@ export const useLanguageStore = defineStore('language', () => {
                 admin: 'Admin',
                 logout: 'Cerrar Sesión',
                 welcome: 'Bienvenido',
-                statistics: 'Estadísticas Furbito',
-                profile: 'Gestionar Perfil'
+                statistics: 'Estadísticas',
+                profile: 'Perfil',
+                userRanking: 'Usuarios',
+                help: 'Ayuda'
+            },
+            help: {
+                title: 'Centro de Ayuda FurbitoBET',
+                subtitle: 'Tu guía completa para dominar la plataforma',
+                intro: 'Bienvenido a la sección de ayuda. Aquí encontrarás todo lo necesario para navegar, apostar y competir en FurbitoBET.',
+                registration: {
+                    title: 'Registro y Cuenta',
+                    desc: 'Para comenzar tu viaje en FurbitoBET, necesitas una cuenta verificada.',
+                    details: [
+                        '**Usuario Único**: Elige un nombre de usuario que te represente en los rankings.',
+                        '**Email Real**: Es crucial usar un correo válido, ya que recibirás un enlace de confirmación.',
+                        '**Activación**: Tu cuenta no estará activa hasta que hagas clic en el enlace enviado a tu correo. ¡Revisa tu carpeta de spam si no lo ves!'
+                    ]
+                },
+                betting: {
+                    title: 'Sistema de Apuestas',
+                    desc: 'La emoción del juego está a un clic de distancia. Aprende a realizar tus jugadas.',
+                    details: [
+                        '**Cuotas (Odds)**: Representan el multiplicador de tu ganancia. Si apuestas 10€ a cuota 2.50, recibirás 25€ (15€ de ganancia neta).',
+                        '**Boleto de Apuestas**: Al seleccionar una cuota, se añade a tu boleto en la parte inferior.',
+                        '**Combinadas**: Puedes combinar varios eventos para multiplicar tus cuotas, pero recuerda que no puedes combinar mercados contradictorios del mismo evento.',
+                        '**Ganancia Potencial**: Te muestra cuánto ganarás si aciertas todos tus pronósticos.'
+                    ]
+                },
+                ranking: {
+                    title: 'Clasificaciones y Competencia',
+                    desc: 'Demuestra que eres el mejor pronosticador de la liga.',
+                    details: [
+                        '**Clasificación de Liga**: Tabla oficial de los equipos de Furbito FIC.',
+                        '**Ranking de Usuarios**: Compite contra otros usuarios. Se ordena por "Ganancia Bruta" (Total ganado), no solo por saldo actual.',
+                        '**Saldo vs Ganancia**: El saldo es lo que tienes disponible para apostar. La ganancia es el acumulado histórico de tus victorias.'
+                    ]
+                },
+                stats: {
+                    title: 'Estadísticas Furbito',
+                    desc: 'Información detallada para fundamentar tus decisiones.',
+                    details: [
+                        'Consulta el rendimiento de los jugadores de la liga.',
+                        'Goles, asistencias, tarjetas y partidos jugados.',
+                        'Utiliza estos datos para predecir mejor los resultados de los partidos.'
+                    ]
+                },
+                contact: 'Soporte Técnico',
+                contactDesc: '¿Tienes algún problema? Contacta con administración a través del correo oficial.'
             },
             ranking: {
                 title: 'Clasificación',
@@ -220,8 +266,54 @@ export const useLanguageStore = defineStore('language', () => {
                 admin: 'Admin',
                 logout: 'Pechar Sesión',
                 welcome: 'Benvido',
-                statistics: 'Estatísticas Furbito',
-                profile: 'Xestionar Perfil'
+                statistics: 'Estatísticas',
+                profile: 'Perfil',
+                userRanking: 'Usuarios',
+                help: 'Axuda'
+            },
+            help: {
+                title: 'Centro de Axuda FurbitoBET',
+                subtitle: 'A túa guía completa para dominar a plataforma',
+                intro: 'Benvido á sección de axuda. Aquí atoparás todo o necesario para navegar, apostar e competir en FurbitoBET.',
+                registration: {
+                    title: 'Rexistro e Conta',
+                    desc: 'Para comezar a túa viaxe en FurbitoBET, precisas unha conta verificada.',
+                    details: [
+                        '**Usuario Único**: Elixe un nome de usuario que te represente nos rankings.',
+                        '**Email Real**: É crucial usar un correo válido, xa que recibirás unha ligazón de confirmación.',
+                        '**Activación**: A túa conta non estará activa ata que fagas clic na ligazón enviada ao teu correo. Revisa o spam!'
+                    ]
+                },
+                betting: {
+                    title: 'Sistema de Apostas',
+                    desc: 'A emoción do xogo está a un clic de distancia. Aprende a realizar as túas xogadas.',
+                    details: [
+                        '**Cotas (Odds)**: Representan o multiplicador da túa ganancia. Se apostas 10€ a cota 2.50, recibirás 25€.',
+                        '**Boleto de Apostas**: Ao seleccionar unha cota, engádese ao teu boleto na parte inferior.',
+                        '**Combinadas**: Podes combinar varios eventos para multiplicar as túas cotas.',
+                        '**Ganancia Potencial**: Amósache canto gañarás se acertas todos os teus pronósticos.'
+                    ]
+                },
+                ranking: {
+                    title: 'Clasificacións e Competición',
+                    desc: 'Demostra que es o mellor pronosticador da liga.',
+                    details: [
+                        '**Clasificación de Liga**: Táboa oficial dos equipos de Furbito FIC.',
+                        '**Ranking de Usuarios**: Compite contra outros usuarios. Ordénase por "Ganancia Bruta".',
+                        '**Saldo vs Ganancia**: O saldo é o que tens dispoñible. A ganancia é o acumulado das túas vitorias.'
+                    ]
+                },
+                stats: {
+                    title: 'Estatísticas Furbito',
+                    desc: 'Información detallada para fundamentar as túas decisións.',
+                    details: [
+                        'Consulta o rendemento dos xogadores da liga.',
+                        'Goles, asistencias, tarxetas e partidos xogados.',
+                        'Utiliza estes datos para predicir mellor os resultados.'
+                    ]
+                },
+                contact: 'Soporte Técnico',
+                contactDesc: '¿Tes algún problema? Contacta coa administración.'
             },
             ranking: {
                 title: 'Clasificación',
@@ -428,8 +520,54 @@ export const useLanguageStore = defineStore('language', () => {
                 admin: 'Admin',
                 logout: 'Logout',
                 welcome: 'Welcome',
-                statistics: 'Furbito Statistics',
-                profile: 'Manage Profile'
+                statistics: 'Stats',
+                profile: 'Profile',
+                userRanking: 'Users',
+                help: 'Help'
+            },
+            help: {
+                title: 'FurbitoBET Help Center',
+                subtitle: 'Your complete guide to mastering the platform',
+                intro: 'Welcome to the help section. Here you will find everything you need to navigate, bet, and compete on FurbitoBET.',
+                registration: {
+                    title: 'Registration & Account',
+                    desc: 'To start your journey on FurbitoBET, you need a verified account.',
+                    details: [
+                        '**Unique Username**: Choose a username that represents you in the rankings.',
+                        '**Real Email**: It is crucial to use a valid email, as you will receive a confirmation link.',
+                        '**Activation**: Your account will not be active until you click the link sent to your email. Check spam!'
+                    ]
+                },
+                betting: {
+                    title: 'Betting System',
+                    desc: 'The thrill of the game is just a click away. Learn how to place your bets.',
+                    details: [
+                        '**Odds**: Represent your winning multiplier. If you bet 10€ at 2.50 odds, you get 25€.',
+                        '**Bet Slip**: Selecting an odd adds it to your slip at the bottom.',
+                        '**Combos**: Combine multiple events to multiply your odds.',
+                        '**Potential Win**: Shows how much you will win if all your predictions are correct.'
+                    ]
+                },
+                ranking: {
+                    title: 'Rankings & Competition',
+                    desc: 'Prove you are the best predictor in the league.',
+                    details: [
+                        '**League Standings**: Official table of Furbito FIC teams.',
+                        '**User Ranking**: Compete against others. Ordered by "Gross Profit".',
+                        '**Balance vs Profit**: Balance is what you have available to bet. Profit is your historical accumulated winnings.'
+                    ]
+                },
+                stats: {
+                    title: 'Furbito Stats',
+                    desc: 'Detailed info to support your decisions.',
+                    details: [
+                        'Check the performance of league players.',
+                        'Goals, assists, cards, and matches played.',
+                        'Use this data to better predict match outcomes.'
+                    ]
+                },
+                contact: 'Technical Support',
+                contactDesc: 'Having issues? Contact administration via official email.'
             },
             ranking: {
                 title: 'Standings',

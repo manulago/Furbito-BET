@@ -33,7 +33,7 @@ function logout() {
         </div>
 
         <!-- Desktop Menu -->
-        <div class="hidden md:flex items-center gap-6">
+        <div class="hidden md:flex items-center gap-4">
           <!-- Public Links -->
           <template v-if="auth.user">
             <router-link to="/" class="text-gray-300 hover:text-green-400 transition font-medium text-lg">{{ langStore.t('nav.home') }}</router-link>
@@ -44,7 +44,7 @@ function logout() {
           <router-link to="/help" class="text-gray-300 hover:text-green-400 transition font-medium text-lg">{{ langStore.t('nav.help') || 'Ayuda' }}</router-link>
           <router-link v-if="auth.isAdmin" to="/admin" class="text-gray-300 hover:text-yellow-400 transition font-medium text-lg">{{ langStore.t('nav.admin') }}</router-link>
 
-          <div v-if="auth.user" class="flex items-center gap-6">
+          <div v-if="auth.user" class="flex items-center gap-4">
             <RouterLink to="/my-bets" class="text-gray-300 hover:text-green-400 transition font-medium text-lg">{{ langStore.t('nav.myBets') }}</RouterLink>
             <RouterLink to="/profile/settings" class="text-gray-300 hover:text-green-400 transition font-medium text-lg">{{ langStore.t('nav.profile') || 'Gestionar Perfil' }}</RouterLink>
             <RouterLink v-if="auth.user.role === 'ADMIN'" to="/admin" class="text-gray-300 hover:text-green-400 transition font-medium text-lg">{{ langStore.t('nav.admin') }}</RouterLink>
