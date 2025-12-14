@@ -92,7 +92,6 @@ public class AuthController {
             String token = java.util.UUID.randomUUID().toString();
             user.setResetToken(token);
             userRepository.save(user);
-            System.out.println("DEBUG_TOKEN: " + token);
 
             try {
                 emailService.sendResetPasswordEmail(user.getEmail(), token);
