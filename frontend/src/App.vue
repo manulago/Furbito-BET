@@ -3,7 +3,7 @@ import { useAuthStore } from './stores/auth'
 import { useBetStore } from './stores/bet'
 import { useLanguageStore } from './stores/language'
 import { useRouter } from 'vue-router'
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 
 const auth = useAuthStore()
 const betStore = useBetStore()
@@ -15,31 +15,39 @@ const showNewsModal = ref(false)
 const currentNewsCount = ref(0)
 const NEWS_KEY_VERSION = 'news_v1'
 
-onMounted(() => {
-  if (auth.user) {
-    auth.fetchBalance()
+function checkNews() {
+  if (!auth.user) return
 
-    // News Modal Logic
-    const userId = auth.user.id || 'guest'
-    const storageKey = `${NEWS_KEY_VERSION}_count_${userId}`
-    const sessionKey = `${NEWS_KEY_VERSION}_seen_session`
+  auth.fetchBalance()
 
-    // Check if already seen this session (tab)
-    const seenThisSession = sessionStorage.getItem(sessionKey)
+  // News Modal Logic
+  const userId = auth.user.id || 'guest'
+  const storageKey = `${NEWS_KEY_VERSION}_count_${userId}`
+  const sessionKey = `${NEWS_KEY_VERSION}_seen_session_${userId}` // Specific to user session
 
-    if (!seenThisSession) {
-        let count = parseInt(localStorage.getItem(storageKey) || '0')
-        
-        if (count < 5) {
-            currentNewsCount.value = count
-            showNewsModal.value = true
-            
-            // Increment count and mark session as seen
-            localStorage.setItem(storageKey, (count + 1).toString())
-            sessionStorage.setItem(sessionKey, 'true')
-        }
-    }
+  // Check if already seen this session (tab)
+  const seenThisSession = sessionStorage.getItem(sessionKey)
+
+  if (!seenThisSession) {
+      let count = parseInt(localStorage.getItem(storageKey) || '0')
+      
+      if (count < 5) {
+          currentNewsCount.value = count
+          showNewsModal.value = true
+          
+          // Increment count and mark session as seen
+          localStorage.setItem(storageKey, (count + 1).toString())
+          sessionStorage.setItem(sessionKey, 'true')
+      }
   }
+}
+
+onMounted(() => {
+  checkNews()
+})
+
+watch(() => auth.user, () => {
+    checkNews()
 })
 
 function logout() {
@@ -58,14 +66,13 @@ function logout() {
         </div>
 
         <!-- Desktop Menu -->
-        <!-- Desktop Menu -->
         <div class="hidden md:flex items-center gap-2">
           <!-- Public Links -->
           <template v-if="auth.user">
             <router-link to="/" class="px-2 py-1.5 rounded-lg text-gray-300 hover:text-white hover:bg-gray-700 transition font-medium text-sm whitespace-nowrap" active-class="bg-gray-700 text-green-400">{{ langStore.t('nav.home') }}</router-link>
             <RouterLink to="/ranking" class="px-2 py-1.5 rounded-lg text-gray-300 hover:text-white hover:bg-gray-700 transition font-medium text-sm whitespace-nowrap" active-class="bg-gray-700 text-green-400">{{ langStore.t('nav.ranking') }}</RouterLink>
             <RouterLink to="/user-ranking" class="px-2 py-1.5 rounded-lg text-gray-300 hover:text-white hover:bg-gray-700 transition font-medium text-sm whitespace-nowrap" active-class="bg-gray-700 text-green-400">{{ langStore.t('nav.userRanking') || 'Usuarios' }}</RouterLink>
-            <router-link to="/statistics" class="px-2 py-1.5 rounded-lg text-gray-300 hover:text-white hover:bg-gray-700 transition font-medium text-sm whitespace-nowrap" active-class="bg-gray-700 text-green-400">{{ langStore.t('nav.statistics') }}</RouterLink>
+            <router-link to="/statistics" class="px-2 py-1.5 rounded-lg text-gray-300 hover:text-white hover:bg-gray-700 transition font-medium text-sm whitespace-nowrap" active-class="bg-gray-700 text-green-400">{{ langStore.t('nav.statistics') }}</router-link>
           </template>
           <router-link to="/help" class="px-2 py-1.5 rounded-lg text-gray-300 hover:text-white hover:bg-gray-700 transition font-medium text-sm whitespace-nowrap" active-class="bg-gray-700 text-green-400">{{ langStore.t('nav.help') || 'Ayuda' }}</router-link>
           <!-- <router-link v-if="auth.user" to="/roulette" class="text-xl hover:scale-110 transition duration-300" title="Ruleta de la Suerte">🎰</router-link> -->
@@ -136,7 +143,7 @@ function logout() {
             <RouterLink to="/statistics" @click="isMobileMenuOpen = false" class="block py-3 px-4 rounded-lg hover:bg-gray-700 text-white font-medium text-lg">{{ langStore.t('nav.statistics') }}</RouterLink>
             <!-- <RouterLink to="/roulette" @click="isMobileMenuOpen = false" class="block py-3 px-4 rounded-lg hover:bg-gray-700 text-white font-medium text-lg">🎰 Ruleta de la Suerte</RouterLink> -->
           </template>
-          <RouterLink to="/help" @click="isMobileMenuOpen = false" class="block py-3 px-4 rounded-lg hover:bg-gray-700 text-white font-medium text-lg">{{ langStore.t('nav.help') || 'Ayuda' }}</routerLink>
+          <RouterLink to="/help" @click="isMobileMenuOpen = false" class="block py-3 px-4 rounded-lg hover:bg-gray-700 text-white font-medium text-lg">{{ langStore.t('nav.help') || 'Ayuda' }}</RouterLink>
 
           <div v-if="auth.user" class="flex flex-col gap-2 border-t border-gray-700 pt-2">
             <div class="text-gray-300 text-sm pb-2 px-4">{{ langStore.t('nav.welcome') }}, <span class="font-bold text-white text-lg">{{ auth.user.username }}</span></div>
