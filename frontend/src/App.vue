@@ -209,16 +209,16 @@ function logout() {
 
     <!-- News Modal -->
     <div v-if="showNewsModal" class="fixed inset-0 bg-black bg-opacity-90 z-[60] flex items-center justify-center p-4 animate-fade-in-up">
-      <div class="bg-gray-800 border-2 border-green-500 rounded-xl max-w-lg w-full p-6 relative shadow-2xl">
-        <button @click="showNewsModal = false" class="absolute top-4 right-4 text-gray-400 hover:text-white">&times;</button>
+      <div class="bg-gray-800 border-2 border-green-500 rounded-xl max-w-lg w-full p-4 md:p-6 relative shadow-2xl flex flex-col max-h-[90vh]">
+        <button @click="showNewsModal = false" class="absolute top-2 right-2 md:top-4 md:right-4 text-gray-400 hover:text-white text-xl p-2">&times;</button>
         
-        <h2 class="text-3xl font-bold bg-gradient-to-r from-green-400 to-blue-500 bg-clip-text text-transparent mb-6">
+        <h2 class="text-2xl md:text-3xl font-bold bg-gradient-to-r from-green-400 to-blue-500 bg-clip-text text-transparent mb-4 md:mb-6 pr-8">
           ¡Novedades en FurbitoBET!
         </h2>
 
-        <div class="space-y-4 text-gray-200 mb-8">
+        <div class="space-y-4 text-gray-200 mb-6 md:mb-8 overflow-y-auto custom-scrollbar flex-1">
            <div class="flex items-start gap-4 p-3 bg-gray-700/50 rounded-lg">
-              <span class="text-3xl">📱</span>
+              <span class="text-3xl shrink-0">📱</span>
               <div>
                 <h3 class="font-bold text-blue-400">Mejora Móvil</h3>
                 <p class="text-sm text-gray-300">Disfruta de una experiencia 100% optimizada para tu teléfono. Navegación más fluida y accesible.</p>
@@ -226,7 +226,7 @@ function logout() {
            </div>
 
            <div class="flex items-start gap-4 p-3 bg-gray-700/50 rounded-lg">
-              <span class="text-3xl">❓</span>
+              <span class="text-3xl shrink-0">❓</span>
               <div>
                 <h3 class="font-bold text-green-400">Nueva Ayuda</h3>
                 <p class="text-sm text-gray-300">¿Dudas? Visita nuestra nueva sección de ayuda para aprender cómo funciona todo.</p>
@@ -234,7 +234,7 @@ function logout() {
            </div>
 
            <div class="flex items-start gap-4 p-3 bg-gray-700/50 rounded-lg">
-              <span class="text-3xl">⚙️</span>
+              <span class="text-3xl shrink-0">⚙️</span>
               <div>
                 <h3 class="font-bold text-yellow-400">Gestión de Perfil</h3>
                 <p class="text-sm text-gray-300">Ahora tienes control total sobre tu cuenta. Actualiza tus datos y preferencias fácilmente.</p>
@@ -242,7 +242,7 @@ function logout() {
            </div>
 
            <div class="flex items-start gap-4 p-3 bg-gray-700/50 rounded-lg">
-              <span class="text-3xl">👀</span>
+              <span class="text-3xl shrink-0">👀</span>
               <div>
                 <h3 class="font-bold text-purple-400">Espía a los Mejores</h3>
                 <p class="text-sm text-gray-300">Visita el perfil de otros usuarios desde el ranking para ver su historial de apuestas y estrategias.</p>
@@ -250,11 +250,11 @@ function logout() {
            </div>
         </div>
 
-        <button @click="showNewsModal = false" class="w-full bg-gradient-to-r from-green-500 to-blue-600 hover:from-green-400 hover:to-blue-500 text-white font-bold py-3 rounded-lg shadow-lg transition transform hover:scale-105">
+        <button @click="showNewsModal = false" class="w-full bg-gradient-to-r from-green-500 to-blue-600 hover:from-green-400 hover:to-blue-500 text-white font-bold py-3 rounded-lg shadow-lg transition transform hover:scale-105 shrink-0">
           ¡Entendido!
         </button>
         
-        <p class="text-center text-xs text-gray-500 mt-4">
+        <p class="text-center text-xs text-gray-500 mt-4 shrink-0">
           Este aviso desaparecerá después de {{ 5 - currentNewsCount }} inicios más.
         </p>
       </div>
