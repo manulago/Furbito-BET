@@ -42,7 +42,7 @@ function logout() {
             <router-link to="/statistics" class="text-gray-300 hover:text-green-400 transition font-medium text-lg">{{ langStore.t('nav.statistics') }}</router-link>
           </template>
           <router-link to="/help" class="text-gray-300 hover:text-green-400 transition font-medium text-lg">{{ langStore.t('nav.help') || 'Ayuda' }}</router-link>
-          <router-link v-if="auth.user" to="/roulette" class="text-2xl hover:scale-110 transition duration-300" title="Ruleta de la Suerte">🎰</router-link>
+          <!-- <router-link v-if="auth.user" to="/roulette" class="text-2xl hover:scale-110 transition duration-300" title="Ruleta de la Suerte">🎰</router-link> -->
           <router-link v-if="auth.isAdmin" to="/admin" class="text-gray-300 hover:text-yellow-400 transition font-medium text-lg">{{ langStore.t('nav.admin') }}</router-link>
 
           <div v-if="auth.user" class="flex items-center gap-4">
@@ -107,7 +107,7 @@ function logout() {
             <RouterLink to="/ranking" @click="isMobileMenuOpen = false" class="block py-3 px-4 rounded-lg hover:bg-gray-700 text-white font-medium text-lg">{{ langStore.t('nav.ranking') }}</RouterLink>
             <RouterLink to="/user-ranking" @click="isMobileMenuOpen = false" class="block py-3 px-4 rounded-lg hover:bg-gray-700 text-white font-medium text-lg">{{ langStore.t('nav.userRanking') || 'Usuarios' }}</RouterLink>
             <RouterLink to="/statistics" @click="isMobileMenuOpen = false" class="block py-3 px-4 rounded-lg hover:bg-gray-700 text-white font-medium text-lg">{{ langStore.t('nav.statistics') }}</RouterLink>
-            <RouterLink to="/roulette" @click="isMobileMenuOpen = false" class="block py-3 px-4 rounded-lg hover:bg-gray-700 text-white font-medium text-lg">🎰 Ruleta de la Suerte</RouterLink>
+            <!-- <RouterLink to="/roulette" @click="isMobileMenuOpen = false" class="block py-3 px-4 rounded-lg hover:bg-gray-700 text-white font-medium text-lg">🎰 Ruleta de la Suerte</RouterLink> -->
           </template>
           <RouterLink to="/help" @click="isMobileMenuOpen = false" class="block py-3 px-4 rounded-lg hover:bg-gray-700 text-white font-medium text-lg">{{ langStore.t('nav.help') || 'Ayuda' }}</routerLink>
 
