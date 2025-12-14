@@ -107,6 +107,7 @@ function logout() {
             <RouterLink to="/ranking" @click="isMobileMenuOpen = false" class="block py-3 px-4 rounded-lg hover:bg-gray-700 text-white font-medium text-lg">{{ langStore.t('nav.ranking') }}</RouterLink>
             <RouterLink to="/user-ranking" @click="isMobileMenuOpen = false" class="block py-3 px-4 rounded-lg hover:bg-gray-700 text-white font-medium text-lg">{{ langStore.t('nav.userRanking') || 'Usuarios' }}</RouterLink>
             <RouterLink to="/statistics" @click="isMobileMenuOpen = false" class="block py-3 px-4 rounded-lg hover:bg-gray-700 text-white font-medium text-lg">{{ langStore.t('nav.statistics') }}</RouterLink>
+            <RouterLink to="/roulette" @click="isMobileMenuOpen = false" class="block py-3 px-4 rounded-lg hover:bg-gray-700 text-white font-medium text-lg">🎰 Ruleta de la Suerte</RouterLink>
           </template>
           <RouterLink to="/help" @click="isMobileMenuOpen = false" class="block py-3 px-4 rounded-lg hover:bg-gray-700 text-white font-medium text-lg">{{ langStore.t('nav.help') || 'Ayuda' }}</routerLink>
 
