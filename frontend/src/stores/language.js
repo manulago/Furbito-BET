@@ -59,6 +59,77 @@ export const useLanguageStore = defineStore('language', () => {
                         'Utiliza estos datos para predecir mejor los resultados de los partidos.'
                     ]
                 },
+                pwa: {
+                    title: 'Instala la App en Cualquier Dispositivo',
+                    subtitle: 'Acceso rápido desde tu pantalla de inicio - Móvil y PC',
+                    description: 'FurbitoBET es una PWA (Progressive Web App) que puedes instalar en <strong>cualquier dispositivo</strong>: Android, iPhone, Windows, Mac o Linux. Disfruta de acceso instantáneo sin abrir el navegador.',
+                    benefits: {
+                        faster: {
+                            title: 'Más Rápido',
+                            desc: 'Carga instantánea desde tu pantalla de inicio'
+                        },
+                        offline: {
+                            title: 'Funciona Offline',
+                            desc: 'Visualiza contenido aunque pierdas conexión'
+                        },
+                        noBrowser: {
+                            title: 'Sin Navegador',
+                            desc: 'Experiencia de app nativa completa'
+                        },
+                        multiplatform: {
+                            title: 'Multiplataforma',
+                            desc: 'Funciona en todos tus dispositivos'
+                        }
+                    },
+                    instructions: {
+                        title: '📖 Instrucciones de Instalación por Plataforma',
+                        android: {
+                            title: 'Android (Chrome/Edge)',
+                            step1: 'Abre <strong>FurbitoBET</strong> en Chrome o Edge',
+                            step2: 'Busca el botón flotante <strong>"📱 Instalar App"</strong> o el icono ⊕ en la barra de direcciones',
+                            step3: 'Toca <strong>"Instalar"</strong> o <strong>"Añadir a pantalla de inicio"</strong>',
+                            step4: '¡Listo! Encontrarás el icono en tu pantalla de inicio'
+                        },
+                        ios: {
+                            title: 'iPhone/iPad (Safari)',
+                            step1: 'Abre <strong>FurbitoBET</strong> en Safari (⚠️ debe ser Safari)',
+                            step2: 'Toca el botón <strong>Compartir</strong> en la barra inferior',
+                            step3: 'Desplázate y selecciona <strong>"Añadir a pantalla de inicio"</strong>',
+                            step4: 'Toca <strong>"Añadir"</strong> y ¡disfruta de la app!'
+                        },
+                        windows: {
+                            title: 'Windows (Chrome/Edge)',
+                            step1: 'Abre <strong>FurbitoBET</strong> en Chrome o Edge',
+                            step2: 'Busca el icono <strong>⊕</strong> o <strong>🖥️</strong> en la barra de direcciones',
+                            step3: 'Haz clic en <strong>"Instalar FurbitoBET"</strong>',
+                            step4: 'La app se abrirá en una ventana independiente y aparecerá en el menú de inicio',
+                            tip: '💡 También puedes usar: Menú (⋮) → "Instalar FurbitoBET"'
+                        },
+                        mac: {
+                            title: 'Mac (Chrome/Edge/Safari)',
+                            step1: 'Abre <strong>FurbitoBET</strong> en Chrome, Edge o Safari',
+                            step2: '<strong>Chrome/Edge:</strong> Busca el icono ⊕ en la barra de direcciones',
+                            step3: 'Haz clic en <strong>"Instalar FurbitoBET"</strong>',
+                            step4: 'La app aparecerá en el Dock y en Aplicaciones',
+                            tip: '💡 Safari: Archivo → "Añadir a Dock" (macOS Sonoma+)'
+                        },
+                        linux: {
+                            title: 'Linux (Chrome/Firefox/Edge)',
+                            chromeBrowser: 'Chrome/Chromium/Edge:',
+                            chromeStep1: 'Abre FurbitoBET en el navegador',
+                            chromeStep2: 'Busca el icono ⊕ en la barra de direcciones',
+                            chromeStep3: 'Haz clic en "Instalar FurbitoBET"',
+                            chromeStep4: 'La app aparecerá en tu menú de aplicaciones',
+                            firefoxBrowser: 'Firefox:',
+                            firefoxStep1: 'Abre FurbitoBET en Firefox',
+                            firefoxStep2: 'Menú (☰) → "Instalar sitio como aplicación"',
+                            firefoxStep3: 'Confirma la instalación',
+                            firefoxStep4: 'Accede desde el menú de aplicaciones'
+                        }
+                    },
+                    tip: '💡 <strong>Tip:</strong> Una vez instalada, la app se abrirá en pantalla completa sin la barra del navegador, funcionará más rápido y podrás acceder incluso sin conexión a internet.',
+                    troubleshooting: '¿Problemas con la instalación? Asegúrate de usar un navegador compatible (Chrome, Edge, Safari o Firefox)'
+                },
                 contact: 'Soporte Técnico',
                 contactDesc: '¿Tienes algún problema? Contacta con administración a través del correo oficial.'
             },
@@ -313,6 +384,77 @@ export const useLanguageStore = defineStore('language', () => {
                         'Goles, asistencias, tarxetas e partidos xogados.',
                         'Utiliza estes datos para predicir mellor os resultados.'
                     ]
+                },
+                pwa: {
+                    title: 'Instala a App en Calquera Dispositivo',
+                    subtitle: 'Acceso rápido desde a túa pantalla de inicio - Móbil e PC',
+                    description: 'FurbitoBET é unha PWA (Progressive Web App) que podes instalar en <strong>calquera dispositivo</strong>: Android, iPhone, Windows, Mac ou Linux. Goza de acceso instantáneo sen abrir o navegador.',
+                    benefits: {
+                        faster: {
+                            title: 'Máis Rápido',
+                            desc: 'Carga instantánea desde a túa pantalla de inicio'
+                        },
+                        offline: {
+                            title: 'Funciona Offline',
+                            desc: 'Visualiza contido aínda que perdas conexión'
+                        },
+                        noBrowser: {
+                            title: 'Sen Navegador',
+                            desc: 'Experiencia de app nativa completa'
+                        },
+                        multiplatform: {
+                            title: 'Multiplataforma',
+                            desc: 'Funciona en todos os teus dispositivos'
+                        }
+                    },
+                    instructions: {
+                        title: '📖 Instrucións de Instalación por Plataforma',
+                        android: {
+                            title: 'Android (Chrome/Edge)',
+                            step1: 'Abre <strong>FurbitoBET</strong> en Chrome ou Edge',
+                            step2: 'Busca o botón flotante <strong>"📱 Instalar App"</strong> ou o icono ⊕ na barra de enderezos',
+                            step3: 'Toca <strong>"Instalar"</strong> ou <strong>"Engadir á pantalla de inicio"</strong>',
+                            step4: 'Listo! Atoparás o icono na túa pantalla de inicio'
+                        },
+                        ios: {
+                            title: 'iPhone/iPad (Safari)',
+                            step1: 'Abre <strong>FurbitoBET</strong> en Safari (⚠️ debe ser Safari)',
+                            step2: 'Toca o botón <strong>Compartir</strong> na barra inferior',
+                            step3: 'Desprázate e selecciona <strong>"Engadir á pantalla de inicio"</strong>',
+                            step4: 'Toca <strong>"Engadir"</strong> e goza da app!'
+                        },
+                        windows: {
+                            title: 'Windows (Chrome/Edge)',
+                            step1: 'Abre <strong>FurbitoBET</strong> en Chrome ou Edge',
+                            step2: 'Busca o icono <strong>⊕</strong> ou <strong>🖥️</strong> na barra de enderezos',
+                            step3: 'Fai clic en <strong>"Instalar FurbitoBET"</strong>',
+                            step4: 'A app abrirase nunha ventá independente e aparecerá no menú de inicio',
+                            tip: '💡 Tamén podes usar: Menú (⋮) → "Instalar FurbitoBET"'
+                        },
+                        mac: {
+                            title: 'Mac (Chrome/Edge/Safari)',
+                            step1: 'Abre <strong>FurbitoBET</strong> en Chrome, Edge ou Safari',
+                            step2: '<strong>Chrome/Edge:</strong> Busca o icono ⊕ na barra de enderezos',
+                            step3: 'Fai clic en <strong>"Instalar FurbitoBET"</strong>',
+                            step4: 'A app aparecerá no Dock e en Aplicacións',
+                            tip: '💡 Safari: Arquivo → "Engadir ao Dock" (macOS Sonoma+)'
+                        },
+                        linux: {
+                            title: 'Linux (Chrome/Firefox/Edge)',
+                            chromeBrowser: 'Chrome/Chromium/Edge:',
+                            chromeStep1: 'Abre FurbitoBET no navegador',
+                            chromeStep2: 'Busca o icono ⊕ na barra de enderezos',
+                            chromeStep3: 'Fai clic en "Instalar FurbitoBET"',
+                            chromeStep4: 'A app aparecerá no teu menú de aplicacións',
+                            firefoxBrowser: 'Firefox:',
+                            firefoxStep1: 'Abre FurbitoBET en Firefox',
+                            firefoxStep2: 'Menú (☰) → "Instalar sitio como aplicación"',
+                            firefoxStep3: 'Confirma a instalación',
+                            firefoxStep4: 'Accede desde o menú de aplicacións'
+                        }
+                    },
+                    tip: '💡 <strong>Tip:</strong> Unha vez instalada, a app abrirase en pantalla completa sen a barra do navegador, funcionará máis rápido e poderás acceder incluso sen conexión a internet.',
+                    troubleshooting: 'Problemas coa instalación? Asegúrate de usar un navegador compatible (Chrome, Edge, Safari ou Firefox)'
                 },
                 contact: 'Soporte Técnico',
                 contactDesc: '¿Tes algún problema? Contacta coa administración.'
@@ -569,6 +711,77 @@ export const useLanguageStore = defineStore('language', () => {
                         'Goals, assists, cards, and matches played.',
                         'Use this data to better predict match outcomes.'
                     ]
+                },
+                pwa: {
+                    title: 'Install the App on Any Device',
+                    subtitle: 'Quick access from your home screen - Mobile & PC',
+                    description: 'FurbitoBET is a PWA (Progressive Web App) that you can install on <strong>any device</strong>: Android, iPhone, Windows, Mac, or Linux. Enjoy instant access without opening a browser.',
+                    benefits: {
+                        faster: {
+                            title: 'Faster',
+                            desc: 'Instant loading from your home screen'
+                        },
+                        offline: {
+                            title: 'Works Offline',
+                            desc: 'View content even when you lose connection'
+                        },
+                        noBrowser: {
+                            title: 'No Browser',
+                            desc: 'Complete native app experience'
+                        },
+                        multiplatform: {
+                            title: 'Cross-Platform',
+                            desc: 'Works on all your devices'
+                        }
+                    },
+                    instructions: {
+                        title: '📖 Installation Instructions by Platform',
+                        android: {
+                            title: 'Android (Chrome/Edge)',
+                            step1: 'Open <strong>FurbitoBET</strong> in Chrome or Edge',
+                            step2: 'Look for the floating <strong>"📱 Install App"</strong> button or the ⊕ icon in the address bar',
+                            step3: 'Tap <strong>"Install"</strong> or <strong>"Add to home screen"</strong>',
+                            step4: 'Done! You\'ll find the icon on your home screen'
+                        },
+                        ios: {
+                            title: 'iPhone/iPad (Safari)',
+                            step1: 'Open <strong>FurbitoBET</strong> in Safari (⚠️ must be Safari)',
+                            step2: 'Tap the <strong>Share</strong> button in the bottom bar',
+                            step3: 'Scroll and select <strong>"Add to Home Screen"</strong>',
+                            step4: 'Tap <strong>"Add"</strong> and enjoy the app!'
+                        },
+                        windows: {
+                            title: 'Windows (Chrome/Edge)',
+                            step1: 'Open <strong>FurbitoBET</strong> in Chrome or Edge',
+                            step2: 'Look for the <strong>⊕</strong> or <strong>🖥️</strong> icon in the address bar',
+                            step3: 'Click <strong>"Install FurbitoBET"</strong>',
+                            step4: 'The app will open in a separate window and appear in the start menu',
+                            tip: '💡 You can also use: Menu (⋮) → "Install FurbitoBET"'
+                        },
+                        mac: {
+                            title: 'Mac (Chrome/Edge/Safari)',
+                            step1: 'Open <strong>FurbitoBET</strong> in Chrome, Edge, or Safari',
+                            step2: '<strong>Chrome/Edge:</strong> Look for the ⊕ icon in the address bar',
+                            step3: 'Click <strong>"Install FurbitoBET"</strong>',
+                            step4: 'The app will appear in the Dock and Applications',
+                            tip: '💡 Safari: File → "Add to Dock" (macOS Sonoma+)'
+                        },
+                        linux: {
+                            title: 'Linux (Chrome/Firefox/Edge)',
+                            chromeBrowser: 'Chrome/Chromium/Edge:',
+                            chromeStep1: 'Open FurbitoBET in the browser',
+                            chromeStep2: 'Look for the ⊕ icon in the address bar',
+                            chromeStep3: 'Click "Install FurbitoBET"',
+                            chromeStep4: 'The app will appear in your applications menu',
+                            firefoxBrowser: 'Firefox:',
+                            firefoxStep1: 'Open FurbitoBET in Firefox',
+                            firefoxStep2: 'Menu (☰) → "Install site as app"',
+                            firefoxStep3: 'Confirm installation',
+                            firefoxStep4: 'Access from the applications menu'
+                        }
+                    },
+                    tip: '💡 <strong>Tip:</strong> Once installed, the app will open in full screen without the browser bar, run faster, and you can access it even without an internet connection.',
+                    troubleshooting: 'Having installation issues? Make sure to use a compatible browser (Chrome, Edge, Safari, or Firefox)'
                 },
                 contact: 'Technical Support',
                 contactDesc: 'Having issues? Contact administration via official email.'
