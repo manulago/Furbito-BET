@@ -85,9 +85,11 @@ export const useLanguageStore = defineStore('language', () => {
                     unknown: 'Desconocido'
                 },
                 users: {
+                    title: 'Clasificación de Usuarios',
                     pos: 'Pos',
                     user: 'Usuario',
-                    balance: 'Saldo'
+                    balance: 'Saldo',
+                    profit: 'Ganancia'
                 },
                 loading: 'Cargando datos...',
                 error: 'Error al cargar los datos. Por favor, inténtalo de nuevo.'
@@ -339,9 +341,11 @@ export const useLanguageStore = defineStore('language', () => {
                     unknown: 'Descoñecido'
                 },
                 users: {
+                    title: 'Clasificación de Usuarios',
                     pos: 'Pos',
                     user: 'Usuario',
-                    balance: 'Saldo'
+                    balance: 'Saldo',
+                    profit: 'Ganancia'
                 },
                 loading: 'Cargando datos...',
                 error: 'Erro ao cargar os datos. Por favor, inténtao de novo.'
@@ -592,9 +596,11 @@ export const useLanguageStore = defineStore('language', () => {
                     unknown: 'Unknown'
                 },
                 users: {
+                    title: 'User Ranking',
                     pos: 'Pos',
                     user: 'User',
-                    balance: 'Balance'
+                    balance: 'Balance',
+                    profit: 'Profit'
                 },
                 loading: 'Loading data...',
                 error: 'Error loading data. Please try again.'

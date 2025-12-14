@@ -65,7 +65,7 @@ onMounted(() => {
             <th class="px-4 py-2">{{ langStore.t('ranking.users.pos') }}</th>
             <th class="px-4 py-2">{{ langStore.t('ranking.users.user') }}</th>
             <th class="px-4 py-2 text-right">{{ langStore.t('ranking.users.balance') }}</th>
-            <th class="px-4 py-2 text-right">Ganancia</th>
+            <th class="px-4 py-2 text-right">{{ langStore.t('ranking.users.profit') }}</th>
           </tr>
         </thead>
         <tbody>
