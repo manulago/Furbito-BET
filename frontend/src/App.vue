@@ -35,11 +35,12 @@ function logout() {
         <!-- Desktop Menu -->
         <div class="hidden md:flex items-center gap-6">
           <!-- Public Links -->
-          <!-- Public Links -->
-          <router-link to="/" class="text-gray-300 hover:text-green-400 transition font-medium text-lg">{{ langStore.t('nav.home') }}</router-link>
-          <RouterLink to="/ranking" class="text-gray-300 hover:text-green-400 transition font-medium text-lg">{{ langStore.t('nav.ranking') }}</RouterLink>
-          <RouterLink to="/user-ranking" class="text-gray-300 hover:text-green-400 transition font-medium text-lg">{{ langStore.t('nav.userRanking') || 'Usuarios' }}</RouterLink>
-          <router-link to="/statistics" class="text-gray-300 hover:text-green-400 transition font-medium text-lg">{{ langStore.t('nav.statistics') }}</router-link>
+          <template v-if="auth.user">
+            <router-link to="/" class="text-gray-300 hover:text-green-400 transition font-medium text-lg">{{ langStore.t('nav.home') }}</router-link>
+            <RouterLink to="/ranking" class="text-gray-300 hover:text-green-400 transition font-medium text-lg">{{ langStore.t('nav.ranking') }}</RouterLink>
+            <RouterLink to="/user-ranking" class="text-gray-300 hover:text-green-400 transition font-medium text-lg">{{ langStore.t('nav.userRanking') || 'Usuarios' }}</RouterLink>
+            <router-link to="/statistics" class="text-gray-300 hover:text-green-400 transition font-medium text-lg">{{ langStore.t('nav.statistics') }}</router-link>
+          </template>
           <router-link to="/help" class="text-gray-300 hover:text-green-400 transition font-medium text-lg">{{ langStore.t('nav.help') || 'Ayuda' }}</router-link>
           <router-link v-if="auth.isAdmin" to="/admin" class="text-gray-300 hover:text-yellow-400 transition font-medium text-lg">{{ langStore.t('nav.admin') }}</router-link>
 
@@ -100,10 +101,13 @@ function logout() {
               </select>
           </div>
 
-          <RouterLink to="/" @click="isMobileMenuOpen = false" class="block py-3 px-4 rounded-lg hover:bg-gray-700 text-white font-medium text-lg">{{ langStore.t('nav.home') }}</RouterLink>
-          <RouterLink to="/ranking" @click="isMobileMenuOpen = false" class="block py-3 px-4 rounded-lg hover:bg-gray-700 text-white font-medium text-lg">{{ langStore.t('nav.ranking') }}</RouterLink>
-          <RouterLink to="/statistics" @click="isMobileMenuOpen = false" class="block py-3 px-4 rounded-lg hover:bg-gray-700 text-white font-medium text-lg">{{ langStore.t('nav.statistics') }}</RouterLink>
-          <!-- <RouterLink to="/results" @click="isMobileMenuOpen = false" class="block py-3 px-4 rounded-lg hover:bg-gray-700 text-white font-medium text-lg">Results</RouterLink> -->
+          <template v-if="auth.user">
+            <RouterLink to="/" @click="isMobileMenuOpen = false" class="block py-3 px-4 rounded-lg hover:bg-gray-700 text-white font-medium text-lg">{{ langStore.t('nav.home') }}</RouterLink>
+            <RouterLink to="/ranking" @click="isMobileMenuOpen = false" class="block py-3 px-4 rounded-lg hover:bg-gray-700 text-white font-medium text-lg">{{ langStore.t('nav.ranking') }}</RouterLink>
+            <RouterLink to="/user-ranking" @click="isMobileMenuOpen = false" class="block py-3 px-4 rounded-lg hover:bg-gray-700 text-white font-medium text-lg">{{ langStore.t('nav.userRanking') || 'Usuarios' }}</RouterLink>
+            <RouterLink to="/statistics" @click="isMobileMenuOpen = false" class="block py-3 px-4 rounded-lg hover:bg-gray-700 text-white font-medium text-lg">{{ langStore.t('nav.statistics') }}</RouterLink>
+          </template>
+          <RouterLink to="/help" @click="isMobileMenuOpen = false" class="block py-3 px-4 rounded-lg hover:bg-gray-700 text-white font-medium text-lg">{{ langStore.t('nav.help') || 'Ayuda' }}</routerLink>
 
           <div v-if="auth.user" class="flex flex-col gap-2 border-t border-gray-700 pt-2">
             <div class="text-gray-300 text-sm pb-2 px-4">{{ langStore.t('nav.welcome') }}, <span class="font-bold text-white text-lg">{{ auth.user.username }}</span></div>
