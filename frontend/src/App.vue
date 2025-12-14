@@ -3,7 +3,7 @@ import { useAuthStore } from './stores/auth'
 import { useBetStore } from './stores/bet'
 import { useLanguageStore } from './stores/language'
 import { useRouter } from 'vue-router'
-import { onMounted, ref, watch } from 'vue'
+import { onMounted, ref, watch, onUnmounted } from 'vue'
 import InstallPrompt from './components/InstallPrompt.vue'
 
 const auth = useAuthStore()
@@ -15,6 +15,44 @@ const isMobileMenuOpen = ref(false)
 const showNewsModal = ref(false)
 const currentNewsCount = ref(0)
 const NEWS_KEY_VERSION = 'news_v1'
+
+// Inactivity timeout (15 minutes)
+const INACTIVITY_TIMEOUT = 15 * 60 * 1000 // 15 minutes in milliseconds
+let inactivityTimer = null
+
+function resetInactivityTimer() {
+  // Clear existing timer
+  if (inactivityTimer) {
+    clearTimeout(inactivityTimer)
+  }
+
+  // Only set timer if user is logged in
+  if (auth.user) {
+    inactivityTimer = setTimeout(() => {
+      console.log('⏰ Auto-logout: 15 minutes of inactivity')
+      auth.logout()
+      router.push('/login')
+      alert('Tu sesión ha expirado por inactividad. Por favor, inicia sesión nuevamente.')
+    }, INACTIVITY_TIMEOUT)
+  }
+}
+
+function setupActivityListeners() {
+  // Events that indicate user activity
+  const events = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart', 'click']
+  
+  events.forEach(event => {
+    window.addEventListener(event, resetInactivityTimer, true)
+  })
+}
+
+function removeActivityListeners() {
+  const events = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart', 'click']
+  
+  events.forEach(event => {
+    window.removeEventListener(event, resetInactivityTimer, true)
+  })
+}
 
 function checkNews() {
   if (!auth.user) return
@@ -45,13 +83,34 @@ function checkNews() {
 
 onMounted(() => {
   checkNews()
+  setupActivityListeners()
+  resetInactivityTimer()
 })
 
-watch(() => auth.user, () => {
+onUnmounted(() => {
+  removeActivityListeners()
+  if (inactivityTimer) {
+    clearTimeout(inactivityTimer)
+  }
+})
+
+watch(() => auth.user, (newUser) => {
     checkNews()
+    
+    // Reset timer when user logs in/out
+    if (newUser) {
+      resetInactivityTimer()
+    } else {
+      if (inactivityTimer) {
+        clearTimeout(inactivityTimer)
+      }
+    }
 })
 
 function logout() {
+  if (inactivityTimer) {
+    clearTimeout(inactivityTimer)
+  }
   auth.logout()
   router.push('/login')
 }
@@ -218,6 +277,14 @@ function logout() {
         </h2>
 
         <div class="space-y-4 text-gray-200 mb-6 md:mb-8 overflow-y-auto custom-scrollbar flex-1">
+           <div class="flex items-start gap-4 p-3 bg-gray-700/50 rounded-lg">
+              <span class="text-3xl shrink-0">📱</span>
+              <div>
+                <h3 class="font-bold text-blue-400">¡Instala la App!</h3>
+                <p class="text-sm text-gray-300">Ahora puedes instalar FurbitoBET en tu móvil o PC. Acceso rápido desde tu pantalla de inicio.</p>
+              </div>
+           </div>
+
            <div class="flex items-start gap-4 p-3 bg-gray-700/50 rounded-lg">
               <span class="text-3xl shrink-0">📱</span>
               <div>

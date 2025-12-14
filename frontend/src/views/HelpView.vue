@@ -1,7 +1,17 @@
 <script setup>
 import { useLanguageStore } from '../stores/language'
+import { ref, onMounted } from 'vue'
+import InstallPrompt from '../components/InstallPrompt.vue'
 
 const langStore = useLanguageStore()
+const isIOS = ref(false)
+const isAndroid = ref(false)
+
+onMounted(() => {
+  const userAgent = window.navigator.userAgent.toLowerCase()
+  isIOS.value = /iphone|ipad|ipod/.test(userAgent)
+  isAndroid.value = /android/.test(userAgent)
+})
 
 function formatText(text) {
   if (!text) return ''
@@ -91,6 +101,101 @@ function formatText(text) {
 
     </div>
 
+    <!-- PWA Installation Section -->
+    <div class="max-w-4xl mx-auto mt-12">
+      <div class="group bg-gradient-to-br from-blue-600/20 to-purple-600/20 backdrop-blur-sm p-8 rounded-3xl border-2 border-blue-500/50 hover:border-blue-400 transition-all duration-300 hover:shadow-2xl hover:shadow-blue-500/20">
+        <div class="flex items-center gap-4 mb-6">
+          <div class="w-16 h-16 bg-blue-500/30 rounded-2xl flex items-center justify-center text-4xl group-hover:scale-110 transition-transform">📱</div>
+          <div>
+            <h2 class="text-3xl font-bold text-white">Instala la App</h2>
+            <p class="text-blue-300">Acceso rápido desde tu pantalla de inicio</p>
+          </div>
+        </div>
+
+        <p class="text-gray-300 mb-6 text-lg">
+          ¿Sabías que puedes instalar FurbitoBET como una aplicación en tu dispositivo? Disfruta de acceso instantáneo sin abrir el navegador.
+        </p>
+
+        <!-- Benefits -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+          <div class="bg-gray-800/50 p-4 rounded-xl border border-gray-700">
+            <div class="text-2xl mb-2">⚡</div>
+            <h4 class="font-bold text-white mb-1">Más Rápido</h4>
+            <p class="text-sm text-gray-400">Carga instantánea desde tu pantalla de inicio</p>
+          </div>
+          <div class="bg-gray-800/50 p-4 rounded-xl border border-gray-700">
+            <div class="text-2xl mb-2">📴</div>
+            <h4 class="font-bold text-white mb-1">Funciona Offline</h4>
+            <p class="text-sm text-gray-400">Visualiza contenido aunque pierdas conexión</p>
+          </div>
+          <div class="bg-gray-800/50 p-4 rounded-xl border border-gray-700">
+            <div class="text-2xl mb-2">🎯</div>
+            <h4 class="font-bold text-white mb-1">Sin Navegador</h4>
+            <p class="text-sm text-gray-400">Experiencia de app nativa completa</p>
+          </div>
+        </div>
+
+        <!-- Installation Instructions -->
+        <div class="bg-gray-900/50 p-6 rounded-2xl border border-gray-700 mb-6">
+          <h3 class="text-xl font-bold text-white mb-4">📖 Cómo Instalar:</h3>
+          
+          <!-- Android Instructions -->
+          <div v-if="isAndroid || !isIOS" class="mb-6">
+            <h4 class="font-bold text-green-400 mb-3 flex items-center gap-2">
+              <span class="text-2xl">🤖</span> En Android (Chrome)
+            </h4>
+            <ol class="space-y-2 text-gray-300">
+              <li class="flex items-start gap-3">
+                <span class="text-green-400 font-bold shrink-0">1.</span>
+                <span>Busca el botón flotante <strong>"📱 Instalar App"</strong> en esta página</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <span class="text-green-400 font-bold shrink-0">2.</span>
+                <span>Haz clic y confirma la instalación</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <span class="text-green-400 font-bold shrink-0">3.</span>
+                <span>¡Listo! Encontrarás el icono en tu pantalla de inicio</span>
+              </li>
+            </ol>
+          </div>
+
+          <!-- iOS Instructions -->
+          <div v-if="isIOS || !isAndroid">
+            <h4 class="font-bold text-blue-400 mb-3 flex items-center gap-2">
+              <span class="text-2xl">🍎</span> En iPhone/iPad (Safari)
+            </h4>
+            <ol class="space-y-2 text-gray-300">
+              <li class="flex items-start gap-3">
+                <span class="text-blue-400 font-bold shrink-0">1.</span>
+                <span>Toca el botón <strong>Compartir</strong> 
+                  <svg class="inline w-4 h-4 mx-1" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M16 5l-1.42 1.42-1.59-1.59V16h-1.98V4.83L9.42 6.42 8 5l4-4 4 4zm4 5v11c0 1.1-.9 2-2 2H6c-1.11 0-2-.9-2-2V10c0-1.11.89-2 2-2h3v2H6v11h12V10h-3V8h3c1.1 0 2 .89 2 2z"/>
+                  </svg>
+                  en la barra inferior
+                </span>
+              </li>
+              <li class="flex items-start gap-3">
+                <span class="text-blue-400 font-bold shrink-0">2.</span>
+                <span>Selecciona <strong>"Añadir a pantalla de inicio"</strong></span>
+              </li>
+              <li class="flex items-start gap-3">
+                <span class="text-blue-400 font-bold shrink-0">3.</span>
+                <span>Confirma y ¡disfruta de la app!</span>
+              </li>
+            </ol>
+          </div>
+        </div>
+
+        <!-- Call to Action -->
+        <div class="text-center">
+          <p class="text-gray-400 text-sm mb-4">
+            💡 <strong>Tip:</strong> Una vez instalada, la app se abrirá en pantalla completa sin la barra del navegador
+          </p>
+        </div>
+      </div>
+    </div>
+
     <!-- Contact Section -->
     <div class="text-center mt-16">
        <div class="inline-block bg-gray-800 p-8 rounded-2xl border border-gray-700 max-w-4xl hover:border-green-500 transition duration-300">
@@ -98,5 +203,8 @@ function formatText(text) {
          <p class="text-gray-400 text-lg">{{ langStore.t('help.contactDesc') }}</p>
        </div>
     </div>
+
+    <!-- Install Prompt Component -->
+    <InstallPrompt />
   </div>
 </template>
