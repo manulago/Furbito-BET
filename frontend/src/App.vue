@@ -4,6 +4,7 @@ import { useBetStore } from './stores/bet'
 import { useLanguageStore } from './stores/language'
 import { useRouter } from 'vue-router'
 import { onMounted, ref, watch } from 'vue'
+import InstallPrompt from './components/InstallPrompt.vue'
 
 const auth = useAuthStore()
 const betStore = useBetStore()
@@ -259,5 +260,8 @@ function logout() {
         </p>
       </div>
     </div>
+
+    <!-- PWA Install Prompt -->
+    <InstallPrompt />
   </div>
 </template>

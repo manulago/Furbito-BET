@@ -48,3 +48,11 @@
 3:46:31 [vite] (client) hmr update /src/style.css
 3:47:12 [vite] (client) hmr update /src/views/AdminView.vue, /src/style.css
 3:47:12 [vite] (client) hmr update /src/style.css
+3:51:44 [vite] (client) page reload index.html
+3:51:44 [vite] (client) hmr update /src/style.css
+3:51:59 [vite] (client) page reload src/main.js
+3:51:59 [vite] (client) hmr update /src/style.css
+3:52:30 [vite] (client) hmr update /src/App.vue, /src/style.css
+3:52:30 [vite] (client) hmr update /src/style.css
+3:52:43 [vite] (client) hmr update /src/App.vue, /src/style.css
+3:52:43 [vite] (client) hmr update /src/style.css
