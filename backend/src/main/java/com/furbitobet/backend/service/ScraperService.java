@@ -9,6 +9,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -18,10 +20,30 @@ import java.util.Map;
 public class ScraperService {
 
     private static final String URL = "https://udcxest.udc.gal/xest/publica/liga/grupo/clasificacion.xhtml?idobjsel=749";
-
     private static final Logger logger = LoggerFactory.getLogger(ScraperService.class);
 
+    // Cache configuration
+    private static final int CACHE_DURATION_MINUTES = 5;
+
+    // Cache for standings
+    private List<Map<String, String>> cachedStandings = null;
+    private LocalDateTime standingsLastFetch = null;
+
+    // Cache for match results
+    private List<Map<String, Object>> cachedResults = null;
+    private LocalDateTime resultsLastFetch = null;
+
     public List<Map<String, String>> getLeagueStandings() {
+        // Check if cache is valid
+        if (cachedStandings != null && standingsLastFetch != null) {
+            long minutesSinceLastFetch = Duration.between(standingsLastFetch, LocalDateTime.now()).toMinutes();
+            if (minutesSinceLastFetch < CACHE_DURATION_MINUTES) {
+                logger.info("Returning cached standings (age: {} minutes)", minutesSinceLastFetch);
+                return cachedStandings;
+            }
+        }
+
+        logger.info("Cache expired or empty, fetching fresh standings data...");
         List<Map<String, String>> standings = new ArrayList<>();
         try {
             Document doc = Jsoup.connect(URL)
@@ -73,13 +95,34 @@ public class ScraperService {
             } else {
                 logger.warn("TableDiv not found");
             }
+
+            // Update cache
+            cachedStandings = standings;
+            standingsLastFetch = LocalDateTime.now();
+            logger.info("Standings cache updated with {} teams", standings.size());
+
         } catch (IOException e) {
             logger.error("Error scraping league standings", e);
+            // If scraping fails but we have cached data, return it even if expired
+            if (cachedStandings != null) {
+                logger.warn("Returning stale cache due to scraping error");
+                return cachedStandings;
+            }
         }
         return standings;
     }
 
     public List<Map<String, Object>> getMatchResults() {
+        // Check if cache is valid
+        if (cachedResults != null && resultsLastFetch != null) {
+            long minutesSinceLastFetch = Duration.between(resultsLastFetch, LocalDateTime.now()).toMinutes();
+            if (minutesSinceLastFetch < CACHE_DURATION_MINUTES) {
+                logger.info("Returning cached match results (age: {} minutes)", minutesSinceLastFetch);
+                return cachedResults;
+            }
+        }
+
+        logger.info("Cache expired or empty, fetching fresh match results...");
         List<Map<String, Object>> results = new ArrayList<>();
         try {
             Document doc = Jsoup
@@ -123,8 +166,19 @@ public class ScraperService {
                     results.add(matchData);
                 }
             }
+
+            // Update cache
+            cachedResults = results;
+            resultsLastFetch = LocalDateTime.now();
+            logger.info("Match results cache updated with {} matches", results.size());
+
         } catch (IOException e) {
             logger.error("Error scraping match results", e);
+            // If scraping fails but we have cached data, return it even if expired
+            if (cachedResults != null) {
+                logger.warn("Returning stale cache due to scraping error");
+                return cachedResults;
+            }
         }
         return results;
     }

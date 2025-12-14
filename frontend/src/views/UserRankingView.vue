@@ -2,6 +2,7 @@
 import { ref, onMounted } from 'vue'
 import { useLanguageStore } from '../stores/language'
 import { useAuthStore } from '../stores/auth'
+import LoadingSpinner from '../components/LoadingSpinner.vue'
 
 const langStore = useLanguageStore()
 const auth = useAuthStore()
@@ -50,9 +51,7 @@ onMounted(() => {
       <h2 class="text-3xl font-bold text-white">{{ langStore.t('ranking.users.title') || 'Clasificación de Usuarios' }}</h2>
     </div>
 
-    <div v-if="loading" class="text-center text-gray-400">
-      {{ langStore.t('ranking.loading') }}
-    </div>
+    <LoadingSpinner v-if="loading" />
 
     <div v-else-if="error" class="text-center text-red-400">
       {{ error }}
