@@ -42,6 +42,7 @@ function logout() {
             <router-link to="/statistics" class="text-gray-300 hover:text-green-400 transition font-medium text-lg">{{ langStore.t('nav.statistics') }}</router-link>
           </template>
           <router-link to="/help" class="text-gray-300 hover:text-green-400 transition font-medium text-lg">{{ langStore.t('nav.help') || 'Ayuda' }}</router-link>
+          <router-link v-if="auth.user" to="/roulette" class="text-2xl hover:scale-110 transition duration-300" title="Ruleta de la Suerte">🎰</router-link>
           <router-link v-if="auth.isAdmin" to="/admin" class="text-gray-300 hover:text-yellow-400 transition font-medium text-lg">{{ langStore.t('nav.admin') }}</router-link>
 
           <div v-if="auth.user" class="flex items-center gap-4">
