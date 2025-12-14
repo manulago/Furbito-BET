@@ -272,9 +272,6 @@ public class AdminController {
             int successCount = 0;
             int failCount = 0;
 
-            String subject = "🎉 ¡Novedades en FurbitoBET!";
-            String message = buildNewsEmailMessage();
-
             for (User user : allUsers) {
                 // Skip admin users
                 if (user.getRole() == User.Role.ADMIN) {
@@ -282,7 +279,7 @@ public class AdminController {
                 }
 
                 try {
-                    emailService.sendSimpleMessage(user.getEmail(), subject, message);
+                    emailService.sendNewsEmail(user.getEmail(), user.getUsername());
                     successCount++;
                     System.out.println("✅ News email sent to: " + user.getEmail());
                 } catch (Exception e) {
@@ -311,32 +308,6 @@ public class AdminController {
             return org.springframework.http.ResponseEntity.internalServerError()
                     .body("Error sending news emails: " + e.getMessage());
         }
-    }
-
-    private String buildNewsEmailMessage() {
-        return "¡Hola!\\n\\n" +
-                "Tenemos grandes novedades en FurbitoBET que queremos compartir contigo:\\n\\n" +
-                "📱 ¡INSTALA LA APP!\\n" +
-                "Ahora puedes instalar FurbitoBET en tu móvil o PC como una aplicación.\\n" +
-                "Acceso rápido desde tu pantalla de inicio, sin abrir el navegador.\\n\\n" +
-                "🔹 En Android: Busca el botón \\\"Instalar App\\\" en la página\\n" +
-                "🔹 En iPhone: Toca Compartir → \\\"Añadir a pantalla de inicio\\\"\\n\\n" +
-                "📱 MEJORA MÓVIL\\n" +
-                "Experiencia 100% optimizada para tu teléfono.\\n" +
-                "Navegación más fluida y accesible.\\n\\n" +
-                "❓ NUEVA PÁGINA DE AYUDA\\n" +
-                "¿Dudas? Visita nuestra sección de ayuda para aprender cómo funciona todo.\\n\\n" +
-                "⚙️ GESTIÓN DE PERFIL\\n" +
-                "Control total sobre tu cuenta.\\n" +
-                "Actualiza tus datos y preferencias fácilmente.\\n\\n" +
-                "👀 ESPÍA A LOS MEJORES\\n" +
-                "Visita el perfil de otros usuarios desde el ranking.\\n" +
-                "Ve su historial de apuestas y estrategias.\\n\\n" +
-                "---\\n\\n" +
-                "¡Entra ahora y descubre todas las mejoras!\\n" +
-                "https://furbitobet.vercel.app\\n\\n" +
-                "Saludos,\\n" +
-                "El equipo de FurbitoBET 🎰";
     }
 
     @PostMapping("/test-email")

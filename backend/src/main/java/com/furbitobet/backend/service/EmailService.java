@@ -206,6 +206,149 @@ public class EmailService {
     }
 
     @Async
+    public void sendNewsEmail(String to, String username) {
+        System.out.println("Sending news email to: " + to);
+        String subject = "🎉 ¡Novedades en FurbitoBET!";
+        String appLink = frontendUrl;
+
+        String htmlContent = "<!DOCTYPE html>" +
+                "<html>" +
+                "<head>" +
+                "<meta charset='UTF-8'>" +
+                "<meta name='viewport' content='width=device-width, initial-scale=1.0'>" +
+                "<style>" +
+                "body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #0f172a; margin: 0; padding: 0; }"
+                +
+                ".container { max-width: 600px; margin: 20px auto; background-color: #1e293b; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }"
+                +
+                ".header { background: linear-gradient(135deg, #22c55e 0%, #3b82f6 100%); padding: 40px 30px; text-align: center; }"
+                +
+                ".header h1 { color: #ffffff; margin: 0; font-size: 32px; font-weight: 800; text-shadow: 0 2px 4px rgba(0,0,0,0.2); }"
+                +
+                ".header p { color: #e0f2fe; margin: 10px 0 0 0; font-size: 16px; }" +
+                ".content { padding: 40px 30px; }" +
+                ".greeting { color: #f1f5f9; font-size: 18px; margin-bottom: 20px; }" +
+                ".intro { color: #cbd5e1; font-size: 16px; line-height: 1.6; margin-bottom: 30px; }" +
+                ".features { margin: 30px 0; }" +
+                ".feature-card { background: linear-gradient(135deg, #334155 0%, #1e293b 100%); border-left: 4px solid #22c55e; border-radius: 12px; padding: 20px; margin-bottom: 20px; transition: transform 0.3s; }"
+                +
+                ".feature-icon { font-size: 32px; margin-bottom: 10px; }" +
+                ".feature-title { color: #22c55e; font-size: 18px; font-weight: bold; margin-bottom: 8px; }" +
+                ".feature-desc { color: #cbd5e1; font-size: 14px; line-height: 1.5; }" +
+                ".highlight { background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%); border-left-color: #3b82f6; }"
+                +
+                ".highlight .feature-title { color: #60a5fa; }" +
+                ".button-container { text-align: center; margin: 40px 0; }" +
+                ".button { display: inline-block; padding: 16px 40px; background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); color: white; text-decoration: none; border-radius: 50px; font-weight: bold; font-size: 18px; box-shadow: 0 8px 16px rgba(34, 197, 94, 0.4); transition: all 0.3s; }"
+                +
+                ".footer { background-color: #0f172a; padding: 30px; text-align: center; border-top: 1px solid #334155; }"
+                +
+                ".footer p { color: #64748b; font-size: 12px; margin: 5px 0; }" +
+                ".divider { height: 2px; background: linear-gradient(90deg, transparent, #334155, transparent); margin: 30px 0; }"
+                +
+                "</style>" +
+                "</head>" +
+                "<body>" +
+                "<div class='container'>" +
+
+                "<!-- Header -->" +
+                "<div class='header'>" +
+                "<h1>🎉 ¡Novedades en FurbitoBET!</h1>" +
+                "<p>Descubre todas las mejoras que hemos preparado para ti</p>" +
+                "</div>" +
+
+                "<!-- Content -->" +
+                "<div class='content'>" +
+                "<p class='greeting'>¡Hola <strong>" + (username != null ? username : "") + "</strong>!</p>" +
+                "<p class='intro'>Tenemos grandes novedades en FurbitoBET que queremos compartir contigo. Hemos trabajado duro para mejorar tu experiencia y hacerla aún más emocionante.</p>"
+                +
+
+                "<!-- Features -->" +
+                "<div class='features'>" +
+
+                "<!-- Feature 1: PWA -->" +
+                "<div class='feature-card highlight'>" +
+                "<div class='feature-icon'>📱</div>" +
+                "<div class='feature-title'>¡Instala la App!</div>" +
+                "<div class='feature-desc'>" +
+                "Ahora puedes instalar FurbitoBET en tu móvil o PC como una aplicación. " +
+                "Acceso rápido desde tu pantalla de inicio, sin necesidad de abrir el navegador.<br><br>" +
+                "<strong>🔹 En Android:</strong> Busca el botón \"Instalar App\" en la página<br>" +
+                "<strong>🔹 En iPhone:</strong> Toca Compartir → \"Añadir a pantalla de inicio\"<br>" +
+                "<strong>🔹 En PC:</strong> Busca el icono ⊕ en la barra de direcciones" +
+                "</div>" +
+                "</div>" +
+
+                "<!-- Feature 2: Mobile -->" +
+                "<div class='feature-card'>" +
+                "<div class='feature-icon'>📱</div>" +
+                "<div class='feature-title'>Mejora Móvil</div>" +
+                "<div class='feature-desc'>" +
+                "Experiencia 100% optimizada para tu teléfono. Navegación más fluida, accesible y rápida en cualquier dispositivo."
+                +
+                "</div>" +
+                "</div>" +
+
+                "<!-- Feature 3: Help -->" +
+                "<div class='feature-card'>" +
+                "<div class='feature-icon'>❓</div>" +
+                "<div class='feature-title'>Nueva Página de Ayuda</div>" +
+                "<div class='feature-desc'>" +
+                "¿Dudas sobre cómo funciona algo? Visita nuestra nueva sección de ayuda con guías completas y tutoriales paso a paso."
+                +
+                "</div>" +
+                "</div>" +
+
+                "<!-- Feature 4: Profile -->" +
+                "<div class='feature-card'>" +
+                "<div class='feature-icon'>⚙️</div>" +
+                "<div class='feature-title'>Gestión de Perfil</div>" +
+                "<div class='feature-desc'>" +
+                "Control total sobre tu cuenta. Actualiza tus datos, cambia tu contraseña y gestiona tus preferencias fácilmente."
+                +
+                "</div>" +
+                "</div>" +
+
+                "<!-- Feature 5: Public Profiles -->" +
+                "<div class='feature-card'>" +
+                "<div class='feature-icon'>👀</div>" +
+                "<div class='feature-title'>Espía a los Mejores</div>" +
+                "<div class='feature-desc'>" +
+                "Visita el perfil de otros usuarios desde el ranking. Ve su historial de apuestas, estrategias y aprende de los mejores."
+                +
+                "</div>" +
+                "</div>" +
+
+                "</div>" +
+
+                "<div class='divider'></div>" +
+
+                "<!-- CTA Button -->" +
+                "<div class='button-container'>" +
+                "<a href='" + appLink + "' class='button'>🎰 Entrar a FurbitoBET</a>" +
+                "</div>" +
+
+                "<p class='intro' style='text-align: center; margin-top: 20px;'>" +
+                "¡No esperes más! Entra ahora y descubre todas las mejoras que hemos preparado para ti." +
+                "</p>" +
+
+                "</div>" +
+
+                "<!-- Footer -->" +
+                "<div class='footer'>" +
+                "<p>Este es un email informativo sobre las novedades de FurbitoBET</p>" +
+                "<p>&copy; 2025 FurbitoBET. Todos los derechos reservados.</p>" +
+                "<p style='margin-top: 15px;'>🎰 La mejor plataforma de apuestas deportivas</p>" +
+                "</div>" +
+
+                "</div>" +
+                "</body>" +
+                "</html>";
+
+        sendEmail(to, username != null ? username : to, subject, htmlContent);
+    }
+
+    @Async
     public void sendNewEventEmail(String to, String username, String eventName, String eventDate) {
         System.out.println("Sending new event notification to: " + to);
         String subject = "⚽ Nuevo Partido Disponible: " + eventName;
