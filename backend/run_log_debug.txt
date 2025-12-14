@@ -276,3 +276,8 @@ org.springframework.web.client.HttpClientErrorException$Unauthorized: 401 Unauth
 2025-12-14T01:49:59.239+01:00  INFO 66878 --- [backend] [nio-8080-exec-3] c.f.backend.service.ScraperService       : Scraping URL: https://udcxest.udc.gal/xest/publica/liga/grupo/clasificacion.xhtml?idobjsel=749
 2025-12-14T01:49:59.239+01:00  INFO 66878 --- [backend] [nio-8080-exec-3] c.f.backend.service.ScraperService       : Document Title: UDC Xest - Liga
 2025-12-14T01:49:59.239+01:00  INFO 66878 --- [backend] [nio-8080-exec-3] c.f.backend.service.ScraperService       : Found rows: 10
+2025-12-14T02:39:11.753+01:00  INFO 66878 --- [backend] [   scheduling-1] c.f.backend.service.EventSyncService     : Starting event synchronization for team: INFORMÁTICA-1
+2025-12-14T02:39:12.652+01:00  INFO 66878 --- [backend] [   scheduling-1] c.f.backend.service.ScraperService       : Scraping URL: https://udcxest.udc.gal/xest/publica/liga/grupo/clasificacion.xhtml?idobjsel=749
+2025-12-14T02:39:12.652+01:00  INFO 66878 --- [backend] [   scheduling-1] c.f.backend.service.ScraperService       : Document Title: UDC Xest - Liga
+2025-12-14T02:39:12.652+01:00  INFO 66878 --- [backend] [   scheduling-1] c.f.backend.service.ScraperService       : Found rows: 10
+2025-12-14T02:39:12.684+01:00  INFO 66878 --- [backend] [   scheduling-1] c.f.backend.service.EventSyncService     : Event synchronization completed.
