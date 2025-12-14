@@ -11,9 +11,34 @@ const langStore = useLanguageStore()
 const router = useRouter()
 const isMobileMenuOpen = ref(false)
 
+const showNewsModal = ref(false)
+const currentNewsCount = ref(0)
+const NEWS_KEY_VERSION = 'news_v1'
+
 onMounted(() => {
   if (auth.user) {
     auth.fetchBalance()
+
+    // News Modal Logic
+    const userId = auth.user.id || 'guest'
+    const storageKey = `${NEWS_KEY_VERSION}_count_${userId}`
+    const sessionKey = `${NEWS_KEY_VERSION}_seen_session`
+
+    // Check if already seen this session (tab)
+    const seenThisSession = sessionStorage.getItem(sessionKey)
+
+    if (!seenThisSession) {
+        let count = parseInt(localStorage.getItem(storageKey) || '0')
+        
+        if (count < 5) {
+            currentNewsCount.value = count
+            showNewsModal.value = true
+            
+            // Increment count and mark session as seen
+            localStorage.setItem(storageKey, (count + 1).toString())
+            sessionStorage.setItem(sessionKey, 'true')
+        }
+    }
   }
 })
 
@@ -172,6 +197,51 @@ function logout() {
             {{ langStore.t('betSlip.placeBet') }}
           </button>
         </div>
+      </div>
+    </div>
+
+    <!-- News Modal -->
+    <div v-if="showNewsModal" class="fixed inset-0 bg-black bg-opacity-90 z-[60] flex items-center justify-center p-4 animate-fade-in-up">
+      <div class="bg-gray-800 border-2 border-green-500 rounded-xl max-w-lg w-full p-6 relative shadow-2xl">
+        <button @click="showNewsModal = false" class="absolute top-4 right-4 text-gray-400 hover:text-white">&times;</button>
+        
+        <h2 class="text-3xl font-bold bg-gradient-to-r from-green-400 to-blue-500 bg-clip-text text-transparent mb-6">
+          ¡Novedades en FurbitoBET!
+        </h2>
+
+        <div class="space-y-4 text-gray-200 mb-8">
+           <div class="flex items-start gap-4 p-3 bg-gray-700/50 rounded-lg">
+              <span class="text-3xl">🎰</span>
+              <div>
+                <h3 class="font-bold text-green-400">Nueva Ruleta de la Suerte</h3>
+                <p class="text-sm text-gray-300">Gira la ruleta cada 12 horas y gana saldo gratis al instante. ¡Premios de hasta 50€!</p>
+              </div>
+           </div>
+
+           <div class="flex items-start gap-4 p-3 bg-gray-700/50 rounded-lg">
+              <span class="text-3xl">📱</span>
+              <div>
+                <h3 class="font-bold text-blue-400">Mejora Móvil</h3>
+                <p class="text-sm text-gray-300">Navegación optimizada para móviles. Accede a todo más rápido.</p>
+              </div>
+           </div>
+
+           <div class="flex items-start gap-4 p-3 bg-gray-700/50 rounded-lg">
+              <span class="text-3xl">🚀</span>
+              <div>
+                <h3 class="font-bold text-yellow-400">Más Rápido</h3>
+                <p class="text-sm text-gray-300">Hemos mejorado la interfaz de escritorio para que sea más clara y compacta.</p>
+              </div>
+           </div>
+        </div>
+
+        <button @click="showNewsModal = false" class="w-full bg-gradient-to-r from-green-500 to-blue-600 hover:from-green-400 hover:to-blue-500 text-white font-bold py-3 rounded-lg shadow-lg transition transform hover:scale-105">
+          ¡Entendido!
+        </button>
+        
+        <p class="text-center text-xs text-gray-500 mt-4">
+          Este aviso desaparecerá después de {{ 5 - currentNewsCount }} inicios más.
+        </p>
       </div>
     </div>
   </div>
