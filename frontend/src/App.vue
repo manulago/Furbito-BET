@@ -363,47 +363,55 @@ function logout() {
         <button @click="showNewsModal = false" class="absolute top-2 right-2 md:top-4 md:right-4 text-gray-400 hover:text-white text-xl p-2">&times;</button>
         
         <h2 class="text-2xl md:text-3xl font-bold bg-gradient-to-r from-green-400 to-blue-500 bg-clip-text text-transparent mb-4 md:mb-6 pr-8">
-          ¡Novedades en FurbitoBET!
+          ¡Grandes Novedades en FurbitoBET!
         </h2>
 
         <div class="space-y-4 text-gray-200 mb-6 md:mb-8 overflow-y-auto custom-scrollbar flex-1">
            <div class="flex items-start gap-4 p-3 bg-gray-700/50 rounded-lg">
+              <span class="text-3xl shrink-0">🎯</span>
+              <div>
+                <h3 class="font-bold text-blue-400">Categorías Colapsables</h3>
+                <p class="text-sm text-gray-300">Los eventos muestran categorías colapsadas. Haz clic para expandir solo las que te interesen. ¡Navegación más limpia!</p>
+              </div>
+           </div>
+
+           <div class="flex items-start gap-4 p-3 bg-gray-700/50 rounded-lg">
+              <span class="text-3xl shrink-0">🧠</span>
+              <div>
+                <h3 class="font-bold text-purple-400">Validación Inteligente</h3>
+                <p class="text-sm text-gray-300">Sistema mejorado que previene combinaciones ilógicas. Sustitución automática sin alertas molestas.</p>
+              </div>
+           </div>
+
+           <div class="flex items-start gap-4 p-3 bg-gray-700/50 rounded-lg">
+              <span class="text-3xl shrink-0">📊</span>
+              <div>
+                <h3 class="font-bold text-yellow-400">Cuotas Más Realistas</h3>
+                <p class="text-sm text-gray-300">Sistema renovado con distribución de Poisson. Considera ataque, defensa y forma del equipo. ¡Más justas!</p>
+              </div>
+           </div>
+
+           <div class="flex items-start gap-4 p-3 bg-gray-700/50 rounded-lg">
+              <span class="text-3xl shrink-0">📅</span>
+              <div>
+                <h3 class="font-bold text-green-400">Historial Mejorado</h3>
+                <p class="text-sm text-gray-300">Tus apuestas ahora muestran fecha exacta, categoría en badges morados y ordenación cronológica.</p>
+              </div>
+           </div>
+
+           <div class="flex items-start gap-4 p-3 bg-gray-700/50 rounded-lg">
+              <span class="text-3xl shrink-0">🗑️</span>
+              <div>
+                <h3 class="font-bold text-red-400">Eventos Cancelados</h3>
+                <p class="text-sm text-gray-300">Si se cancela un evento, tus apuestas se anulan automáticamente y recibes tu dinero + email de notificación.</p>
+              </div>
+           </div>
+
+           <div class="flex items-start gap-4 p-3 bg-gray-700/50 rounded-lg">
               <span class="text-3xl shrink-0">📱</span>
               <div>
                 <h3 class="font-bold text-blue-400">¡Instala la App!</h3>
-                <p class="text-sm text-gray-300">Ahora puedes instalar FurbitoBET en tu móvil o PC. Acceso rápido desde tu pantalla de inicio.</p>
-              </div>
-           </div>
-
-           <div class="flex items-start gap-4 p-3 bg-gray-700/50 rounded-lg">
-              <span class="text-3xl shrink-0">📱</span>
-              <div>
-                <h3 class="font-bold text-blue-400">Mejora Móvil</h3>
-                <p class="text-sm text-gray-300">Disfruta de una experiencia 100% optimizada para tu teléfono. Navegación más fluida y accesible.</p>
-              </div>
-           </div>
-
-           <div class="flex items-start gap-4 p-3 bg-gray-700/50 rounded-lg">
-              <span class="text-3xl shrink-0">❓</span>
-              <div>
-                <h3 class="font-bold text-green-400">Nueva Ayuda</h3>
-                <p class="text-sm text-gray-300">¿Dudas? Visita nuestra nueva sección de ayuda para aprender cómo funciona todo.</p>
-              </div>
-           </div>
-
-           <div class="flex items-start gap-4 p-3 bg-gray-700/50 rounded-lg">
-              <span class="text-3xl shrink-0">⚙️</span>
-              <div>
-                <h3 class="font-bold text-yellow-400">Gestión de Perfil</h3>
-                <p class="text-sm text-gray-300">Ahora tienes control total sobre tu cuenta. Actualiza tus datos y preferencias fácilmente.</p>
-              </div>
-           </div>
-
-           <div class="flex items-start gap-4 p-3 bg-gray-700/50 rounded-lg">
-              <span class="text-3xl shrink-0">👀</span>
-              <div>
-                <h3 class="font-bold text-purple-400">Espía a los Mejores</h3>
-                <p class="text-sm text-gray-300">Visita el perfil de otros usuarios desde el ranking para ver su historial de apuestas y estrategias.</p>
+                <p class="text-sm text-gray-300">Acceso rápido desde tu pantalla de inicio. Android: botón "Instalar". iPhone: Compartir → Añadir.</p>
               </div>
            </div>
         </div>

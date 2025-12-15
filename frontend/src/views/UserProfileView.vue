@@ -28,7 +28,15 @@ async function fetchData() {
       headers: { 'Authorization': `Bearer ${auth.token}` }
     })
     if (betsRes.ok) {
-      bets.value = await betsRes.json()
+      const fetchedBets = await betsRes.json()
+      // Sort bets by date, most recent first
+      // Bets without placedAt go to the end
+      bets.value = fetchedBets.sort((a, b) => {
+        if (!a.placedAt && !b.placedAt) return 0
+        if (!a.placedAt) return 1
+        if (!b.placedAt) return -1
+        return new Date(b.placedAt) - new Date(a.placedAt)
+      })
     }
   } catch (e) {
     console.error(e)
@@ -37,8 +45,19 @@ async function fetchData() {
   }
 }
 
-function formatOutcome(bet) {
-  return bet.outcomes.map(o => `${o.event.name}: ${o.description} (@${o.odds})`).join(', ')
+function formatBetDate(bet) {
+  if (!bet.placedAt) {
+    return 'Sin fecha'
+  }
+  try {
+    const date = new Date(bet.placedAt)
+    if (isNaN(date.getTime())) {
+      return 'Sin fecha'
+    }
+    return date.toLocaleString()
+  } catch (e) {
+    return 'Sin fecha'
+  }
 }
 
 function calculatePotentialWin(bet) {
@@ -73,29 +92,46 @@ onMounted(() => {
       </div>
 
       <div v-else class="space-y-4">
-        <div v-for="bet in bets" :key="bet.id" class="bg-gray-800 p-4 rounded-lg shadow border border-gray-700">
-          <div class="flex justify-between items-start mb-2">
-            <div>
-              <span class="text-sm text-gray-400">{{ new Date(bet.placedAt).toLocaleString() }}</span>
-              <div class="font-bold text-white mt-1">{{ formatOutcome(bet) }}</div>
+        <div v-for="bet in bets" :key="bet.id" class="bg-gray-800 p-6 rounded-lg shadow-lg border border-gray-700 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+          <div class="w-full">
+            <div class="text-sm text-gray-400 mb-3">{{ formatBetDate(bet) }}</div>
+            <div v-for="outcome in bet.outcomes" :key="outcome.id" class="mb-2 last:mb-0 border-b md:border-b-0 border-gray-700 pb-2 md:pb-0 last:border-0 last:pb-0">
+              <div class="flex items-start gap-2">
+                <span v-if="outcome.outcomeGroup" class="inline-block bg-purple-600 text-white text-xs font-bold px-2 py-0.5 rounded whitespace-nowrap flex-shrink-0">
+                  {{ outcome.outcomeGroup }}
+                </span>
+                <h3 class="text-lg font-bold text-green-400 leading-tight">{{ outcome.description }}</h3>
+              </div>
+              <p class="text-gray-400 text-sm mt-1">
+                {{ outcome.event.name }} 
+                <span class="text-gray-500 block sm:inline">@ {{ outcome.odds }}</span>
+              </p>
             </div>
-            <span class="px-2 py-1 rounded text-xs font-bold uppercase" :class="{
-              'bg-yellow-900 text-yellow-400': bet.status === 'PENDING',
-              'bg-green-900 text-green-400': bet.status === 'WON',
-              'bg-red-900 text-red-400': bet.status === 'LOST',
-              'bg-gray-700 text-gray-400': bet.status === 'VOID' || bet.status === 'CANCELLED'
-            }">{{ langStore.t('common.status.' + bet.status) }}</span>
           </div>
-          <div class="flex justify-between items-center text-sm border-t border-gray-700 pt-2 mt-2">
-            <span class="text-gray-300">{{ langStore.t('profile.wager') }}: <span class="font-bold text-white">{{ bet.amount }} €</span></span>
+          <div class="w-full md:w-auto text-left md:text-right border-t md:border-t-0 border-gray-700 pt-4 md:pt-0 mt-2 md:mt-0 flex flex-row md:flex-col justify-between items-center md:items-end gap-x-4 flex-wrap">
+            <div class="flex flex-col md:items-end">
+              <p class="text-white font-bold text-lg">{{ bet.amount }} €</p>
+              <p class="text-sm font-bold uppercase" :class="{
+                'text-yellow-400': bet.status === 'PENDING',
+                'text-green-500': bet.status === 'WON',
+                'text-red-500': bet.status === 'LOST',
+                'text-gray-500': bet.status === 'CANCELLED' || bet.status === 'VOID'
+              }">
+                {{ langStore.t('common.status.' + bet.status) }}
+              </p>
+            </div>
             
-            <span v-if="bet.status === 'PENDING'" class="text-gray-300">
-              {{ langStore.t('profile.potWin') }}: <span class="font-bold text-green-400">{{ calculatePotentialWin(bet) }} €</span>
-            </span>
-            <span v-else class="text-gray-300">
-              Ganancia Total: <span class="font-bold text-green-400">{{ bet.winnings !== null ? bet.winnings : '0.00' }} €</span>
-            </span>
-
+            <div class="flex flex-col md:items-end">
+              <p v-if="bet.status === 'PENDING'" class="text-xs text-gray-500 text-right md:text-right">
+                {{ langStore.t('betSlip.totalOdds') }}: {{ bet.outcomes.reduce((acc, curr) => acc * curr.odds, 1).toFixed(2) }}
+              </p>
+              <p v-if="bet.status === 'PENDING'" class="text-xs text-gray-500 text-right md:text-right">
+                {{ langStore.t('betSlip.potentialReturn') }}: {{ calculatePotentialWin(bet) }} €
+              </p>
+              <p v-if="bet.status !== 'PENDING'" class="text-sm font-bold mt-1 text-right md:text-right text-green-400">
+                Ganancia Total: {{ bet.winnings !== null ? bet.winnings : '0.00' }} €
+              </p>
+            </div>
           </div>
         </div>
       </div>

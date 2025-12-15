@@ -15,7 +15,14 @@ async function fetchBets() {
       headers: { 'Authorization': `Bearer ${auth.token}` }
   })
   if (res.ok) {
-    bets.value = await res.json()
+    const fetchedBets = await res.json()
+    // Sort bets by date, most recent first
+    bets.value = fetchedBets.sort((a, b) => {
+      if (!a.placedAt && !b.placedAt) return 0
+      if (!a.placedAt) return 1
+      if (!b.placedAt) return -1
+      return new Date(b.placedAt) - new Date(a.placedAt)
+    })
   }
 }
 
@@ -115,8 +122,16 @@ function getNetProfitValue(bet) {
       <div v-for="bet in filteredBets" :key="bet.id" class="bg-gray-800 p-6 rounded-lg shadow-lg border border-gray-700 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div class="w-full">
           <div v-for="outcome in bet.outcomes" :key="outcome.id" class="mb-2 last:mb-0 border-b md:border-b-0 border-gray-700 pb-2 md:pb-0 last:border-0 last:pb-0">
-            <h3 class="text-lg font-bold text-green-400 leading-tight">{{ outcome.description }}</h3>
-            <p class="text-gray-400 text-sm">{{ outcome.event.name }} <span class="text-gray-500 block sm:inline">@ {{ outcome.odds }}</span></p>
+            <div class="flex items-start gap-2">
+              <span v-if="outcome.outcomeGroup" class="inline-block bg-purple-600 text-white text-xs font-bold px-2 py-0.5 rounded whitespace-nowrap flex-shrink-0">
+                {{ outcome.outcomeGroup }}
+              </span>
+              <h3 class="text-lg font-bold text-green-400 leading-tight">{{ outcome.description }}</h3>
+            </div>
+            <p class="text-gray-400 text-sm mt-1">
+              {{ outcome.event.name }} 
+              <span class="text-gray-500 block sm:inline">@ {{ outcome.odds }}</span>
+            </p>
           </div>
         </div>
         <div class="w-full md:w-auto text-left md:text-right border-t md:border-t-0 border-gray-700 pt-4 md:pt-0 mt-2 md:mt-0 flex flex-row md:flex-col justify-between items-center md:items-end gap-x-4 flex-wrap">

@@ -17,41 +17,74 @@ export const useBetStore = defineStore('bet', () => {
                 const mainMarkets = ['Ganador del Partido', 'Doble Oportunidad', 'Apuesta sin Empate']
 
                 const isMain = (g) => mainMarkets.includes(g)
-                const isGoal = (g) => g && g.startsWith('Goles')
-                // Basic check for player stats (Goleadores, Asistencias, etc) - usually imply not Main/Goals/Ambos
-                // But specifically we just want to ensure we don't block compatible things.
-                // Any outcome NOT Main and NOT Goals is treated as "Other" (Player Stats, BTTS) which we allow to combine.
+
+                // Extract base category (remove "- Más de" or "- Menos de")
+                const extractBaseCategory = (group) => {
+                    if (!group) return ''
+                    return group
+                        .replace(/ - Más de$/, '')
+                        .replace(/ - Menos de$/, '')
+                        .trim()
+                }
+
+                // Extract direction (MAS, MENOS, or empty)
+                const extractDirection = (group) => {
+                    if (!group) return ''
+                    if (group.includes(' - Más de')) return 'MAS'
+                    if (group.includes(' - Menos de')) return 'MENOS'
+                    return ''
+                }
 
                 const newGroup = outcome.outcomeGroup
                 const newIsMain = isMain(newGroup)
-                const newIsGoal = isGoal(newGroup)
+                const newBaseCategory = extractBaseCategory(newGroup)
+                const newDirection = extractDirection(newGroup)
 
-                // Filter out conflicting outcomes
-                const conflictingIds = []
+                // Find and remove conflicting outcomes
+                const toRemove = []
 
-                sameEventOutcomes.forEach(existing => {
+                for (const existing of sameEventOutcomes) {
                     const existingGroup = existing.outcomeGroup
                     const existingIsMain = isMain(existingGroup)
-                    const existingIsGoal = isGoal(existingGroup)
+                    const existingBaseCategory = extractBaseCategory(existingGroup)
+                    const existingDirection = extractDirection(existingGroup)
 
-                    let conflict = false
+                    let isConflict = false
 
+                    // Conflict: main markets (1X2, DC, DNB)
                     if (newIsMain && existingIsMain) {
-                        // Conflict: Cannot combine 1X2, DC, DNB
-                        conflict = true
+                        isConflict = true
                     }
-                    // Goals can now be combined with each other (Over + Under, etc)
-                    // Else: Main + Goal is OK. Main + Other is OK. Goal + Other is OK. Other + Other is OK.
 
-                    if (conflict) {
-                        conflictingIds.push(existing.id)
+                    // Check for overlapping goal bets
+                    if (newBaseCategory === existingBaseCategory && newBaseCategory !== '') {
+                        // Allow Goleadores and Asistencias
+                        if (newBaseCategory === 'Goleadores' || newBaseCategory === 'Asistencias') {
+                            continue
+                        }
+
+                        // If same direction (both MAS or both MENOS), they overlap
+                        if (newDirection === existingDirection && newDirection !== '') {
+                            isConflict = true
+                        }
+
+                        // If both have no direction (like Ganador, Ambos Marcan), they're exclusive
+                        if (newDirection === '' && existingDirection === '') {
+                            isConflict = true
+                        }
                     }
-                })
 
-                // Remove conflicts
-                conflictingIds.forEach(id => {
+                    if (isConflict) {
+                        toRemove.push(existing.id)
+                    }
+                }
+
+                // Remove all conflicting outcomes
+                toRemove.forEach(id => {
                     const idx = selectedOutcomes.value.findIndex(o => o.id === id)
-                    if (idx !== -1) selectedOutcomes.value.splice(idx, 1)
+                    if (idx !== -1) {
+                        selectedOutcomes.value.splice(idx, 1)
+                    }
                 })
 
                 selectedOutcomes.value.push(outcome)

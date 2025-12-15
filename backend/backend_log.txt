@@ -73,3 +73,6 @@ DATA INITIALIZATION COMPLETE.
 2025-12-14T03:38:16.407+01:00  INFO 105438 --- [backend] [nio-8080-exec-6] c.f.backend.service.ScraperService       : Scraping URL: https://udcxest.udc.gal/xest/publica/liga/grupo/clasificacion.xhtml?idobjsel=749
 2025-12-14T03:38:16.407+01:00  INFO 105438 --- [backend] [nio-8080-exec-6] c.f.backend.service.ScraperService       : Document Title: UDC Xest - Liga
 2025-12-14T03:38:16.408+01:00  INFO 105438 --- [backend] [nio-8080-exec-6] c.f.backend.service.ScraperService       : Found rows: 10
+2025-12-14T04:32:30.418+01:00  INFO 105438 --- [backend] [ionShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-12-14T04:32:30.449+01:00  INFO 105438 --- [backend] [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2025-12-14T04:32:30.475+01:00  INFO 105438 --- [backend] [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.

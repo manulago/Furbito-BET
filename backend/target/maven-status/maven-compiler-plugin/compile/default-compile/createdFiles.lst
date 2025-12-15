@@ -6,12 +6,16 @@ com/furbitobet/backend/config/SecurityConfig.class
 com/furbitobet/backend/config/AppConfig.class
 com/furbitobet/backend/controller/UserController$ProfileUpdateRequest.class
 com/furbitobet/backend/security/JwtRequestFilter.class
+com/furbitobet/backend/repository/AppConfigRepository.class
+com/furbitobet/backend/service/AppConfigService.class
 com/furbitobet/backend/model/Player.class
 com/furbitobet/backend/model/Bet.class
 com/furbitobet/backend/FurbitoBetApplication.class
 com/furbitobet/backend/model/Bet$BetStatus.class
 com/furbitobet/backend/controller/LeagueController.class
+com/furbitobet/backend/controller/AdminController$NewsletterRequest.class
 com/furbitobet/backend/model/Outcome.class
+com/furbitobet/backend/model/AppConfig.class
 com/furbitobet/backend/security/JwtUtil.class
 com/furbitobet/backend/controller/BetController.class
 com/furbitobet/backend/repository/EventRepository.class
@@ -44,6 +48,7 @@ com/furbitobet/backend/service/ScraperService.class
 com/furbitobet/backend/controller/AuthController$AuthResponse.class
 com/furbitobet/backend/controller/AuthController$ResetPasswordRequest.class
 com/furbitobet/backend/controller/AuthController.class
+com/furbitobet/backend/controller/RewardController.class
 com/furbitobet/backend/repository/PlayerRepository.class
 com/furbitobet/backend/service/PlayerService.class
 com/furbitobet/backend/controller/AuthController$RegisterRequest.class

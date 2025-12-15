@@ -53,16 +53,59 @@ public class BetService {
             }
         }
 
-        // Check for mutually exclusive outcomes
+        // Check for mutually exclusive or overlapping outcomes
         for (int i = 0; i < outcomes.size(); i++) {
             for (int j = i + 1; j < outcomes.size(); j++) {
                 Outcome o1 = outcomes.get(i);
                 Outcome o2 = outcomes.get(j);
-                if (o1.getEvent().getId().equals(o2.getEvent().getId()) &&
-                        o1.getOutcomeGroup() != null &&
-                        o1.getOutcomeGroup().equals(o2.getOutcomeGroup())) {
-                    throw new RuntimeException("No se pueden apostar a dos sucesos del mismo tipo");
+
+                // Skip if different events
+                if (!o1.getEvent().getId().equals(o2.getEvent().getId())) {
+                    continue;
                 }
+
+                // Both outcomes are from the same event
+                String group1 = o1.getOutcomeGroup();
+                String group2 = o2.getOutcomeGroup();
+
+                if (group1 == null || group2 == null) {
+                    continue;
+                }
+
+                // Extract base category and direction
+                String baseCategory1 = extractBaseCategory(group1);
+                String baseCategory2 = extractBaseCategory(group2);
+
+                // If different base categories, they're compatible
+                if (!baseCategory1.equals(baseCategory2)) {
+                    continue;
+                }
+
+                // Allow combining multiple "Goleadores" or "Asistencias" (player-specific bets)
+                if (baseCategory1.equals("Goleadores") || baseCategory1.equals("Asistencias")) {
+                    continue;
+                }
+
+                // Same base category - check if they overlap
+                String direction1 = extractDirection(group1);
+                String direction2 = extractDirection(group2);
+
+                // If both are in the same direction (both "Más de" or both "Menos de"), they
+                // overlap
+                if (direction1.equals(direction2) && !direction1.isEmpty()) {
+                    throw new RuntimeException(
+                            "No se pueden combinar apuestas del mismo tipo y dirección para el mismo evento. " +
+                                    "Por ejemplo, no puedes apostar a 'Menos de 5.5' y 'Menos de 4.5' al mismo tiempo.");
+                }
+
+                // If both have no direction (like "Ganador del Partido"), they're mutually
+                // exclusive
+                if (direction1.isEmpty() && direction2.isEmpty()) {
+                    throw new RuntimeException(
+                            "No se pueden combinar dos apuestas del mismo tipo para el mismo evento.");
+                }
+
+                // Different directions (one "Más de", one "Menos de") are allowed
             }
         }
 
@@ -78,7 +121,51 @@ public class BetService {
         bet.setOutcomes(outcomes);
         bet.setAmount(amount);
         bet.setStatus(Bet.BetStatus.PENDING);
+        bet.setPlacedAt(now);
         return betRepository.save(bet);
+    }
+
+    /**
+     * Extracts the base category from an outcomeGroup string.
+     * For example:
+     * - "Goles - Furbito FIC - Más de" -> "Goles - Furbito FIC"
+     * - "Goles - ECONÓMICAS-5 - Menos de" -> "Goles - ECONÓMICAS-5"
+     * - "Ganador del Partido" -> "Ganador del Partido"
+     * - "Ambos Marcan" -> "Ambos Marcan"
+     */
+    private String extractBaseCategory(String outcomeGroup) {
+        if (outcomeGroup == null) {
+            return "";
+        }
+
+        // Remove common directional indicators
+        String base = outcomeGroup
+                .replaceAll(" - Más de$", "")
+                .replaceAll(" - Menos de$", "")
+                .replaceAll(" - Over$", "")
+                .replaceAll(" - Under$", "")
+                .trim();
+
+        return base;
+    }
+
+    /**
+     * Extracts the direction from an outcomeGroup string.
+     * Returns "MAS" for "Más de", "MENOS" for "Menos de", or "" for no direction.
+     */
+    private String extractDirection(String outcomeGroup) {
+        if (outcomeGroup == null) {
+            return "";
+        }
+
+        if (outcomeGroup.contains(" - Más de") || outcomeGroup.contains(" - Over")) {
+            return "MAS";
+        }
+        if (outcomeGroup.contains(" - Menos de") || outcomeGroup.contains(" - Under")) {
+            return "MENOS";
+        }
+
+        return "";
     }
 
     public java.util.List<Bet> getBetsByUserId(Long userId) {

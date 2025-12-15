@@ -181,19 +181,41 @@ public class EventService {
 
     @org.springframework.transaction.annotation.Transactional
     public void deleteEvent(Long id) {
-        // 1. Find all bets associated with this event
+        // 1. Find the event
+        Event event = eventRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Event not found"));
+
+        // 2. Find all bets associated with this event
         List<com.furbitobet.backend.model.Bet> bets = betRepository.findDistinctByOutcomes_Event_Id(id);
 
-        // 2. Void bets and refund users if they were pending
+        // 3. Void bets and refund users if they were pending
         for (com.furbitobet.backend.model.Bet bet : bets) {
             if (bet.getStatus() == com.furbitobet.backend.model.Bet.BetStatus.PENDING) {
                 bet.setStatus(com.furbitobet.backend.model.Bet.BetStatus.VOID);
+                bet.setWinnings(bet.getAmount()); // Set winnings to original amount (refund)
+
+                // Refund the user
                 userService.updateBalance(bet.getUser().getId(), bet.getAmount());
                 betRepository.save(bet);
+
+                // Optionally send notification email
+                try {
+                    String subject = "Evento Cancelado - Apuesta #" + bet.getId() + " Anulada";
+                    String body = "Hola " + bet.getUser().getUsername() + ",\n\n" +
+                            "El evento \"" + event.getName() + "\" ha sido cancelado por el administrador.\n" +
+                            "Tu apuesta #" + bet.getId() + " ha sido anulada.\n" +
+                            "Se te ha devuelto el importe de " + String.format("%.2f", bet.getAmount()) + "€.\n\n" +
+                            "Lamentamos las molestias.\n\n" +
+                            "FurbitoBET";
+                    emailService.sendSimpleMessage(bet.getUser().getEmail(), subject, body);
+                } catch (Exception e) {
+                    System.err
+                            .println("Error sending cancellation email for bet " + bet.getId() + ": " + e.getMessage());
+                }
             }
         }
 
-        // 3. Delete the event (cascades to outcomes)
+        // 4. Delete the event (cascades to outcomes)
         eventRepository.deleteById(id);
     }
 

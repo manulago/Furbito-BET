@@ -138,68 +138,87 @@ public class EventSyncService {
             String homeTeamFormatted, String awayTeamFormatted,
             List<Map<String, String>> standings) {
 
-        Map<String, Double> homeStats = getTeamStats(homeTeamOriginal, standings);
-        Map<String, Double> awayStats = getTeamStats(awayTeamOriginal, standings);
+        Map<String, Double> team1Stats = getTeamStats(homeTeamOriginal, standings);
+        Map<String, Double> team2Stats = getTeamStats(awayTeamOriginal, standings);
 
-        double homePoints = homeStats.getOrDefault("points", 0.0);
-        double awayPoints = awayStats.getOrDefault("points", 0.0);
+        // Calculate team strengths (no home advantage since field is neutral)
+        double team1Strength = calculateTeamStrength(team1Stats);
+        double team2Strength = calculateTeamStrength(team2Stats);
 
-        // 1X2 Market
-        double diff = homePoints - awayPoints;
-        double factor = diff * 0.05;
+        // Calculate win probabilities using more sophisticated model
+        double totalStrength = team1Strength + team2Strength;
+        double team1WinProb = team1Strength / totalStrength;
+        double team2WinProb = team2Strength / totalStrength;
 
-        double homeOdds = Math.max(1.1, 2.5 - factor);
-        double awayOdds = Math.max(1.1, 2.5 + factor);
-        double drawOdds = Math.max(2.0, 3.0 - (Math.abs(diff) * 0.02));
+        // Calculate draw probability based on how evenly matched teams are
+        double strengthDiff = Math.abs(team1Strength - team2Strength);
+        double drawProb = 0.25 * (1.0 - (strengthDiff / (team1Strength + team2Strength)));
+        drawProb = Math.max(0.15, Math.min(0.35, drawProb)); // Clamp between 15-35%
 
-        createOutcome(event, "1", homeOdds, "Ganador del Partido");
+        // Normalize probabilities
+        double totalProb = team1WinProb + team2WinProb + drawProb;
+        team1WinProb /= totalProb;
+        team2WinProb /= totalProb;
+        drawProb /= totalProb;
+
+        // Apply margin (house edge) - 8% margin
+        double margin = 0.92;
+        double team1Odds = (1.0 / team1WinProb) * margin;
+        double team2Odds = (1.0 / team2WinProb) * margin;
+        double drawOdds = (1.0 / drawProb) * margin;
+
+        // Ensure minimum odds
+        team1Odds = Math.max(1.10, team1Odds);
+        team2Odds = Math.max(1.10, team2Odds);
+        drawOdds = Math.max(2.00, drawOdds);
+
+        createOutcome(event, "1", team1Odds, "Ganador del Partido");
         createOutcome(event, "X", drawOdds, "Ganador del Partido");
-        createOutcome(event, "2", awayOdds, "Ganador del Partido");
+        createOutcome(event, "2", team2Odds, "Ganador del Partido");
 
-        // Probabilities (normalized)
-        double prob1 = 1.0 / homeOdds;
+        // Recalculate normalized probabilities for derived markets
+        double prob1 = 1.0 / team1Odds;
         double probX = 1.0 / drawOdds;
-        double prob2 = 1.0 / awayOdds;
-        double totalProb = prob1 + probX + prob2;
+        double prob2 = 1.0 / team2Odds;
+        totalProb = prob1 + probX + prob2;
         prob1 /= totalProb;
         probX /= totalProb;
         prob2 /= totalProb;
 
         // Double Chance
-        createOutcome(event, "1X", 1.0 / (prob1 + probX), "Doble Oportunidad");
-        createOutcome(event, "X2", 1.0 / (probX + prob2), "Doble Oportunidad");
-        createOutcome(event, "12", 1.0 / (prob1 + prob2), "Doble Oportunidad");
+        createOutcome(event, "1X", (1.0 / (prob1 + probX)) * margin, "Doble Oportunidad");
+        createOutcome(event, "X2", (1.0 / (probX + prob2)) * margin, "Doble Oportunidad");
+        createOutcome(event, "12", (1.0 / (prob1 + prob2)) * margin, "Doble Oportunidad");
 
         // Draw No Bet
-        createOutcome(event, "1 (Sin Empate)", 1.0 / (prob1 / (prob1 + prob2)), "Apuesta sin Empate");
-        createOutcome(event, "2 (Sin Empate)", 1.0 / (prob2 / (prob1 + prob2)), "Apuesta sin Empate");
+        createOutcome(event, "1 (Sin Empate)", (1.0 / (prob1 / (prob1 + prob2))) * margin, "Apuesta sin Empate");
+        createOutcome(event, "2 (Sin Empate)", (1.0 / (prob2 / (prob1 + prob2))) * margin, "Apuesta sin Empate");
 
-        // Over/Under Goals (0.5 to 9.5)
-        // Avg goals per match = (GF + GA) / Played
-        double homeAvgGoals = (homeStats.get("gf") + homeStats.get("ga")) / Math.max(1, homeStats.get("played"));
-        double awayAvgGoals = (awayStats.get("gf") + awayStats.get("ga")) / Math.max(1, awayStats.get("played"));
-        double matchAvgGoals = (homeAvgGoals + awayAvgGoals) / 2.0;
+        // Over/Under Goals using Poisson distribution
+        double team1AvgGoalsScored = team1Stats.get("gf") / Math.max(1, team1Stats.get("played"));
+        double team1AvgGoalsConceded = team1Stats.get("ga") / Math.max(1, team1Stats.get("played"));
+        double team2AvgGoalsScored = team2Stats.get("gf") / Math.max(1, team2Stats.get("played"));
+        double team2AvgGoalsConceded = team2Stats.get("ga") / Math.max(1, team2Stats.get("played"));
+
+        // Expected goals for this match
+        double expectedGoalsTeam1 = (team1AvgGoalsScored + team2AvgGoalsConceded) / 2.0;
+        double expectedGoalsTeam2 = (team2AvgGoalsScored + team1AvgGoalsConceded) / 2.0;
+        double expectedTotalGoals = expectedGoalsTeam1 + expectedGoalsTeam2;
 
         double lastOverOdds = 0.0;
         double lastUnderOdds = 1000.0;
 
-        // Iterate from 0.5 to 9.5
+        // Over/Under total goals (0.5 to 9.5)
         for (double line = 0.5; line <= 9.5; line += 1.0) {
-
-            double diffGoals = matchAvgGoals - line;
-            // Sigmoid-like adjustment
-            double probUnder = 1.0 / (1.0 + Math.exp(diffGoals));
+            double probOver = calculatePoissonOver(expectedTotalGoals, line);
+            double probUnder = 1.0 - probOver;
 
             // Clamp probabilities
+            probOver = Math.max(0.01, Math.min(0.99, probOver));
             probUnder = Math.max(0.01, Math.min(0.99, probUnder));
-            double probOver = 1.0 - probUnder;
 
-            double underOddsVal = 1.0 / probUnder;
-            double overOddsVal = 1.0 / probOver;
-
-            // Apply margin (e.g. 5%)
-            underOddsVal *= 0.95;
-            overOddsVal *= 0.95;
+            double overOddsVal = (1.0 / probOver) * margin;
+            double underOddsVal = (1.0 / probUnder) * margin;
 
             // Monotonicity check
             if (overOddsVal <= lastOverOdds) {
@@ -221,25 +240,84 @@ public class EventSyncService {
             }
         }
 
-        // Team Goals (Home)
-        // Avg goals for home team = GF / Played
-        double homeTeamAvg = homeStats.get("gf") / Math.max(1, homeStats.get("played"));
-        createTeamGoalOutcomes(event, homeTeamFormatted, homeTeamAvg, "Goles - " + homeTeamFormatted);
-
-        // Team Goals (Away)
-        double awayTeamAvg = awayStats.get("gf") / Math.max(1, awayStats.get("played"));
-        createTeamGoalOutcomes(event, awayTeamFormatted, awayTeamAvg, "Goles - " + awayTeamFormatted);
+        // Team-specific goals
+        createTeamGoalOutcomes(event, homeTeamFormatted, expectedGoalsTeam1, "Goles - " + homeTeamFormatted);
+        createTeamGoalOutcomes(event, awayTeamFormatted, expectedGoalsTeam2, "Goles - " + awayTeamFormatted);
 
         // Both Teams to Score (BTTS)
-        // High GF and High GA -> High chance of BTTS
-        double bttsProb = (homeAvgGoals + awayAvgGoals) / 6.0; // Rough heuristic
-        bttsProb = Math.min(0.9, Math.max(0.1, bttsProb)); // Clamp 0.1 - 0.9
+        // Probability both score at least 1 = P(Team1 >= 1) * P(Team2 >= 1)
+        double probTeam1Scores = 1.0 - Math.exp(-expectedGoalsTeam1);
+        double probTeam2Scores = 1.0 - Math.exp(-expectedGoalsTeam2);
+        double bttsYesProb = probTeam1Scores * probTeam2Scores;
+        bttsYesProb = Math.max(0.10, Math.min(0.90, bttsYesProb));
 
-        double bttsYes = 1.0 / bttsProb;
-        double bttsNo = 1.0 / (1.0 - bttsProb);
+        double bttsYesOdds = (1.0 / bttsYesProb) * margin;
+        double bttsNoOdds = (1.0 / (1.0 - bttsYesProb)) * margin;
 
-        createOutcome(event, "Sí", bttsYes, "Ambos Marcan");
-        createOutcome(event, "No", bttsNo, "Ambos Marcan");
+        createOutcome(event, "Sí", bttsYesOdds, "Ambos Marcan");
+        createOutcome(event, "No", bttsNoOdds, "Ambos Marcan");
+    }
+
+    /**
+     * Calculate team strength based on multiple factors
+     */
+    private double calculateTeamStrength(Map<String, Double> stats) {
+        double points = stats.get("points");
+        double played = Math.max(1, stats.get("played"));
+        double gf = stats.get("gf");
+        double ga = stats.get("ga");
+
+        // Points per game (weight: 40%)
+        double ppg = points / played;
+        double ppgScore = ppg / 3.0; // Normalize (max 3 points per game)
+
+        // Goal difference (weight: 30%)
+        double gd = (gf - ga) / played;
+        double gdScore = (gd + 3.0) / 6.0; // Normalize (-3 to +3 range)
+        gdScore = Math.max(0, Math.min(1, gdScore));
+
+        // Offensive strength (weight: 15%)
+        double offensiveScore = Math.min(1.0, (gf / played) / 5.0); // Normalize (5 goals/game = max)
+
+        // Defensive strength (weight: 15%)
+        double defensiveScore = 1.0 - Math.min(1.0, (ga / played) / 5.0); // Lower GA = better
+
+        // Weighted combination
+        double strength = (ppgScore * 0.40) + (gdScore * 0.30) + (offensiveScore * 0.15) + (defensiveScore * 0.15);
+
+        // Ensure minimum strength
+        return Math.max(0.1, strength);
+    }
+
+    /**
+     * Calculate probability of scoring more than X goals using Poisson distribution
+     */
+    private double calculatePoissonOver(double lambda, double k) {
+        double probUnder = 0.0;
+        for (int i = 0; i <= (int) k; i++) {
+            probUnder += poissonProbability(lambda, i);
+        }
+        return 1.0 - probUnder;
+    }
+
+    /**
+     * Poisson probability mass function
+     */
+    private double poissonProbability(double lambda, int k) {
+        return (Math.pow(lambda, k) * Math.exp(-lambda)) / factorial(k);
+    }
+
+    /**
+     * Calculate factorial
+     */
+    private long factorial(int n) {
+        if (n <= 1)
+            return 1;
+        long result = 1;
+        for (int i = 2; i <= n; i++) {
+            result *= i;
+        }
+        return result;
     }
 
     private void createTeamGoalOutcomes(Event event, String teamName, double avgGoals, String group) {

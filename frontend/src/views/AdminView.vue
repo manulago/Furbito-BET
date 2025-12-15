@@ -49,36 +49,52 @@ const playerForm = ref({
 
 // Newsletter Logic
 const showNewsletterModal = ref(false)
-const newsletterSubject = ref('🎉 ¡Novedades en FurbitoBET!')
+const newsletterSubject = ref('🎉 ¡Grandes Novedades en FurbitoBET!')
 const newsletterMessage = ref(`¡Hola!
 
-Tenemos grandes novedades en FurbitoBET que queremos compartir contigo:
+Tenemos GRANDES novedades en FurbitoBET que queremos compartir contigo:
+
+🎯 CATEGORÍAS COLAPSABLES
+Ahora los eventos muestran las categorías de apuestas colapsadas por defecto.
+Haz clic para expandir solo las que te interesen.
+¡Navegación mucho más limpia y rápida!
+
+🧠 VALIDACIÓN INTELIGENTE DE APUESTAS
+Sistema mejorado que previene combinaciones ilógicas:
+✅ Permite: "Más de 0.5" + "Menos de 9.5" (compatibles)
+✅ Permite: Múltiples goleadores en la misma apuesta
+❌ Bloquea: "Más de 2.5" + "Más de 3.5" (solapamiento)
+¡Sustitución automática sin alertas molestas!
+
+📊 CUOTAS MÁS REALISTAS
+Sistema de cálculo completamente renovado:
+• Sin ventaja de local (campo neutral)
+• Considera 4 factores: puntos, diferencia de goles, ataque y defensa
+• Distribución de Poisson para probabilidades de goles
+• Cuotas más justas y competitivas
+
+📅 HISTORIAL MEJORADO
+Tus apuestas ahora muestran:
+• Fecha y hora exacta de cada apuesta
+• Ordenación de más reciente a más antigua
+• Categoría del suceso en badges morados
+• Vista consistente en perfil y "Mis Apuestas"
+
+🗑️ EVENTOS CANCELADOS
+Si un admin cancela un evento:
+• Tus apuestas se anulan automáticamente
+• Recibes tu dinero de vuelta al instante
+• Email de notificación explicando la situación
+¡Total transparencia!
 
 📱 ¡INSTALA LA APP!
-Ahora puedes instalar FurbitoBET en tu móvil o PC como una aplicación.
-Acceso rápido desde tu pantalla de inicio, sin abrir el navegador.
-
-🔹 En Android: Busca el botón "Instalar App" en la página
-🔹 En iPhone: Toca Compartir → "Añadir a pantalla de inicio"
-
-📱 MEJORA MÓVIL
-Experiencia 100% optimizada para tu teléfono.
-Navegación más fluida y accesible.
-
-❓ NUEVA PÁGINA DE AYUDA
-¿Dudas? Visita nuestra sección de ayuda para aprender cómo funciona todo.
-
-⚙️ GESTIÓN DE PERFIL
-Control total sobre tu cuenta.
-Actualiza tus datos y preferencias fácilmente.
-
-👀 ESPÍA A LOS MEJORES
-Visita el perfil de otros usuarios desde el ranking.
-Ve su historial de apuestas y estrategias.
+Acceso rápido desde tu pantalla de inicio.
+🔹 Android: Botón "Instalar App"
+🔹 iPhone: Compartir → "Añadir a pantalla de inicio"
 
 ---
 
-¡Entra ahora y descubre todas las mejoras!
+¡Entra ahora y disfruta de todas las mejoras!
 https://furbitobet.vercel.app
 
 Saludos,
