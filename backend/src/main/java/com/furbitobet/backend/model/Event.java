@@ -19,6 +19,10 @@ public class Event {
     @Enumerated(EnumType.STRING)
     private EventStatus status;
 
+    // Store match result for re-resolution if needed
+    private Integer homeGoals;
+    private Integer awayGoals;
+
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
     private List<Outcome> outcomes;
 

@@ -12,6 +12,7 @@ import java.math.BigDecimal;
 import com.furbitobet.backend.repository.EventRepository;
 import com.furbitobet.backend.repository.OutcomeRepository;
 import com.furbitobet.backend.repository.BetRepository;
+import com.furbitobet.backend.repository.UserRepository;
 import com.furbitobet.backend.model.Bet;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,6 +34,9 @@ public class AdminController {
 
     @Autowired
     private BetRepository betRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @Autowired
     private com.furbitobet.backend.service.EventSyncService eventSyncService;
@@ -129,56 +133,79 @@ public class AdminController {
         outcome.setStatus(status);
         outcomeRepository.save(outcome);
 
-        // Update bets logic could be complex for combined bets,
-        // but for now let's assume a separate process or simple check
-        // For this task, we just update the outcome status.
-        // A real system would trigger a settlement job.
-        // Let's implement a basic settlement for single bets or check all bets
-        // containing this outcome
+        // Re-evaluate all bets containing this outcome
+        java.util.List<Bet> allBets = betRepository.findAll();
 
-        java.util.List<Bet> bets = betRepository.findAll(); // Inefficient but works for small scale
-        for (Bet bet : bets) {
-            if (bet.getStatus() == Bet.BetStatus.PENDING) {
-                checkBetStatus(bet);
+        for (Bet bet : allBets) {
+            // Check if this bet contains the modified outcome
+            boolean containsOutcome = bet.getOutcomes().stream()
+                    .anyMatch(o -> o.getId().equals(id));
+
+            if (!containsOutcome) {
+                continue;
             }
-        }
-    }
 
-    private void checkBetStatus(Bet bet) {
-        boolean allWon = true;
-        boolean anyLost = false;
+            // Store old bet status to handle balance adjustments
+            Bet.BetStatus oldBetStatus = bet.getStatus();
+            BigDecimal oldWinnings = bet.getWinnings() != null ? bet.getWinnings() : BigDecimal.ZERO;
 
-        for (Outcome o : bet.getOutcomes()) {
-            if (o.getStatus() == Outcome.OutcomeStatus.LOST) {
-                anyLost = true;
-                break;
+            // Re-evaluate bet status
+            boolean allResolved = true;
+            boolean anyLost = false;
+            BigDecimal totalOdds = BigDecimal.ONE;
+            boolean anyVoid = false;
+
+            for (Outcome o : bet.getOutcomes()) {
+                if (o.getStatus() == Outcome.OutcomeStatus.PENDING) {
+                    allResolved = false;
+                }
+                if (o.getStatus() == Outcome.OutcomeStatus.LOST) {
+                    anyLost = true;
+                }
+                if (o.getStatus() == Outcome.OutcomeStatus.WON) {
+                    totalOdds = totalOdds.multiply(o.getOdds());
+                }
+                if (o.getStatus() == Outcome.OutcomeStatus.VOID) {
+                    anyVoid = true;
+                }
             }
-            if (o.getStatus() == Outcome.OutcomeStatus.PENDING) {
-                allWon = false;
-            }
-        }
 
-        if (anyLost) {
-            bet.setStatus(Bet.BetStatus.LOST);
-            betRepository.save(bet);
-        } else if (allWon) {
-            bet.setStatus(Bet.BetStatus.WON);
             User user = bet.getUser();
-            java.math.BigDecimal multiplier = bet.getOutcomes().stream()
-                    .map(Outcome::getOdds)
-                    .reduce(java.math.BigDecimal.ONE, java.math.BigDecimal::multiply);
-            user.setBalance(user.getBalance().add(bet.getAmount().multiply(multiplier)));
-            userService.updateBalance(user.getId(), java.math.BigDecimal.ZERO); // Just to save user? No, updateBalance
-                                                                                // adds.
-            // We need to save user directly or use a specific method.
-            // userService.updateBalance adds amount.
-            // Let's use repository directly or add method in UserService.
-            // Actually userService.updateBalance adds the amount to existing balance.
-            // But we already did setBalance.
-            // Let's use userService.updateBalance(user.getId(), winnings) instead of manual
-            // set.
-            // Wait, we already calculated winnings.
-            // Let's revert the manual setBalance and use userService.
+
+            // Revert previous winnings if bet was already settled
+            if (oldBetStatus == Bet.BetStatus.WON && oldWinnings.compareTo(BigDecimal.ZERO) > 0) {
+                user.setBalance(user.getBalance().subtract(oldWinnings));
+            } else if (oldBetStatus == Bet.BetStatus.VOID && bet.getAmount() != null) {
+                // Revert refund if bet was voided
+                user.setBalance(user.getBalance().subtract(bet.getAmount()));
+            }
+
+            // Apply new bet status
+            if (anyLost) {
+                bet.setStatus(Bet.BetStatus.LOST);
+                bet.setWinnings(BigDecimal.ZERO);
+            } else if (!allResolved) {
+                bet.setStatus(Bet.BetStatus.PENDING);
+                bet.setWinnings(null);
+            } else {
+                // All resolved and none lost
+                if (anyVoid && totalOdds.compareTo(BigDecimal.ONE) == 0
+                        && bet.getOutcomes().stream().allMatch(o -> o.getStatus() == Outcome.OutcomeStatus.VOID)) {
+                    // All void - refund
+                    bet.setStatus(Bet.BetStatus.VOID);
+                    bet.setWinnings(bet.getAmount());
+                    user.setBalance(user.getBalance().add(bet.getAmount()));
+                } else {
+                    // Won
+                    bet.setStatus(Bet.BetStatus.WON);
+                    BigDecimal winnings = bet.getAmount().multiply(totalOdds);
+                    bet.setWinnings(winnings);
+                    user.setBalance(user.getBalance().add(winnings));
+                }
+            }
+
+            userRepository.save(user);
+            betRepository.save(bet);
         }
     }
 

@@ -227,6 +227,10 @@ public class EventService {
     public void resolveEvent(Event event, int homeGoals, int awayGoals) {
         logger.info("Resolving event {}: {} - {}", event.getDescription(), homeGoals, awayGoals);
 
+        // Save the match result in the event for future re-resolution
+        event.setHomeGoals(homeGoals);
+        event.setAwayGoals(awayGoals);
+
         List<Outcome> outcomes = outcomeRepository.findByEventId(event.getId());
 
         for (Outcome outcome : outcomes) {

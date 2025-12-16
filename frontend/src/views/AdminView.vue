@@ -518,8 +518,9 @@ const resolveAwayGoals = ref(0)
 
 function startResolveEvent(event) {
   resolvingEvent.value = event
-  resolveHomeGoals.value = 0
-  resolveAwayGoals.value = 0
+  // Pre-fill with existing results if event was already resolved
+  resolveHomeGoals.value = event.homeGoals ?? 0
+  resolveAwayGoals.value = event.awayGoals ?? 0
 }
 
 async function resolveEvent() {
@@ -761,11 +762,21 @@ onMounted(() => {
         </div>
       </div>
 
+
       <!-- Resolve Event Modal -->
       <div v-if="resolvingEvent" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
         <div class="bg-gray-800 p-6 rounded-lg shadow-xl border border-blue-500 w-full max-w-md">
-          <h3 class="text-xl font-bold mb-4 text-blue-400">{{ langStore.t('admin.simulateResult') }}</h3>
-          <p class="text-white mb-4 font-bold">{{ resolvingEvent.name }}</p>
+          <h3 class="text-xl font-bold mb-2 text-blue-400">
+            {{ resolvingEvent.status === 'COMPLETED' ? '🔄 Modificar Resultado' : langStore.t('admin.simulateResult') }}
+          </h3>
+          <p class="text-white mb-2 font-bold">{{ resolvingEvent.name }}</p>
+          
+          <!-- Show current result if already resolved -->
+          <p v-if="resolvingEvent.homeGoals !== null && resolvingEvent.homeGoals !== undefined" class="text-sm text-yellow-400 mb-4">
+            ⚠️ Resultado actual: {{ resolvingEvent.homeGoals }} - {{ resolvingEvent.awayGoals }}
+            <br><span class="text-xs text-gray-400">Las apuestas se reevaluarán automáticamente</span>
+          </p>
+          
           <div class="flex gap-4 items-center justify-center mb-6">
             <div class="flex flex-col items-center">
                <label class="text-gray-400 text-sm mb-1">{{ langStore.t('admin.home') }}</label>
@@ -779,7 +790,9 @@ onMounted(() => {
           </div>
           <div class="flex justify-end gap-3">
             <button @click="resolvingEvent = null" class="px-4 py-2 text-gray-300 hover:text-white">{{ langStore.t('admin.cancel') }}</button>
-            <button @click="resolveEvent" class="bg-blue-600 hover:bg-blue-500 px-6 py-2 rounded text-white font-bold">{{ langStore.t('admin.resolveSettle') }}</button>
+            <button @click="resolveEvent" class="bg-blue-600 hover:bg-blue-500 px-6 py-2 rounded text-white font-bold">
+              {{ resolvingEvent.status === 'COMPLETED' ? 'Actualizar' : langStore.t('admin.resolveSettle') }}
+            </button>
           </div>
         </div>
       </div>
@@ -829,7 +842,9 @@ onMounted(() => {
           </div>
           <div class="flex gap-2 w-full md:w-auto">
              <button @click="startEditEvent(selectedEvent)" class="flex-1 md:flex-none bg-blue-600 hover:bg-blue-500 text-white px-2 md:px-3 py-1 rounded text-xs md:text-sm font-bold">{{ langStore.t('admin.editDetails') }}</button>
-             <button v-if="selectedEvent.status === 'UPCOMING'" @click="startResolveEvent(selectedEvent)" class="flex-1 md:flex-none bg-green-600 hover:bg-green-500 text-white px-2 md:px-3 py-1 rounded text-xs md:text-sm font-bold whitespace-nowrap">{{ langStore.t('admin.simulateResult') }}</button>
+             <button v-if="selectedEvent.status === 'UPCOMING' || selectedEvent.status === 'COMPLETED'" @click="startResolveEvent(selectedEvent)" class="flex-1 md:flex-none bg-green-600 hover:bg-green-500 text-white px-2 md:px-3 py-1 rounded text-xs md:text-sm font-bold whitespace-nowrap">
+               {{ selectedEvent.status === 'COMPLETED' ? '🔄 Modificar Resultado' : langStore.t('admin.simulateResult') }}
+             </button>
           </div>
         </div>
 
