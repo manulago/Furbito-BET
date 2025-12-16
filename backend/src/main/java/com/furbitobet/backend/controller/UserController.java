@@ -33,6 +33,11 @@ public class UserController {
 
     @PutMapping("/{id}/balance")
     public User updateBalance(@PathVariable Long id, @RequestBody java.math.BigDecimal amount) {
+        // SECURITY: Validate that balance is not negative
+        if (amount.compareTo(java.math.BigDecimal.ZERO) < 0) {
+            throw new RuntimeException("Balance cannot be negative");
+        }
+
         User user = userService.getUserById(id);
         user.setBalance(amount);
         return userRepository.save(user);

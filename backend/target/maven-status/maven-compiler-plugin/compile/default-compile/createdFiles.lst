@@ -1,3 +1,4 @@
+com/furbitobet/backend/dto/UserDTO.class
 com/furbitobet/backend/repository/CategoryRepository.class
 com/furbitobet/backend/service/EventService.class
 com/furbitobet/backend/model/Outcome$OutcomeStatus.class

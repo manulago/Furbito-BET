@@ -31,6 +31,12 @@ public class AuthController {
             return ResponseEntity.badRequest().body("Error: Email is already in use!");
         }
 
+        // SECURITY: Validate password strength
+        if (!isPasswordValid(request.getPassword())) {
+            return ResponseEntity.badRequest().body(
+                    "Error: Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one digit, and one special character.");
+        }
+
         User user = new User();
         user.setUsername(request.getUsername());
         user.setEmail(request.getEmail());
@@ -56,6 +62,20 @@ public class AuthController {
         }
 
         return ResponseEntity.ok("User registered successfully! Please check your email to confirm your account.");
+    }
+
+    // SECURITY: Password validation helper
+    private boolean isPasswordValid(String password) {
+        if (password == null || password.length() < 8) {
+            return false;
+        }
+        // At least one uppercase, one lowercase, one digit, one special char
+        boolean hasUpper = password.chars().anyMatch(Character::isUpperCase);
+        boolean hasLower = password.chars().anyMatch(Character::isLowerCase);
+        boolean hasDigit = password.chars().anyMatch(Character::isDigit);
+        boolean hasSpecial = password.chars().anyMatch(ch -> !Character.isLetterOrDigit(ch));
+
+        return hasUpper && hasLower && hasDigit && hasSpecial;
     }
 
     @GetMapping("/confirm-account")
@@ -91,6 +111,8 @@ public class AuthController {
             User user = userOpt.get();
             String token = java.util.UUID.randomUUID().toString();
             user.setResetToken(token);
+            // SECURITY: Add expiration to reset token (1 hour)
+            user.setResetTokenExpiry(java.time.LocalDateTime.now().plusHours(1));
             userRepository.save(user);
 
             try {
@@ -117,8 +139,21 @@ public class AuthController {
         }
 
         User user = userOpt.get();
+
+        // SECURITY: Validate token expiration
+        if (user.getResetTokenExpiry() != null && user.getResetTokenExpiry().isBefore(java.time.LocalDateTime.now())) {
+            return ResponseEntity.badRequest().body("Reset token has expired. Please request a new one.");
+        }
+
+        // SECURITY: Validate new password strength
+        if (!isPasswordValid(request.getNewPassword())) {
+            return ResponseEntity.badRequest().body(
+                    "Error: Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one digit, and one special character.");
+        }
+
         user.setPassword(passwordEncoder.encode(request.getNewPassword()));
         user.setResetToken(null);
+        user.setResetTokenExpiry(null);
         userRepository.save(user);
 
         return ResponseEntity.ok("Password has been reset successfully.");
@@ -170,14 +205,17 @@ public class AuthController {
 
         User user = userRepository.findByUsername(request.getUsername()).get();
 
-        return ResponseEntity.ok(new AuthResponse(jwt, user));
+        // SECURITY: Use DTO to prevent exposing sensitive user data
+        com.furbitobet.backend.dto.UserDTO userDTO = new com.furbitobet.backend.dto.UserDTO(user);
+
+        return ResponseEntity.ok(new AuthResponse(jwt, userDTO));
     }
 
     public static class AuthResponse {
         private String token;
-        private User user;
+        private com.furbitobet.backend.dto.UserDTO user;
 
-        public AuthResponse(String token, User user) {
+        public AuthResponse(String token, com.furbitobet.backend.dto.UserDTO user) {
             this.token = token;
             this.user = user;
         }
@@ -186,7 +224,7 @@ public class AuthController {
             return token;
         }
 
-        public User getUser() {
+        public com.furbitobet.backend.dto.UserDTO getUser() {
             return user;
         }
     }

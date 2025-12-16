@@ -30,6 +30,7 @@
 /home/manulago/Escritorio/FurbitoBET/backend/src/main/java/com/furbitobet/backend/controller/EventController.java
 /home/manulago/Escritorio/FurbitoBET/backend/src/main/java/com/furbitobet/backend/controller/UserController.java
 /home/manulago/Escritorio/FurbitoBET/backend/src/main/java/com/furbitobet/backend/config/AppConfig.java
+/home/manulago/Escritorio/FurbitoBET/backend/src/main/java/com/furbitobet/backend/dto/UserDTO.java
 /home/manulago/Escritorio/FurbitoBET/backend/src/main/java/com/furbitobet/backend/controller/AdminController.java
 /home/manulago/Escritorio/FurbitoBET/backend/src/main/java/com/furbitobet/backend/repository/PlayerRepository.java
 /home/manulago/Escritorio/FurbitoBET/backend/src/main/java/com/furbitobet/backend/model/Player.java
