@@ -16,10 +16,20 @@ import java.util.function.Function;
 @Component
 public class JwtUtil {
 
-    // Use a fixed secret key (in production this should be in environment
-    // variables)
-    private final String SECRET_STRING = "my_super_secret_key_for_furbitobet_application_123456789";
-    private final Key SECRET_KEY = Keys.hmacShaKeyFor(SECRET_STRING.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+    // SECURITY: Secret key from environment variable (not hardcoded)
+    @org.springframework.beans.factory.annotation.Value("${jwt.secret}")
+    private String SECRET_STRING;
+
+    @org.springframework.beans.factory.annotation.Value("${jwt.expiration}")
+    private long JWT_EXPIRATION;
+
+    private Key SECRET_KEY;
+
+    // Initialize SECRET_KEY after SECRET_STRING is injected
+    @jakarta.annotation.PostConstruct
+    public void init() {
+        this.SECRET_KEY = Keys.hmacShaKeyFor(SECRET_STRING.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+    }
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
@@ -49,7 +59,7 @@ public class JwtUtil {
 
     private String createToken(Map<String, Object> claims, String subject) {
         return Jwts.builder().setClaims(claims).setSubject(subject).setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10)) // 10 hours
+                .setExpiration(new Date(System.currentTimeMillis() + JWT_EXPIRATION))
                 .signWith(SECRET_KEY, SignatureAlgorithm.HS256).compact();
     }
 

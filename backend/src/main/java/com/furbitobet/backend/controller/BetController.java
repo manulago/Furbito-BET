@@ -77,7 +77,16 @@ public class BetController {
     }
 
     @PostMapping("/{id}/cancel")
-    public void cancelBet(@PathVariable Long id, @RequestParam Long userId) {
+    public void cancelBet(@PathVariable Long id, @RequestParam Long userId,
+            org.springframework.security.core.Authentication authentication) {
+        // SECURITY: Verify that the authenticated user matches the userId parameter
+        String authenticatedUsername = authentication.getName();
+        com.furbitobet.backend.model.User requestUser = userService.getUserById(userId);
+
+        if (!requestUser.getUsername().equals(authenticatedUsername)) {
+            throw new RuntimeException("Unauthorized: Cannot cancel other users' bets");
+        }
+
         betService.cancelBet(id, userId);
     }
 }
