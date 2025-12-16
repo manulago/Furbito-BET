@@ -504,12 +504,26 @@ async function deleteOutcome(id) {
 }
 
 async function settleOutcome(id, status) {
-  if (!confirm(`Mark outcome as ${status}?`)) return
-  await fetch(`${import.meta.env.VITE_API_URL}/api/admin/outcomes/${id}/status?status=${status}`, { 
-      method: 'PUT',
-      headers: { 'Authorization': `Bearer ${auth.token}` }
-  })
-  fetchEvents()
+  const statusText = {
+    'WON': 'GANADO ✅',
+    'LOST': 'PERDIDO ❌',
+    'VOID': 'ANULADO ⚪'
+  }[status] || status
+  
+  const message = `¿Marcar este suceso como ${statusText}?\n\n⚠️ IMPORTANTE: Todas las apuestas que incluyan este suceso se reevaluarán automáticamente y los balances de los usuarios se actualizarán.`
+  
+  if (!confirm(message)) return
+  
+  try {
+    await fetch(`${import.meta.env.VITE_API_URL}/api/admin/outcomes/${id}/status?status=${status}`, { 
+        method: 'PUT',
+        headers: { 'Authorization': `Bearer ${auth.token}` }
+    })
+    fetchEvents()
+    alert('✅ Suceso actualizado y apuestas reevaluadas correctamente')
+  } catch (error) {
+    alert('❌ Error al actualizar el suceso: ' + error.message)
+  }
 }
 
 const resolvingEvent = ref(null)
@@ -924,10 +938,20 @@ onMounted(() => {
                    <button @click="startEditOutcome(outcome)" class="bg-blue-600 hover:bg-blue-500 text-white px-3 py-1 rounded text-sm">{{ langStore.t('admin.edit') }}</button>
                    <button @click="deleteOutcome(outcome.id)" class="bg-red-600 hover:bg-red-500 text-white px-3 py-1 rounded text-sm">{{ langStore.t('admin.delete') }}</button>
                    
-                   <div v-if="outcome.status === 'PENDING'" class="flex gap-1 ml-2 border-l border-gray-600 pl-2">
-                      <button @click="settleOutcome(outcome.id, 'WON')" class="bg-green-700 hover:bg-green-600 text-white px-2 py-1 rounded text-xs" title="Mark as Won">W</button>
-                      <button @click="settleOutcome(outcome.id, 'LOST')" class="bg-red-700 hover:bg-red-600 text-white px-2 py-1 rounded text-xs" title="Mark as Lost">L</button>
-                      <button @click="settleOutcome(outcome.id, 'VOID')" class="bg-gray-600 hover:bg-gray-500 text-white px-2 py-1 rounded text-xs" title="Mark as Void(Anular)">V</button>
+                   <!-- Status change buttons - always visible to allow corrections -->
+                   <div class="flex gap-1 ml-2 border-l border-gray-600 pl-2">
+                      <button @click="settleOutcome(outcome.id, 'WON')" 
+                              :class="outcome.status === 'WON' ? 'bg-green-600 ring-2 ring-green-400' : 'bg-green-700 hover:bg-green-600'" 
+                              class="text-white px-2 py-1 rounded text-xs font-bold" 
+                              title="Marcar como Ganado">W</button>
+                      <button @click="settleOutcome(outcome.id, 'LOST')" 
+                              :class="outcome.status === 'LOST' ? 'bg-red-600 ring-2 ring-red-400' : 'bg-red-700 hover:bg-red-600'" 
+                              class="text-white px-2 py-1 rounded text-xs font-bold" 
+                              title="Marcar como Perdido">L</button>
+                      <button @click="settleOutcome(outcome.id, 'VOID')" 
+                              :class="outcome.status === 'VOID' ? 'bg-gray-500 ring-2 ring-gray-300' : 'bg-gray-600 hover:bg-gray-500'" 
+                              class="text-white px-2 py-1 rounded text-xs font-bold" 
+                              title="Marcar como Anulado">V</button>
                    </div>
                 </template>
               </div>
