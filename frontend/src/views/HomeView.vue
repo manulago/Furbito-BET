@@ -10,11 +10,23 @@ const auth = useAuthStore()
 const betStore = useBetStore()
 const langStore = useLanguageStore()
 const events = ref([])
-const router = useRouter() // Keep router as it might be used elsewhere or was implicitly part of the original setup
+const router = useRouter()
 
 onMounted(async () => {
   const res = await fetch(`${import.meta.env.VITE_API_URL}/api/events`)
   events.value = await res.json()
+})
+
+// Filtrar eventos en curso (PENDING e IN_PROGRESS)
+const activeEvents = computed(() => {
+  return events.value.filter(event => 
+    event.status === 'PENDING' || event.status === 'IN_PROGRESS'
+  )
+})
+
+// Filtrar eventos finalizados (RESOLVED)
+const finishedEvents = computed(() => {
+  return events.value.filter(event => event.status === 'RESOLVED')
 })
 
 function selectEvent(event) {
@@ -23,24 +35,50 @@ function selectEvent(event) {
 </script>
 
 <template>
-  <div class="space-y-8 pb-24">
-    <div class="flex justify-between items-center animate-fade-in-down">
-      <h2 class="text-3xl font-bold text-white">{{ langStore.t('home.upcomingEvents') }}</h2>
+  <div class="space-y-12 pb-24">
+    <!-- Eventos en curso -->
+    <div class="space-y-6 animate-fade-in-down">
+      <div class="flex justify-between items-center">
+        <h2 class="text-3xl font-bold text-white">{{ langStore.t('home.upcomingEvents') }}</h2>
+        <span v-if="activeEvents.length > 0" class="text-sm text-gray-400">{{ activeEvents.length }} {{ activeEvents.length === 1 ? 'evento' : 'eventos' }}</span>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 stagger-fade-in">
+        <div v-for="event in activeEvents" :key="event.id" 
+             @click="selectEvent(event)"
+             class="bg-gray-800 rounded-xl overflow-hidden shadow-lg border border-gray-700 hover:border-green-500 cursor-pointer transition-all duration-300 hover-lift hover-glow">
+          <div class="p-6 flex justify-between items-center">
+            <div>
+              <h3 class="text-xl font-bold text-white mb-2">{{ event.name }}</h3>
+              <p class="text-gray-400 text-sm">{{ new Date(event.date).toLocaleString() }}</p>
+            </div>
+            <span class="text-xs font-bold px-2 py-1 rounded bg-blue-500/20 text-blue-400 uppercase tracking-wider transition-colors hover:bg-blue-500/30">{{ langStore.t('common.status.' + event.status) }}</span>
+          </div>
+        </div>
+        <div v-if="activeEvents.length === 0" class="text-gray-500 col-span-2 text-center py-8 animate-fade-in">{{ langStore.t('home.noEvents') }}</div>
+      </div>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 stagger-fade-in">
-      <div v-for="event in events" :key="event.id" 
-           @click="selectEvent(event)"
-           class="bg-gray-800 rounded-xl overflow-hidden shadow-lg border border-gray-700 hover:border-green-500 cursor-pointer transition-all duration-300 hover-lift hover-glow">
-        <div class="p-6 flex justify-between items-center">
-          <div>
-            <h3 class="text-xl font-bold text-white mb-2">{{ event.name }}</h3>
-            <p class="text-gray-400 text-sm">{{ new Date(event.date).toLocaleString() }}</p>
+    <!-- Eventos finalizados -->
+    <div v-if="finishedEvents.length > 0" class="space-y-6 animate-fade-in">
+      <div class="flex justify-between items-center border-t border-gray-700 pt-8">
+        <h2 class="text-2xl font-bold text-gray-300">Eventos Finalizados</h2>
+        <span class="text-sm text-gray-500">{{ finishedEvents.length }} {{ finishedEvents.length === 1 ? 'evento' : 'eventos' }}</span>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 stagger-fade-in">
+        <div v-for="event in finishedEvents" :key="event.id" 
+             @click="selectEvent(event)"
+             class="bg-gray-800/50 rounded-xl overflow-hidden shadow-lg border border-gray-700/50 hover:border-gray-600 cursor-pointer transition-all duration-300 hover-lift opacity-75 hover:opacity-100">
+          <div class="p-6 flex justify-between items-center">
+            <div>
+              <h3 class="text-lg font-bold text-gray-300 mb-2">{{ event.name }}</h3>
+              <p class="text-gray-500 text-sm">{{ new Date(event.date).toLocaleString() }}</p>
+            </div>
+            <span class="text-xs font-bold px-2 py-1 rounded bg-gray-500/20 text-gray-400 uppercase tracking-wider">{{ langStore.t('common.status.' + event.status) }}</span>
           </div>
-          <span class="text-xs font-bold px-2 py-1 rounded bg-blue-500/20 text-blue-400 uppercase tracking-wider transition-colors hover:bg-blue-500/30">{{ langStore.t('common.status.' + event.status) }}</span>
         </div>
       </div>
-      <div v-if="events.length === 0" class="text-gray-500 col-span-2 text-center py-8 animate-fade-in">{{ langStore.t('home.noEvents') }}</div>
     </div>
   </div>
 </template>
