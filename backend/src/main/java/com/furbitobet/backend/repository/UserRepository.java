@@ -20,4 +20,10 @@ public interface UserRepository extends JpaRepository<User, Long> {
     java.util.List<User> findByRoleNotOrderByBalanceDesc(User.Role role);
 
     Optional<User> findByConfirmationToken(String confirmationToken);
+
+    // SECURITY: Pessimistic write lock to prevent race conditions in balance
+    // updates
+    @org.springframework.data.jpa.repository.Lock(jakarta.persistence.LockModeType.PESSIMISTIC_WRITE)
+    @org.springframework.data.jpa.repository.Query("SELECT u FROM User u WHERE u.id = :id")
+    Optional<User> findByIdWithLock(@org.springframework.data.repository.query.Param("id") Long id);
 }

@@ -93,11 +93,20 @@ public class AdminController {
 
     @PutMapping("/outcomes/{id}")
     public Outcome updateOutcome(@PathVariable Long id, @RequestBody OutcomeRequest request) {
+        // SECURITY: Validate odds are positive
+        if (request.getOdds() == null || request.getOdds().compareTo(BigDecimal.ZERO) <= 0) {
+            throw new RuntimeException("Odds must be positive");
+        }
         return eventService.updateOutcome(id, request.getDescription(), request.getOdds(), request.getOutcomeGroup());
     }
 
     @PostMapping("/events/{eventId}/outcomes")
     public Outcome addOutcome(@PathVariable Long eventId, @RequestBody OutcomeRequest request) {
+        // SECURITY: Validate odds are positive
+        if (request.getOdds() == null || request.getOdds().compareTo(BigDecimal.ZERO) <= 0) {
+            throw new RuntimeException("Odds must be positive");
+        }
+
         Event event = eventRepository.findById(eventId).orElseThrow();
         Outcome outcome = new Outcome();
         outcome.setDescription(request.getDescription());

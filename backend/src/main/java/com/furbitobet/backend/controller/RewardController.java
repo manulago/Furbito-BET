@@ -53,35 +53,46 @@ public class RewardController {
     }
 
     @PostMapping("/spin")
+    @org.springframework.transaction.annotation.Transactional
     public ResponseEntity<?> spinRoulette() {
         User user = getAuthenticatedUser();
         if (user == null) {
             return ResponseEntity.status(401).body("User not authenticated");
         }
 
-        // Check cooldown
-        if (user.getLastSpinTime() != null) {
-            LocalDateTime nextSpin = user.getLastSpinTime().plus(12, ChronoUnit.HOURS);
-            if (LocalDateTime.now().isBefore(nextSpin)) {
-                return ResponseEntity.badRequest().body("Cooldown active. Please wait.");
+        // SECURITY: Synchronized block to prevent race condition
+        // Without this, two simultaneous requests could both pass cooldown check
+        synchronized (this) {
+            // Re-fetch user inside synchronized block to get latest state
+            user = userRepository.findById(user.getId()).orElse(null);
+            if (user == null) {
+                return ResponseEntity.status(401).body("User not found");
             }
+
+            // Check cooldown
+            if (user.getLastSpinTime() != null) {
+                LocalDateTime nextSpin = user.getLastSpinTime().plus(12, ChronoUnit.HOURS);
+                if (LocalDateTime.now().isBefore(nextSpin)) {
+                    return ResponseEntity.badRequest().body("Cooldown active. Please wait.");
+                }
+            }
+
+            // Generate reward (10 to 50)
+            int rewardAmount = ThreadLocalRandom.current().nextInt(10, 51);
+            BigDecimal reward = new BigDecimal(rewardAmount);
+
+            // Update user
+            user.setBalance(user.getBalance().add(reward));
+            user.setLastSpinTime(LocalDateTime.now());
+            userRepository.save(user);
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("reward", rewardAmount);
+            response.put("newBalance", user.getBalance());
+            response.put("message", "Congratulations! You won " + rewardAmount + "€");
+
+            return ResponseEntity.ok(response);
         }
-
-        // Generate reward (10 to 50)
-        int rewardAmount = ThreadLocalRandom.current().nextInt(10, 51);
-        BigDecimal reward = new BigDecimal(rewardAmount);
-
-        // Update user
-        user.setBalance(user.getBalance().add(reward));
-        user.setLastSpinTime(LocalDateTime.now());
-        userRepository.save(user);
-
-        Map<String, Object> response = new HashMap<>();
-        response.put("reward", rewardAmount);
-        response.put("newBalance", user.getBalance());
-        response.put("message", "Congratulations! You won " + rewardAmount + "€");
-
-        return ResponseEntity.ok(response);
     }
 
     private User getAuthenticatedUser() {

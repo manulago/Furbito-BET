@@ -36,7 +36,11 @@ public class BetService {
             throw new IllegalArgumentException("Bet amount must be positive");
         }
 
-        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+        // SECURITY: Use pessimistic lock to prevent race condition
+        // Without this, two simultaneous bets could both check balance=100,
+        // then both subtract 100, resulting in balance=-100
+        User user = userRepository.findByIdWithLock(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
         java.util.List<Outcome> outcomes = outcomeRepository.findAllById(outcomeIds);
 
         if (outcomes.isEmpty()) {
