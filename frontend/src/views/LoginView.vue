@@ -21,8 +21,8 @@ async function handleLogin() {
 
     if (res.ok) {
       const data = await res.json()
-      auth.login(data.user.username, data.user.role, data.user.id, data.token)
-      await auth.fetchBalance()
+      // Pass balance from server response
+      auth.login(data.user.username, data.user.role, data.user.id, data.token, data.user.balance)
       router.push('/')
     } else {
       const msg = await res.text()

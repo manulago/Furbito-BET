@@ -6,8 +6,8 @@ export const useAuthStore = defineStore('auth', () => {
 
     const token = ref(localStorage.getItem('token') || null)
 
-    function login(username, role, id, newToken) {
-        user.value = { username, role, id }
+    function login(username, role, id, newToken, balance) {
+        user.value = { username, role, id, balance }
         token.value = newToken
         localStorage.setItem('user', JSON.stringify(user.value))
         localStorage.setItem('token', newToken)
@@ -23,13 +23,17 @@ export const useAuthStore = defineStore('auth', () => {
     async function fetchBalance() {
         if (!user.value) return
         try {
-            const res = await fetch(`${import.meta.env.VITE_API_URL}/api/users/${user.value.id}`, {
+            // Use the ranking endpoint which is public and includes balance
+            const res = await fetch(`${import.meta.env.VITE_API_URL}/api/users/ranking`, {
                 headers: { 'Authorization': `Bearer ${token.value}` }
             })
             if (res.ok) {
-                const userData = await res.json()
-                user.value.balance = userData.balance
-                localStorage.setItem('user', JSON.stringify(user.value))
+                const users = await res.json()
+                const currentUser = users.find(u => u.id === user.value.id)
+                if (currentUser) {
+                    user.value.balance = currentUser.balance
+                    localStorage.setItem('user', JSON.stringify(user.value))
+                }
             }
         } catch (e) {
             console.error('Failed to fetch balance', e)
