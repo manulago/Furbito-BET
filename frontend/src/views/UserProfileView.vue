@@ -15,28 +15,38 @@ const loading = ref(true)
 async function fetchData() {
   loading.value = true
   try {
-    // Fetch user details
-    const userRes = await fetch(`${import.meta.env.VITE_API_URL}/api/users/${userId}`, {
+    // Fetch user details from public ranking endpoint
+    const rankingRes = await fetch(`${import.meta.env.VITE_API_URL}/api/users/ranking`, {
       headers: { 'Authorization': `Bearer ${auth.token}` }
     })
-    if (userRes.ok) {
-      user.value = await userRes.json()
+    if (rankingRes.ok) {
+      const users = await rankingRes.json()
+      user.value = users.find(u => u.id == userId)
+      if (!user.value) {
+        console.error('User not found in ranking')
+        return
+      }
     }
 
-    // Fetch user bets
+    // Try to fetch user bets (will only work if viewing own profile)
     const betsRes = await fetch(`${import.meta.env.VITE_API_URL}/api/bets/user/${userId}`, {
       headers: { 'Authorization': `Bearer ${auth.token}` }
     })
     if (betsRes.ok) {
       const fetchedBets = await betsRes.json()
       // Sort bets by date, most recent first
-      // Bets without placedAt go to the end
       bets.value = fetchedBets.sort((a, b) => {
         if (!a.placedAt && !b.placedAt) return 0
         if (!a.placedAt) return 1
         if (!b.placedAt) return -1
         return new Date(b.placedAt) - new Date(a.placedAt)
       })
+    } else {
+      // If unauthorized (viewing another user's profile), show message
+      if (betsRes.status === 500 || betsRes.status === 403) {
+        console.log('Cannot view other users\' bets (protected)')
+        bets.value = [] // Empty array, will show "no bets" message
+      }
     }
   } catch (e) {
     console.error(e)
@@ -88,7 +98,13 @@ onMounted(() => {
       <h3 class="text-2xl font-bold text-white">{{ langStore.t('profile.history') }}</h3>
       
       <div v-if="bets.length === 0" class="text-gray-400 text-center py-8 bg-gray-800 rounded-lg">
-        {{ langStore.t('profile.noBets') }}
+        <div v-if="user.id == auth.user?.id">
+          {{ langStore.t('profile.noBets') }}
+        </div>
+        <div v-else class="space-y-2">
+          <p class="text-lg">🔒 Apuestas Privadas</p>
+          <p class="text-sm text-gray-500">Las apuestas de este usuario son privadas por seguridad.</p>
+        </div>
       </div>
 
       <div v-else class="space-y-4">
