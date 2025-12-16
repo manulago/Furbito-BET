@@ -23,7 +23,8 @@ public class DataInitializer {
                 System.out.println("Admin user not found. Creating new admin user...");
                 if (adminPassword == null || adminPassword.isEmpty()) {
                     adminPassword = java.util.UUID.randomUUID().toString();
-                    System.out.println("GENERATED ADMIN PASSWORD: " + adminPassword);
+                    // SECURITY: Never log passwords, even generated ones
+                    System.out.println("GENERATED ADMIN PASSWORD: ********** (check environment or regenerate)");
                 }
                 userService.createUser("admin", adminPassword, "admin@furbitobet.com", User.Role.ADMIN);
                 System.out.println("Admin user created successfully.");

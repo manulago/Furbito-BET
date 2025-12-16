@@ -322,15 +322,23 @@ public class AdminController {
     @PostMapping("/test-email")
     public org.springframework.http.ResponseEntity<?> testEmail(@RequestParam String to) {
         try {
-            System.out.println("Received test-email request for: " + to);
+            // SECURITY: Validate email format to prevent abuse
+            if (to == null || !to.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$")) {
+                return org.springframework.http.ResponseEntity.badRequest()
+                        .body("Invalid email format");
+            }
+
+            // SECURITY: Don't log full email addresses
+            System.out.println("Received test-email request for: " + to.replaceAll("(?<=.{2}).(?=.*@)", "*"));
             emailService.sendSimpleMessage(to, "FurbitoBET Test Email",
                     "This is a test email from FurbitoBET admin panel.\n\nIf you receive this, email sending is working correctly!");
             return org.springframework.http.ResponseEntity.ok("Email request queued successfully");
         } catch (Exception e) {
             System.err.println("Error in test-email endpoint: " + e.getMessage());
-            e.printStackTrace();
+            // SECURITY: Don't expose stack trace in production
+            // e.printStackTrace();
             return org.springframework.http.ResponseEntity.internalServerError()
-                    .body("Error sending email: " + e.getMessage());
+                    .body("Error sending email");
         }
     }
 
