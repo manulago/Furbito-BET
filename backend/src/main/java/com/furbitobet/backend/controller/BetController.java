@@ -76,6 +76,24 @@ public class BetController {
         return betService.getBetsByUserId(userId);
     }
 
+    /**
+     * PUBLIC endpoint to view any user's bets (for transparency and competition)
+     * Returns only safe, non-sensitive data:
+     * - Bet outcomes, odds, amounts, status
+     * Does NOT expose:
+     * - User's current balance
+     * - User's email or other private data
+     * 
+     * This allows users to see each other's betting strategies while maintaining
+     * privacy.
+     */
+    @GetMapping("/user/{userId}/public")
+    public java.util.List<Bet> getUserBetsPublic(@PathVariable Long userId) {
+        // PUBLIC: Anyone can view any user's bets (for transparency)
+        // The Bet entity already has @JsonIgnore on sensitive User fields
+        return betService.getBetsByUserId(userId);
+    }
+
     @PostMapping("/{id}/cancel")
     public void cancelBet(@PathVariable Long id, @RequestParam Long userId,
             org.springframework.security.core.Authentication authentication) {

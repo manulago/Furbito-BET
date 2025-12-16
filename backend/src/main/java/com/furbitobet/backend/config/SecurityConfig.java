@@ -55,7 +55,10 @@ public class SecurityConfig {
                         // ones above)
                         .requestMatchers("/api/users/**").hasRole("ADMIN")
 
-                        // Authenticated endpoints
+                        // PUBLIC: Allow viewing any user's bets for transparency (safe endpoint)
+                        .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/bets/user/*/public").permitAll()
+
+                        // Authenticated endpoints (private bets endpoint)
                         .requestMatchers("/api/bets/**").authenticated()
 
                         .anyRequest().permitAll())

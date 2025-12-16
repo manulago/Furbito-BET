@@ -28,10 +28,9 @@ async function fetchData() {
       }
     }
 
-    // Try to fetch user bets (will only work if viewing own profile)
-    const betsRes = await fetch(`${import.meta.env.VITE_API_URL}/api/bets/user/${userId}`, {
-      headers: { 'Authorization': `Bearer ${auth.token}` }
-    })
+    // Fetch user bets using PUBLIC endpoint (allows viewing other users' bets)
+    const betsRes = await fetch(`${import.meta.env.VITE_API_URL}/api/bets/user/${userId}/public`)
+    
     if (betsRes.ok) {
       const fetchedBets = await betsRes.json()
       // Sort bets by date, most recent first
@@ -42,11 +41,8 @@ async function fetchData() {
         return new Date(b.placedAt) - new Date(a.placedAt)
       })
     } else {
-      // If unauthorized (viewing another user's profile), show message
-      if (betsRes.status === 500 || betsRes.status === 403) {
-        console.log('Cannot view other users\' bets (protected)')
-        bets.value = [] // Empty array, will show "no bets" message
-      }
+      console.error('Failed to fetch bets')
+      bets.value = []
     }
   } catch (e) {
     console.error(e)
@@ -98,13 +94,7 @@ onMounted(() => {
       <h3 class="text-2xl font-bold text-white">{{ langStore.t('profile.history') }}</h3>
       
       <div v-if="bets.length === 0" class="text-gray-400 text-center py-8 bg-gray-800 rounded-lg">
-        <div v-if="user.id == auth.user?.id">
-          {{ langStore.t('profile.noBets') }}
-        </div>
-        <div v-else class="space-y-2">
-          <p class="text-lg">🔒 Apuestas Privadas</p>
-          <p class="text-sm text-gray-500">Las apuestas de este usuario son privadas por seguridad.</p>
-        </div>
+        {{ langStore.t('profile.noBets') || 'No hay apuestas' }}
       </div>
 
       <div v-else class="space-y-4">
