@@ -17,16 +17,18 @@ onMounted(async () => {
   events.value = await res.json()
 })
 
-// Filtrar eventos en curso (PENDING e IN_PROGRESS)
+// Filtrar eventos en curso (UPCOMING y LIVE)
 const activeEvents = computed(() => {
   return events.value.filter(event => 
-    event.status === 'PENDING' || event.status === 'IN_PROGRESS'
+    event.status === 'UPCOMING' || event.status === 'LIVE'
   )
 })
 
-// Filtrar eventos finalizados (RESOLVED)
+// Filtrar eventos finalizados (FINISHED y COMPLETED)
 const finishedEvents = computed(() => {
-  return events.value.filter(event => event.status === 'RESOLVED')
+  return events.value.filter(event => 
+    event.status === 'FINISHED' || event.status === 'COMPLETED'
+  )
 })
 
 function selectEvent(event) {
