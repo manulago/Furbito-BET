@@ -13,8 +13,21 @@ public class BetController {
     @Autowired
     private BetService betService;
 
+    @Autowired
+    private com.furbitobet.backend.service.UserService userService;
+
     @PostMapping
-    public Bet placeBet(@RequestBody PlaceBetRequest request) {
+    public Bet placeBet(@RequestBody PlaceBetRequest request,
+            org.springframework.security.core.Authentication authentication) {
+        // SECURITY: Verify that the authenticated user matches the userId in the
+        // request
+        String authenticatedUsername = authentication.getName();
+        com.furbitobet.backend.model.User requestUser = userService.getUserById(request.getUserId());
+
+        if (!requestUser.getUsername().equals(authenticatedUsername)) {
+            throw new RuntimeException("Unauthorized: Cannot place bets for other users");
+        }
+
         return betService.placeBet(request.getUserId(), request.getOutcomeIds(), request.getAmount());
     }
 
@@ -50,7 +63,16 @@ public class BetController {
     }
 
     @GetMapping("/user/{userId}")
-    public java.util.List<Bet> getUserBets(@PathVariable Long userId) {
+    public java.util.List<Bet> getUserBets(@PathVariable Long userId,
+            org.springframework.security.core.Authentication authentication) {
+        // SECURITY: Verify that the authenticated user can only view their own bets
+        String authenticatedUsername = authentication.getName();
+        com.furbitobet.backend.model.User requestUser = userService.getUserById(userId);
+
+        if (!requestUser.getUsername().equals(authenticatedUsername)) {
+            throw new RuntimeException("Unauthorized: Cannot view other users' bets");
+        }
+
         return betService.getBetsByUserId(userId);
     }
 

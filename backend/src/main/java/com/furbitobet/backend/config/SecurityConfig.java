@@ -28,26 +28,35 @@ public class SecurityConfig {
                 .cors(org.springframework.security.config.Customizer.withDefaults())
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
+                        // Public endpoints
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/auth/register", "/api/auth/login", "/api/auth/forgot-password",
                                 "/api/auth/reset-password")
                         .permitAll()
                         .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/events/**").permitAll()
+                        .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/events/**").hasRole("ADMIN")
+                        .requestMatchers(org.springframework.http.HttpMethod.PUT, "/api/events/**").hasRole("ADMIN")
+                        .requestMatchers(org.springframework.http.HttpMethod.DELETE, "/api/events/**").hasRole("ADMIN")
                         .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/league/**").permitAll()
                         .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/users/ranking").permitAll()
                         .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/players/**").permitAll()
-                        .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/players/**").hasRole("ADMIN")
-                        .requestMatchers(org.springframework.http.HttpMethod.PUT, "/api/players/**").hasRole("ADMIN")
-                        .requestMatchers(org.springframework.http.HttpMethod.DELETE, "/api/players/**").hasRole("ADMIN")
-                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/api/bets/**").authenticated()
 
-                        // User Profile Management
+                        // User Profile Management (specific paths before general ones)
                         .requestMatchers("/api/users/confirm-update").permitAll()
                         .requestMatchers("/api/users/*/request-update").authenticated()
 
-                        .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/users/**").authenticated()
+                        // SECURITY FIX: Admin-only endpoints (must be before general /api/users/**)
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                        .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/players/**").hasRole("ADMIN")
+                        .requestMatchers(org.springframework.http.HttpMethod.PUT, "/api/players/**").hasRole("ADMIN")
+                        .requestMatchers(org.springframework.http.HttpMethod.DELETE, "/api/players/**").hasRole("ADMIN")
+
+                        // SECURITY FIX: All /api/users endpoints require ADMIN role (except specific
+                        // ones above)
                         .requestMatchers("/api/users/**").hasRole("ADMIN")
+
+                        // Authenticated endpoints
+                        .requestMatchers("/api/bets/**").authenticated()
 
                         .anyRequest().permitAll())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

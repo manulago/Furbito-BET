@@ -31,6 +31,11 @@ public class BetService {
         if (amount == null)
             throw new IllegalArgumentException("Amount cannot be null");
 
+        // SECURITY: Prevent negative or zero bet amounts
+        if (amount.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new IllegalArgumentException("Bet amount must be positive");
+        }
+
         User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
         java.util.List<Outcome> outcomes = outcomeRepository.findAllById(outcomeIds);
 
@@ -363,5 +368,10 @@ public class BetService {
         });
 
         return results;
+    }
+
+    public User getUserById(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
     }
 }
