@@ -592,4 +592,32 @@ public class AdminController {
             this.amount = amount;
         }
     }
+
+    // Christmas Theme Endpoints
+    @GetMapping("/christmas-theme-status")
+    public org.springframework.http.ResponseEntity<?> getChristmasThemeStatus() {
+        boolean enabled = appConfigService.isChristmasThemeEnabled();
+        return org.springframework.http.ResponseEntity.ok(
+                java.util.Map.of("enabled", enabled));
+    }
+
+    @PostMapping("/enable-christmas-theme")
+    public org.springframework.http.ResponseEntity<?> enableChristmasTheme() {
+        appConfigService.setChristmasThemeEnabled(true);
+        System.out.println("🎄 Christmas theme has been enabled globally by admin");
+        return org.springframework.http.ResponseEntity.ok(
+                java.util.Map.of(
+                        "success", true,
+                        "message", "Christmas theme enabled successfully"));
+    }
+
+    @PostMapping("/disable-christmas-theme")
+    public org.springframework.http.ResponseEntity<?> disableChristmasTheme() {
+        appConfigService.setChristmasThemeEnabled(false);
+        System.out.println("🎄 Christmas theme has been disabled globally by admin");
+        return org.springframework.http.ResponseEntity.ok(
+                java.util.Map.of(
+                        "success", true,
+                        "message", "Christmas theme disabled successfully"));
+    }
 }

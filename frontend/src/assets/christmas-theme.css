@@ -1,0 +1,97 @@
+/* Christmas Theme Styles */
+.christmas-theme {
+    /* Snowflakes animation */
+    position: relative;
+}
+
+.christmas-theme::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image:
+        radial-gradient(2px 2px at 20% 30%, white, transparent),
+        radial-gradient(2px 2px at 60% 70%, white, transparent),
+        radial-gradient(1px 1px at 50% 50%, white, transparent),
+        radial-gradient(1px 1px at 80% 10%, white, transparent),
+        radial-gradient(2px 2px at 90% 60%, white, transparent),
+        radial-gradient(1px 1px at 33% 80%, white, transparent),
+        radial-gradient(2px 2px at 70% 40%, white, transparent);
+    background-size: 200% 200%;
+    animation: snowfall 20s linear infinite;
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0.6;
+}
+
+@keyframes snowfall {
+    0% {
+        background-position: 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%;
+    }
+
+    100% {
+        background-position: 10% 100%, 20% 100%, 15% 100%, 25% 100%, 30% 100%, 35% 100%, 40% 100%;
+    }
+}
+
+/* Christmas colors for navbar */
+.christmas-theme nav {
+    background: linear-gradient(135deg, #165B33 0%, #BB2528 100%) !important;
+    border-bottom: 3px solid #FFD700 !important;
+}
+
+/* Christmas colors for buttons */
+.christmas-theme .bg-green-500 {
+    background: linear-gradient(135deg, #165B33, #1a7a3f) !important;
+}
+
+.christmas-theme .bg-green-600 {
+    background: linear-gradient(135deg, #1a7a3f, #165B33) !important;
+}
+
+.christmas-theme .bg-blue-600 {
+    background: linear-gradient(135deg, #BB2528, #8B1A1D) !important;
+}
+
+.christmas-theme .bg-red-500 {
+    background: linear-gradient(135deg, #BB2528, #8B1A1D) !important;
+}
+
+/* Christmas glow effect */
+.christmas-theme .bg-gray-800 {
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.1) !important;
+}
+
+/* Gold accents */
+.christmas-theme .text-green-400 {
+    color: #FFD700 !important;
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+}
+
+/* Christmas decorations for cards */
+.christmas-theme .bg-gray-800::before {
+    content: '🎄';
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    font-size: 1.2rem;
+    opacity: 0.3;
+}
+
+/* Festive border colors */
+.christmas-theme .border-gray-700 {
+    border-color: rgba(255, 215, 0, 0.3) !important;
+}
+
+/* Christmas hover effects */
+.christmas-theme button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+}
+
+/* Festive gradient background */
+.christmas-theme .bg-gray-900 {
+    background: linear-gradient(180deg, #0a1f0f 0%, #1a0a0a 100%) !important;
+}

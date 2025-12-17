@@ -5,6 +5,8 @@ import { useLanguageStore } from './stores/language'
 import { useRouter } from 'vue-router'
 import { onMounted, ref, watch, onUnmounted } from 'vue'
 import InstallPrompt from './components/InstallPrompt.vue'
+import ChristmasGift from './components/ChristmasGift.vue'
+import './assets/christmas-theme.css'
 
 const auth = useAuthStore()
 const betStore = useBetStore()
@@ -15,6 +17,9 @@ const isMobileMenuOpen = ref(false)
 const showNewsModal = ref(false)
 const currentNewsCount = ref(0)
 const NEWS_KEY_VERSION = 'news_v1'
+
+// Christmas theme
+const christmasThemeEnabled = ref(false)
 
 // Inactivity timeout (15 minutes)
 const INACTIVITY_TIMEOUT = 15 * 60 * 1000 // 15 minutes in milliseconds
@@ -104,10 +109,23 @@ function checkNews() {
   }
 }
 
+async function checkChristmasTheme() {
+  try {
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/christmas-theme-status`)
+    if (res.ok) {
+      const data = await res.json()
+      christmasThemeEnabled.value = data.enabled
+    }
+  } catch (err) {
+    console.error('Error checking christmas theme:', err)
+  }
+}
+
 onMounted(() => {
   checkNews()
   setupActivityListeners()
   resetInactivityTimer()
+  checkChristmasTheme()
 })
 
 onUnmounted(() => {
@@ -195,7 +213,7 @@ function logout() {
 </script>
 
 <template>
-  <div class="min-h-screen bg-gray-900 text-white font-sans pb-24">
+  <div class="min-h-screen bg-gray-900 text-white font-sans pb-24" :class="{ 'christmas-theme': christmasThemeEnabled }">
     <nav class="bg-gray-800 p-4 shadow-lg border-b border-gray-700 relative z-50">
       <div class="container mx-auto flex justify-between items-center">
         <div class="flex items-center gap-3">
@@ -428,6 +446,9 @@ function logout() {
 
     <!-- PWA Install Prompt -->
     <InstallPrompt />
+    
+    <!-- Christmas Gift Modal -->
+    <ChristmasGift v-if="christmasThemeEnabled" />
   </div>
 </template>
 

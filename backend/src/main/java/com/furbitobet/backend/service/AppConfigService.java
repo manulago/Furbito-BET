@@ -32,4 +32,13 @@ public class AppConfigService {
     public void setNewsModalEnabled(boolean enabled) {
         setConfigValue("news_modal_enabled", String.valueOf(enabled));
     }
+
+    public boolean isChristmasThemeEnabled() {
+        String value = getConfigValue("christmas_theme_enabled", "false");
+        return Boolean.parseBoolean(value);
+    }
+
+    public void setChristmasThemeEnabled(boolean enabled) {
+        setConfigValue("christmas_theme_enabled", String.valueOf(enabled));
+    }
 }

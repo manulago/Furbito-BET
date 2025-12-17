@@ -21,6 +21,9 @@ public class AuthController {
     @Autowired
     private com.furbitobet.backend.service.EmailService emailService;
 
+    @Autowired
+    private com.furbitobet.backend.service.AppConfigService appConfigService;
+
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody RegisterRequest request) {
         if (userRepository.existsByUsername(request.getUsername())) {
@@ -279,5 +282,11 @@ public class AuthController {
         public void setPassword(String password) {
             this.password = password;
         }
+    }
+
+    @GetMapping("/christmas-theme-status")
+    public ResponseEntity<?> getChristmasThemeStatus() {
+        boolean enabled = appConfigService.isChristmasThemeEnabled();
+        return ResponseEntity.ok(java.util.Map.of("enabled", enabled));
     }
 }

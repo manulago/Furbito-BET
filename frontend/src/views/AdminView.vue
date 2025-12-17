@@ -766,12 +766,58 @@ async function addBalanceToAll() {
   }
 }
 
+// Christmas Theme Settings
+const christmasThemeEnabled = ref(false)
+
+async function fetchChristmasThemeStatus() {
+  try {
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/christmas-theme-status`, {
+      headers: { 'Authorization': `Bearer ${auth.token}` }
+    })
+    if (res.ok) {
+      const data = await res.json()
+      christmasThemeEnabled.value = data.enabled
+    }
+  } catch (e) {
+    console.error('Error fetching christmas theme status:', e)
+  }
+}
+
+async function toggleChristmasTheme() {
+  const endpoint = christmasThemeEnabled.value 
+    ? `${import.meta.env.VITE_API_URL}/api/admin/disable-christmas-theme`
+    : `${import.meta.env.VITE_API_URL}/api/admin/enable-christmas-theme`
+  
+  const confirmMsg = christmasThemeEnabled.value
+    ? '🎄 ¿Desactivar el tema navideño para TODOS los usuarios?\n\nEsto quitará la decoración navideña y el modal de regalo.'
+    : '🎄 ¿Activar el tema navideño?\n\nLos usuarios verán decoración navideña y un modal de regalo al iniciar sesión.'
+  
+  if (!confirm(confirmMsg)) return
+  
+  try {
+    const res = await fetch(endpoint, {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${auth.token}` }
+    })
+    
+    if (res.ok) {
+      christmasThemeEnabled.value = !christmasThemeEnabled.value
+      alert(`✅ Tema navideño ${christmasThemeEnabled.value ? 'activado' : 'desactivado'} correctamente`)
+    } else {
+      alert('❌ Error al cambiar el estado del tema navideño')
+    }
+  } catch (e) {
+    alert(`❌ Error: ${e.message}`)
+  }
+}
+
 onMounted(() => {
   fetchEvents()
   fetchUsers()
   fetchCategories()
   fetchPlayers()
   fetchNewsModalStatus()
+  fetchChristmasThemeStatus()
 })
 </script>
 
@@ -1382,7 +1428,61 @@ onMounted(() => {
         </div>
       </div>
 
+      <!-- Christmas Theme Settings Card -->
+      <div class="bg-gray-800 rounded-lg p-6 border border-gray-700">
+        <div class="flex items-center gap-3 mb-4">
+          <span class="text-3xl">🎄</span>
+          <div>
+            <h4 class="text-xl font-bold text-white">Tema Navideño</h4>
+            <p class="text-sm text-gray-400">Activa o desactiva la decoración navideña y el modal de regalo</p>
+          </div>
+        </div>
+
+        <div class="bg-gray-900 p-4 rounded-lg mb-4">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-white font-medium">Estado Actual:</p>
+              <p class="text-sm text-gray-400 mt-1">
+                {{ christmasThemeEnabled ? '✅ Activado - Tema navideño visible para todos' : '❌ Desactivado - Tema normal' }}
+              </p>
+            </div>
+            <div class="flex items-center gap-2">
+              <span :class="christmasThemeEnabled ? 'text-green-400' : 'text-red-400'" class="text-2xl">
+                {{ christmasThemeEnabled ? '●' : '○' }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex gap-3">
+          <button 
+            @click="toggleChristmasTheme"
+            :class="[
+              'flex-1 px-4 py-3 rounded-lg font-bold transition',
+              christmasThemeEnabled 
+                ? 'bg-red-600 hover:bg-red-700 text-white' 
+                : 'bg-green-600 hover:bg-green-700 text-white'
+            ]"
+          >
+            {{ christmasThemeEnabled ? '🚫 Desactivar Tema Navideño' : '🎄 Activar Tema Navideño' }}
+          </button>
+        </div>
+
+        <div class="mt-4 p-3 bg-blue-900/20 border border-blue-700 rounded-lg">
+          <p class="text-xs text-blue-300">
+            <strong>ℹ️ Nota:</strong> El tema navideño incluye:
+          </p>
+          <ul class="text-xs text-blue-300 ml-4 mt-2 space-y-1">
+            <li>• 🎨 Colores festivos (rojo, verde, dorado)</li>
+            <li>• ❄️ Animación de copos de nieve</li>
+            <li>• 🎁 Modal de regalo con 100€ (solo informativo)</li>
+            <li>• 🎄 Decoraciones navideñas en toda la app</li>
+          </ul>
+        </div>
+      </div>
+
       <!-- Send News Email Card -->
+
       <div class="bg-gray-800 rounded-lg p-6 border border-gray-700">
         <div class="flex items-center gap-3 mb-4">
           <span class="text-3xl">📧</span>
