@@ -477,4 +477,119 @@ public class AdminController {
                 "Saludos,\n" +
                 "El equipo de FurbitoBET 🎰";
     }
+
+    @PostMapping("/send-christmas-email")
+    public org.springframework.http.ResponseEntity<?> sendChristmasEmail() {
+        try {
+            System.out.println("🎄 Starting Christmas email send to all users...");
+
+            java.util.List<User> allUsers = userService.getAllUsers();
+            int successCount = 0;
+            int failCount = 0;
+
+            for (User user : allUsers) {
+                // Skip admin users
+                if (user.getRole() == User.Role.ADMIN) {
+                    continue;
+                }
+
+                try {
+                    emailService.sendChristmasGiftEmail(user.getEmail(), user.getUsername());
+                    successCount++;
+                    System.out.println("✅ Christmas email sent to: " + user.getEmail());
+                } catch (Exception e) {
+                    failCount++;
+                    System.err
+                            .println("❌ Failed to send Christmas email to " + user.getEmail() + ": " + e.getMessage());
+                }
+
+                // Small delay to avoid overwhelming the email service
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt();
+                }
+            }
+
+            String responseMessage = String.format(
+                    "Christmas emails sent! Success: %d, Failed: %d, Total: %d",
+                    successCount, failCount, successCount + failCount);
+
+            System.out.println("📊 " + responseMessage);
+            return org.springframework.http.ResponseEntity.ok(responseMessage);
+
+        } catch (Exception e) {
+            System.err.println("❌ Error sending Christmas emails: " + e.getMessage());
+            e.printStackTrace();
+            return org.springframework.http.ResponseEntity.internalServerError()
+                    .body("Error sending Christmas emails: " + e.getMessage());
+        }
+    }
+
+    @PostMapping("/add-balance-to-all")
+    @Transactional
+    public org.springframework.http.ResponseEntity<?> addBalanceToAllUsers(@RequestBody AddBalanceRequest request) {
+        try {
+            // SECURITY: Validate amount is positive
+            if (request.getAmount() == null || request.getAmount().compareTo(BigDecimal.ZERO) <= 0) {
+                return org.springframework.http.ResponseEntity.badRequest()
+                        .body("Amount must be positive");
+            }
+
+            // SECURITY: Limit maximum amount to prevent abuse
+            if (request.getAmount().compareTo(new BigDecimal("10000")) > 0) {
+                return org.springframework.http.ResponseEntity.badRequest()
+                        .body("Amount too large. Maximum is 10,000€");
+            }
+
+            System.out.println("💰 Adding " + request.getAmount() + "€ to all users...");
+
+            java.util.List<User> allUsers = userService.getAllUsers();
+            int updatedCount = 0;
+
+            for (User user : allUsers) {
+                // Skip admin users
+                if (user.getRole() == User.Role.ADMIN) {
+                    continue;
+                }
+
+                BigDecimal currentBalance = user.getBalance() != null ? user.getBalance() : BigDecimal.ZERO;
+                user.setBalance(currentBalance.add(request.getAmount()));
+                userRepository.save(user);
+                updatedCount++;
+                System.out.println("✅ Added " + request.getAmount() + "€ to " + user.getUsername() +
+                        " (new balance: " + user.getBalance() + "€)");
+            }
+
+            String responseMessage = String.format(
+                    "Successfully added %s€ to %d users",
+                    request.getAmount(), updatedCount);
+
+            System.out.println("📊 " + responseMessage);
+            return org.springframework.http.ResponseEntity.ok(
+                    java.util.Map.of(
+                            "success", true,
+                            "message", responseMessage,
+                            "usersUpdated", updatedCount,
+                            "amountAdded", request.getAmount()));
+
+        } catch (Exception e) {
+            System.err.println("❌ Error adding balance to users: " + e.getMessage());
+            e.printStackTrace();
+            return org.springframework.http.ResponseEntity.internalServerError()
+                    .body("Error adding balance: " + e.getMessage());
+        }
+    }
+
+    public static class AddBalanceRequest {
+        private BigDecimal amount;
+
+        public BigDecimal getAmount() {
+            return amount;
+        }
+
+        public void setAmount(BigDecimal amount) {
+            this.amount = amount;
+        }
+    }
 }

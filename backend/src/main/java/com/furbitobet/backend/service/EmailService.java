@@ -349,6 +349,129 @@ public class EmailService {
     }
 
     @Async
+    public void sendChristmasGiftEmail(String to, String username) {
+        System.out.println("Sending Christmas gift email to: " + to);
+        String subject = "🎄 ¡Regalo de Navidad: 100€ para la Gran Cena de Furbito! 🎁";
+        String appLink = frontendUrl;
+
+        String htmlContent = "<!DOCTYPE html>" +
+                "<html>" +
+                "<head>" +
+                "<meta charset='UTF-8'>" +
+                "<meta name='viewport' content='width=device-width, initial-scale=1.0'>" +
+                "<style>" +
+                "body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #0f172a; margin: 0; padding: 0; }"
+                +
+                ".container { max-width: 600px; margin: 20px auto; background-color: #1e293b; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }"
+                +
+                ".header { background: linear-gradient(135deg, #dc2626 0%, #16a34a 50%, #dc2626 100%); padding: 50px 30px; text-align: center; position: relative; }"
+                +
+                ".header::before { content: '❄️'; position: absolute; top: 10px; left: 20px; font-size: 30px; opacity: 0.7; }"
+                +
+                ".header::after { content: '🎅'; position: absolute; top: 10px; right: 20px; font-size: 30px; opacity: 0.7; }"
+                +
+                ".header h1 { color: #ffffff; margin: 0; font-size: 36px; font-weight: 800; text-shadow: 0 2px 4px rgba(0,0,0,0.3); }"
+                +
+                ".header p { color: #fef3c7; margin: 10px 0 0 0; font-size: 18px; font-weight: 600; }" +
+                ".content { padding: 40px 30px; }" +
+                ".greeting { color: #f1f5f9; font-size: 18px; margin-bottom: 20px; text-align: center; }" +
+                ".gift-box { background: linear-gradient(135deg, #16a34a 0%, #22c55e 100%); border-radius: 16px; padding: 30px; margin: 30px 0; text-align: center; box-shadow: 0 8px 20px rgba(34, 197, 94, 0.3); }"
+                +
+                ".gift-amount { font-size: 64px; font-weight: 900; color: #ffffff; margin: 10px 0; text-shadow: 0 4px 8px rgba(0,0,0,0.2); }"
+                +
+                ".gift-text { color: #dcfce7; font-size: 20px; font-weight: 600; margin-top: 10px; }" +
+                ".message { color: #cbd5e1; font-size: 16px; line-height: 1.8; margin: 25px 0; text-align: center; }" +
+                ".event-highlight { background: linear-gradient(135deg, #334155 0%, #1e293b 100%); border: 2px solid #22c55e; border-radius: 12px; padding: 25px; margin: 30px 0; text-align: center; }"
+                +
+                ".event-title { color: #22c55e; font-size: 24px; font-weight: bold; margin-bottom: 10px; }" +
+                ".event-desc { color: #cbd5e1; font-size: 16px; line-height: 1.6; }" +
+                ".button-container { text-align: center; margin: 40px 0; }" +
+                ".button { display: inline-block; padding: 18px 45px; background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%); color: white; text-decoration: none; border-radius: 50px; font-weight: bold; font-size: 20px; box-shadow: 0 8px 16px rgba(220, 38, 38, 0.4); transition: all 0.3s; }"
+                +
+                ".footer { background-color: #0f172a; padding: 30px; text-align: center; border-top: 1px solid #334155; }"
+                +
+                ".footer p { color: #64748b; font-size: 12px; margin: 5px 0; }" +
+                ".snowflakes { font-size: 24px; text-align: center; margin: 20px 0; letter-spacing: 10px; }" +
+                "</style>" +
+                "</head>" +
+                "<body>" +
+                "<div class='container'>" +
+
+                "<!-- Header -->" +
+                "<div class='header'>" +
+                "<h1>🎄 ¡Feliz Navidad! 🎄</h1>" +
+                "<p>Tenemos un regalo especial para ti</p>" +
+                "</div>" +
+
+                "<!-- Content -->" +
+                "<div class='content'>" +
+                "<p class='greeting'>¡Hola <strong>" + (username != null ? username : "") + "</strong>!</p>" +
+
+                "<div class='snowflakes'>❄️ ⛄ 🎁 🔔 ⭐</div>" +
+
+                "<p class='message'>" +
+                "En FurbitoBET queremos celebrar estas fiestas contigo de una forma muy especial. " +
+                "Por eso, hemos decidido regalarte algo que sabemos que te va a encantar..." +
+                "</p>" +
+
+                "<!-- Gift Box -->" +
+                "<div class='gift-box'>" +
+                "<div style='font-size: 48px; margin-bottom: 10px;'>🎁</div>" +
+                "<div class='gift-amount'>100€</div>" +
+                "<div class='gift-text'>¡GRATIS PARA APOSTAR!</div>" +
+                "</div>" +
+
+                "<p class='message'>" +
+                "Así es, <strong>100€ completamente gratis</strong> que ya están disponibles en tu cuenta " +
+                "para que los uses como quieras. Y qué mejor ocasión que la próxima..." +
+                "</p>" +
+
+                "<!-- Event Highlight -->" +
+                "<div class='event-highlight'>" +
+                "<div class='event-title'>⚽ Gran Cena de Furbito ⚽</div>" +
+                "<div class='event-desc'>" +
+                "El evento más esperado del año está a punto de llegar. " +
+                "Usa tu regalo navideño para hacer tus apuestas y demostrar quién tiene el mejor olfato para predecir los resultados."
+                +
+                "<br><br>" +
+                "<strong>¡Que gane el mejor!</strong> 🏆" +
+                "</div>" +
+                "</div>" +
+
+                "<p class='message'>" +
+                "No esperes más, entra ahora a FurbitoBET y empieza a planear tu estrategia ganadora. " +
+                "Los 100€ ya están esperándote en tu cuenta." +
+                "</p>" +
+
+                "<!-- CTA Button -->" +
+                "<div class='button-container'>" +
+                "<a href='" + appLink + "' class='button'>🎰 Entrar y Apostar Ahora</a>" +
+                "</div>" +
+
+                "<div class='snowflakes'>🎅 🎄 ⛄ 🎁 ✨</div>" +
+
+                "<p class='message' style='font-size: 14px; color: #94a3b8; margin-top: 30px;'>" +
+                "Desde todo el equipo de FurbitoBET te deseamos unas felices fiestas y mucha suerte en tus apuestas." +
+                "<br><strong>¡Feliz Navidad y próspero Año Nuevo! 🎊</strong>" +
+                "</p>" +
+
+                "</div>" +
+
+                "<!-- Footer -->" +
+                "<div class='footer'>" +
+                "<p>Este es un regalo especial de Navidad de FurbitoBET</p>" +
+                "<p>&copy; 2025 FurbitoBET. Todos los derechos reservados.</p>" +
+                "<p style='margin-top: 15px;'>🎰 La mejor plataforma de apuestas deportivas</p>" +
+                "</div>" +
+
+                "</div>" +
+                "</body>" +
+                "</html>";
+
+        sendEmail(to, username != null ? username : to, subject, htmlContent);
+    }
+
+    @Async
     public void sendNewEventEmail(String to, String username, String eventName, String eventDate) {
         System.out.println("Sending new event notification to: " + to);
         String subject = "⚽ Nuevo Partido Disponible: " + eventName;

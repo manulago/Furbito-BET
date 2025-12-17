@@ -698,6 +698,74 @@ async function sendNewsEmail() {
   }
 }
 
+// Christmas Gift Functions
+const giftAmount = ref(100)
+
+async function sendChristmasEmail() {
+  const confirmMsg = '🎄 ¿Enviar email de REGALO NAVIDEÑO a todos los usuarios?\n\n' +
+                     'Esto enviará un correo anunciando el regalo de 100€ para la Gran Cena de Furbito.\n\n' +
+                     '⚠️ Esta acción no se puede deshacer.'
+  
+  if (!confirm(confirmMsg)) return
+  
+  try {
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/send-christmas-email`, {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${auth.token}` }
+    })
+    
+    if (res.ok) {
+      const message = await res.text()
+      alert(`✅ ${message}\n\nRevisa la consola del backend para más detalles.`)
+    } else {
+      const error = await res.text()
+      alert(`❌ Error al enviar emails:\n${error}`)
+    }
+  } catch (e) {
+    alert(`❌ Error de conexión:\n${e.message}`)
+  }
+}
+
+async function addBalanceToAll() {
+  if (!giftAmount.value || giftAmount.value <= 0) {
+    alert('⚠️ La cantidad debe ser mayor que 0')
+    return
+  }
+
+  if (giftAmount.value > 10000) {
+    alert('⚠️ La cantidad máxima es 10,000€')
+    return
+  }
+
+  const confirmMsg = `💰 ¿Añadir ${giftAmount.value}€ a TODOS los usuarios?\n\n` +
+                     `Esto sumará ${giftAmount.value}€ al balance de cada usuario registrado (excepto admins).\n\n` +
+                     `⚠️ Esta acción no se puede deshacer.`
+  
+  if (!confirm(confirmMsg)) return
+  
+  try {
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/add-balance-to-all`, {
+      method: 'POST',
+      headers: { 
+        'Authorization': `Bearer ${auth.token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ amount: giftAmount.value })
+    })
+    
+    if (res.ok) {
+      const data = await res.json()
+      alert(`✅ ${data.message}\n\nUsuarios actualizados: ${data.usersUpdated}\nCantidad añadida: ${data.amountAdded}€`)
+      fetchUsers() // Refresh user list
+    } else {
+      const error = await res.text()
+      alert(`❌ Error al añadir balance:\n${error}`)
+    }
+  } catch (e) {
+    alert(`❌ Error de conexión:\n${e.message}`)
+  }
+}
+
 onMounted(() => {
   fetchEvents()
   fetchUsers()
@@ -1346,6 +1414,80 @@ onMounted(() => {
           <p class="text-xs text-yellow-300">
             <strong>⚠️ Advertencia:</strong> Este email se enviará a TODOS los usuarios registrados (excepto admins). 
             Úsalo solo cuando haya novedades importantes que comunicar. El contenido del email está predefinido con las últimas mejoras de FurbitoBET.
+          </p>
+        </div>
+      </div>
+
+      <!-- Christmas Email Card -->
+      <div class="bg-gray-800 rounded-lg p-6 border border-gray-700">
+        <div class="flex items-center gap-3 mb-4">
+          <span class="text-3xl">🎄</span>
+          <div>
+            <h4 class="text-xl font-bold text-white">Email de Regalo Navideño</h4>
+            <p class="text-sm text-gray-400">Envía el email especial de Navidad con el regalo de 100€</p>
+          </div>
+        </div>
+
+        <div class="bg-gray-900 p-4 rounded-lg mb-4">
+          <p class="text-white font-medium mb-2">🎁 Contenido del Email:</p>
+          <ul class="text-sm text-gray-400 space-y-1 ml-4">
+            <li>• 🎄 Felicitación navideña personalizada</li>
+            <li>• 💰 Anuncio del regalo de 100€ gratis</li>
+            <li>• ⚽ Promoción de la Gran Cena de Furbito</li>
+            <li>• 🎨 Diseño festivo con colores navideños</li>
+          </ul>
+        </div>
+
+        <button 
+          @click="sendChristmasEmail"
+          class="w-full bg-gradient-to-r from-red-600 to-green-600 hover:from-red-500 hover:to-green-500 text-white px-6 py-3 rounded-lg font-bold transition shadow-lg"
+        >
+          🎄 Enviar Email Navideño a Todos
+        </button>
+
+        <div class="mt-4 p-3 bg-yellow-900/20 border border-yellow-700 rounded-lg">
+          <p class="text-xs text-yellow-300">
+            <strong>⚠️ Advertencia:</strong> Este email se enviará a TODOS los usuarios registrados (excepto admins). 
+            Úsalo para anunciar el regalo navideño de 100€ para la Gran Cena de Furbito.
+          </p>
+        </div>
+      </div>
+
+      <!-- Add Balance to All Users Card -->
+      <div class="bg-gray-800 rounded-lg p-6 border border-gray-700">
+        <div class="flex items-center gap-3 mb-4">
+          <span class="text-3xl">💰</span>
+          <div>
+            <h4 class="text-xl font-bold text-white">Añadir Balance a Todos</h4>
+            <p class="text-sm text-gray-400">Suma una cantidad específica al balance de todos los usuarios</p>
+          </div>
+        </div>
+
+        <div class="bg-gray-900 p-4 rounded-lg mb-4">
+          <label class="block text-white font-medium mb-2">💵 Cantidad a añadir (€):</label>
+          <input 
+            v-model.number="giftAmount" 
+            type="number" 
+            min="1" 
+            max="10000" 
+            step="1"
+            class="w-full bg-gray-700 text-white p-3 rounded-lg border border-gray-600 focus:border-green-500 outline-none text-lg font-bold"
+            placeholder="100"
+          />
+          <p class="text-xs text-gray-400 mt-2">Máximo: 10,000€ por transacción</p>
+        </div>
+
+        <button 
+          @click="addBalanceToAll"
+          class="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white px-6 py-3 rounded-lg font-bold transition shadow-lg"
+        >
+          💰 Añadir {{ giftAmount }}€ a Todos los Usuarios
+        </button>
+
+        <div class="mt-4 p-3 bg-red-900/20 border border-red-700 rounded-lg">
+          <p class="text-xs text-red-300">
+            <strong>🚨 Cuidado:</strong> Esta acción sumará {{ giftAmount }}€ al balance de CADA usuario (excepto admins). 
+            Esta operación NO se puede deshacer. Úsalo solo para regalos especiales o promociones.
           </p>
         </div>
       </div>
