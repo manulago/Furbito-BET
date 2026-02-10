@@ -289,4 +289,10 @@ public class AuthController {
         boolean enabled = appConfigService.isChristmasThemeEnabled();
         return ResponseEntity.ok(java.util.Map.of("enabled", enabled));
     }
+
+    @GetMapping("/carnival-theme-status")
+    public ResponseEntity<?> getCarnivalThemeStatus() {
+        boolean enabled = appConfigService.isCarnivalThemeEnabled();
+        return ResponseEntity.ok(java.util.Map.of("enabled", enabled));
+    }
 }

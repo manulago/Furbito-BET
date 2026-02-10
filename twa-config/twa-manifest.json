@@ -1,0 +1,46 @@
+{
+  "packageId": "com.furbitobet.twa",
+  "host": "furbitobet.vercel.app",
+  "name": "FurbitoBET",
+  "launcherName": "Furbito",
+  "display": "standalone",
+  "themeColor": "#111827",
+  "navigationColor": "#111827",
+  "navigationColorDark": "#111827",
+  "navigationDividerColor": "#111827",
+  "navigationDividerColorDark": "#111827",
+  "backgroundColor": "#111827",
+  "enableNotifications": true,
+  "startUrl": "/",
+  "iconUrl": "https://furbitobet.vercel.app/icons/icon-512x512.png",
+  "maskableIconUrl": "https://furbitobet.vercel.app/icons/maskable-512x512.png",
+  "splashScreenFadeOutDuration": 300,
+  "signingKey": {
+    "path": "./android.keystore",
+    "alias": "furbitobet"
+  },
+  "appVersionCode": 1,
+  "appVersionName": "1.0.0",
+  "shortcuts": [],
+  "generatorApp": "bubblewrap-cli",
+  "webManifestUrl": "https://furbitobet.vercel.app/manifest.json",
+  "fallbackType": "customtabs",
+  "features": {
+    "locationDelegation": {
+      "enabled": false
+    },
+    "playBilling": {
+      "enabled": false
+    }
+  },
+  "alphaDependencies": {
+    "enabled": false
+  },
+  "enableSiteSettingsShortcut": true,
+  "isChromeOSOnly": false,
+  "isMetaQuest": false,
+  "fullScopeUrl": "https://furbitobet.vercel.app/",
+  "minSdkVersion": 19,
+  "orientation": "portrait",
+  "fingerprints": []
+}

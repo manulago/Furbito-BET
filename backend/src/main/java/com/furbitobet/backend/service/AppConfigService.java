@@ -41,4 +41,14 @@ public class AppConfigService {
     public void setChristmasThemeEnabled(boolean enabled) {
         setConfigValue("christmas_theme_enabled", String.valueOf(enabled));
     }
+
+    // Carnival Theme Methods
+    public boolean isCarnivalThemeEnabled() {
+        String value = getConfigValue("carnival_theme_enabled", "false");
+        return Boolean.parseBoolean(value);
+    }
+
+    public void setCarnivalThemeEnabled(boolean enabled) {
+        setConfigValue("carnival_theme_enabled", String.valueOf(enabled));
+    }
 }

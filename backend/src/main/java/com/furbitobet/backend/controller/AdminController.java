@@ -620,4 +620,32 @@ public class AdminController {
                         "success", true,
                         "message", "Christmas theme disabled successfully"));
     }
+
+    // Carnival Theme Endpoints
+    @GetMapping("/carnival-theme-status")
+    public org.springframework.http.ResponseEntity<?> getCarnivalThemeStatus() {
+        boolean enabled = appConfigService.isCarnivalThemeEnabled();
+        return org.springframework.http.ResponseEntity.ok(
+                java.util.Map.of("enabled", enabled));
+    }
+
+    @PostMapping("/enable-carnival-theme")
+    public org.springframework.http.ResponseEntity<?> enableCarnivalTheme() {
+        appConfigService.setCarnivalThemeEnabled(true);
+        System.out.println("🎭 Carnival theme has been enabled globally by admin");
+        return org.springframework.http.ResponseEntity.ok(
+                java.util.Map.of(
+                        "success", true,
+                        "message", "Carnival theme enabled successfully"));
+    }
+
+    @PostMapping("/disable-carnival-theme")
+    public org.springframework.http.ResponseEntity<?> disableCarnivalTheme() {
+        appConfigService.setCarnivalThemeEnabled(false);
+        System.out.println("🎭 Carnival theme has been disabled globally by admin");
+        return org.springframework.http.ResponseEntity.ok(
+                java.util.Map.of(
+                        "success", true,
+                        "message", "Carnival theme disabled successfully"));
+    }
 }

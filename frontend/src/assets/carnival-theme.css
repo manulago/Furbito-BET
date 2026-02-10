@@ -1,0 +1,122 @@
+/* Carnival Theme Styles - Tema de Carnaval */
+.carnival-theme {
+    /* Confetti animation */
+    position: relative;
+}
+
+.carnival-theme::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image:
+        radial-gradient(3px 3px at 10% 20%, #ff6b35, transparent),
+        radial-gradient(3px 3px at 30% 40%, #f7c531, transparent),
+        radial-gradient(2px 2px at 50% 10%, #7b2cbf, transparent),
+        radial-gradient(3px 3px at 70% 30%, #00b4d8, transparent),
+        radial-gradient(2px 2px at 90% 50%, #06d6a0, transparent),
+        radial-gradient(3px 3px at 20% 60%, #ef476f, transparent),
+        radial-gradient(2px 2px at 40% 80%, #ffd166, transparent),
+        radial-gradient(3px 3px at 60% 70%, #06d6a0, transparent),
+        radial-gradient(2px 2px at 80% 90%, #118ab2, transparent);
+    background-size: 150% 150%;
+    animation: confetti-fall 15s linear infinite;
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0.7;
+}
+
+@keyframes confetti-fall {
+    0% {
+        background-position: 0% 0%, 10% 0%, 20% 0%, 30% 0%, 40% 0%, 50% 0%, 60% 0%, 70% 0%, 80% 0%;
+    }
+    100% {
+        background-position: 5% 100%, 15% 100%, 25% 100%, 35% 100%, 45% 100%, 55% 100%, 65% 100%, 75% 100%, 85% 100%;
+    }
+}
+
+/* Carnival colors for navbar - gradient with carnival colors */
+.carnival-theme nav {
+    background: linear-gradient(135deg, #7b2cbf 0%, #f72585 50%, #ff6b35 100%) !important;
+    border-bottom: 3px solid #ffd166 !important;
+}
+
+/* Carnival colors for buttons */
+.carnival-theme .bg-green-500 {
+    background: linear-gradient(135deg, #7b2cbf, #9d4edd) !important;
+}
+
+.carnival-theme .bg-green-600 {
+    background: linear-gradient(135deg, #9d4edd, #7b2cbf) !important;
+}
+
+.carnival-theme .bg-blue-600 {
+    background: linear-gradient(135deg, #f72585, #b5179e) !important;
+}
+
+.carnival-theme .bg-red-500 {
+    background: linear-gradient(135deg, #ff6b35, #f72585) !important;
+}
+
+/* Carnival glow effect */
+.carnival-theme .bg-gray-800 {
+    box-shadow: 0 0 20px rgba(247, 37, 133, 0.15) !important;
+}
+
+/* Colorful accents */
+.carnival-theme .text-green-400 {
+    color: #ffd166 !important;
+    text-shadow: 0 0 10px rgba(255, 209, 102, 0.5);
+}
+
+/* Carnival decorations for cards */
+.carnival-theme .bg-gray-800::before {
+    content: '🎭';
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    font-size: 1.2rem;
+    opacity: 0.3;
+}
+
+/* Festive border colors */
+.carnival-theme .border-gray-700 {
+    border-color: rgba(255, 209, 102, 0.3) !important;
+}
+
+/* Carnival hover effects */
+.carnival-theme button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 20px rgba(247, 37, 133, 0.4);
+}
+
+/* Festive gradient background */
+.carnival-theme .bg-gray-900 {
+    background: linear-gradient(180deg, #1a0a2e 0%, #16213e 100%) !important;
+}
+
+/* Carnival mask animation for special elements */
+@keyframes mask-dance {
+    0%, 100% { transform: rotate(-5deg); }
+    50% { transform: rotate(5deg); }
+}
+
+.carnival-theme .animate-carnival {
+    animation: mask-dance 2s ease-in-out infinite;
+}
+
+/* Rainbow text effect */
+.carnival-theme .carnival-text {
+    background: linear-gradient(90deg, #f72585, #7b2cbf, #3a0ca3, #4361ee, #4cc9f0);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: rainbow-text 3s linear infinite;
+}
+
+@keyframes rainbow-text {
+    0% { background-position: 0% 50%; }
+    100% { background-position: 200% 50%; }
+}

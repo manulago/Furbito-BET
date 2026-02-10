@@ -6,7 +6,9 @@ import { useRouter } from 'vue-router'
 import { onMounted, ref, watch, onUnmounted } from 'vue'
 import InstallPrompt from './components/InstallPrompt.vue'
 import ChristmasGift from './components/ChristmasGift.vue'
+import CarnivalBanner from './components/CarnivalBanner.vue'
 import './assets/christmas-theme.css'
+import './assets/carnival-theme.css'
 
 const auth = useAuthStore()
 const betStore = useBetStore()
@@ -20,6 +22,9 @@ const NEWS_KEY_VERSION = 'news_v1'
 
 // Christmas theme
 const christmasThemeEnabled = ref(false)
+
+// Carnival theme
+const carnivalThemeEnabled = ref(false)
 
 // Inactivity timeout (15 minutes)
 const INACTIVITY_TIMEOUT = 15 * 60 * 1000 // 15 minutes in milliseconds
@@ -121,11 +126,24 @@ async function checkChristmasTheme() {
   }
 }
 
+async function checkCarnivalTheme() {
+  try {
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/carnival-theme-status`)
+    if (res.ok) {
+      const data = await res.json()
+      carnivalThemeEnabled.value = data.enabled
+    }
+  } catch (err) {
+    console.error('Error checking carnival theme:', err)
+  }
+}
+
 onMounted(() => {
   checkNews()
   setupActivityListeners()
   resetInactivityTimer()
   checkChristmasTheme()
+  checkCarnivalTheme()
 })
 
 onUnmounted(() => {
@@ -213,7 +231,7 @@ function logout() {
 </script>
 
 <template>
-  <div class="min-h-screen bg-gray-900 text-white font-sans pb-24" :class="{ 'christmas-theme': christmasThemeEnabled }">
+  <div class="min-h-screen bg-gray-900 text-white font-sans pb-24" :class="{ 'christmas-theme': christmasThemeEnabled, 'carnival-theme': carnivalThemeEnabled }">
     <nav class="bg-gray-800 p-4 shadow-lg border-b border-gray-700 relative z-50">
       <div class="container mx-auto flex justify-between items-center">
         <div class="flex items-center gap-3">
@@ -449,6 +467,9 @@ function logout() {
     
     <!-- Christmas Gift Modal -->
     <ChristmasGift v-if="christmasThemeEnabled" />
+    
+    <!-- Carnival Banner Modal -->
+    <CarnivalBanner :enabled="carnivalThemeEnabled" />
   </div>
 </template>
 

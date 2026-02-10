@@ -1,24 +1,73 @@
 {
     "name": "FurbitoBET",
     "short_name": "Furbito",
-    "description": "Apuestas deportivas del Furbito FIC",
+    "description": "App de entretenimiento para pronósticos deportivos entre amigos. Sin dinero real.",
     "start_url": "/",
+    "scope": "/",
     "display": "standalone",
     "background_color": "#111827",
     "theme_color": "#111827",
     "orientation": "portrait-primary",
-    "icons": [
+    "lang": "es",
+    "categories": ["sports", "entertainment", "social"],
+    "screenshots": [
         {
-            "src": "/logo.jpg",
-            "sizes": "192x192",
-            "type": "image/jpeg",
-            "purpose": "any maskable"
+            "src": "/screenshots/home.png",
+            "sizes": "1080x1920",
+            "type": "image/png",
+            "label": "Pantalla principal"
         },
         {
-            "src": "/logo.jpg",
+            "src": "/screenshots/bets.png",
+            "sizes": "1080x1920",
+            "type": "image/png",
+            "label": "Mis apuestas"
+        }
+    ],
+    "icons": [
+        {
+            "src": "/icons/icon-48x48.png",
+            "sizes": "48x48",
+            "type": "image/png"
+        },
+        {
+            "src": "/icons/icon-72x72.png",
+            "sizes": "72x72",
+            "type": "image/png"
+        },
+        {
+            "src": "/icons/icon-96x96.png",
+            "sizes": "96x96",
+            "type": "image/png"
+        },
+        {
+            "src": "/icons/icon-144x144.png",
+            "sizes": "144x144",
+            "type": "image/png"
+        },
+        {
+            "src": "/icons/icon-192x192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "any"
+        },
+        {
+            "src": "/icons/icon-512x512.png",
             "sizes": "512x512",
-            "type": "image/jpeg",
-            "purpose": "any maskable"
+            "type": "image/png",
+            "purpose": "any"
+        },
+        {
+            "src": "/icons/maskable-192x192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "maskable"
+        },
+        {
+            "src": "/icons/maskable-512x512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "maskable"
         }
     ]
 }
