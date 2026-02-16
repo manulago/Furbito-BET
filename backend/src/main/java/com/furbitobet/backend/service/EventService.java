@@ -24,6 +24,9 @@ public class EventService {
     @Autowired
     private EmailService emailService;
 
+    @Autowired
+    private PlayerOddsService playerOddsService;
+
     public Event createEvent(String name, LocalDateTime date, boolean notifyUsers) {
         Event event = new Event();
         event.setName(name);
@@ -31,6 +34,7 @@ public class EventService {
         event.setStatus(Event.EventStatus.UPCOMING);
         Event savedEvent = eventRepository.save(event);
 
+        // Generar cuotas de jugadores automáticamente usando el nuevo servicio
         generatePlayerOdds(savedEvent);
 
         if (notifyUsers) {
@@ -57,57 +61,44 @@ public class EventService {
         return createEvent(name, date, false);
     }
 
+    /**
+     * Genera automáticamente las cuotas de jugadores para un evento.
+     * Delega al PlayerOddsService que calcula las cuotas basándose en estadísticas.
+     */
     public void generatePlayerOdds(Event event) {
         try {
-            String[] teams = event.getName().split(" vs ");
-            if (teams.length != 2)
-                return;
-
-            java.util.List<com.furbitobet.backend.model.Player> homePlayers = playerRepository
-                    .findByTeam(teams[0].trim());
-            java.util.List<com.furbitobet.backend.model.Player> awayPlayers = playerRepository
-                    .findByTeam(teams[1].trim());
-
-            java.util.List<com.furbitobet.backend.model.Player> allPlayers = new java.util.ArrayList<>();
-            allPlayers.addAll(homePlayers);
-            allPlayers.addAll(awayPlayers);
-
-            for (com.furbitobet.backend.model.Player p : allPlayers) {
-                // Goal Odds Logic
-                double matches = p.getMatchesPlayed() > 0 ? p.getMatchesPlayed() : 1.0;
-                double goalProb = (double) p.getGoals() / matches;
-                // Normalize prob
-                goalProb = Math.max(0.1, Math.min(0.8, goalProb)); // Clamp between 10% and 80%
-                // Add a margin? If user wants simple stats based.
-                // Odds = 1 / Probability * Margin (e.g. 0.9 return to player) -> Odds = 0.9 /
-                // Prob ???
-                // Let's just do Odds = 1 / Prob for simplicity + small buffer for house edge
-                // (e.g. 1.05 / Prob would be generous, usually 1/Prob * 0.9)
-                // Let's assume Probability is accurate, Fair Odds = 1/P. House Odds = 1/P *
-                // 0.9.
-                // But typically for "will score", if players have 0 goals, odds should be high.
-                if (p.getGoals() == 0)
-                    goalProb = 0.1;
-
-                BigDecimal goalOdds = BigDecimal.valueOf(1.0 / goalProb).setScale(2, java.math.RoundingMode.HALF_UP);
-
-                addOutcome(event.getId(), "Gol de " + p.getName(), goalOdds, "Goleadores");
-
-                // Assist Odds Logic
-                double assistProb = (double) p.getAssists() / matches;
-                assistProb = Math.max(0.05, Math.min(0.7, assistProb));
-                if (p.getAssists() == 0)
-                    assistProb = 0.08;
-
-                BigDecimal assistOdds = BigDecimal.valueOf(1.0 / assistProb).setScale(2,
-                        java.math.RoundingMode.HALF_UP);
-
-                addOutcome(event.getId(), "Asistencia de " + p.getName(), assistOdds, "Asistencias");
-            }
+            // Usar el servicio especializado de cuotas de jugadores
+            playerOddsService.generateAllPlayerOdds(event);
         } catch (Exception e) {
             System.err.println("Error generating player odds: " + e.getMessage());
-            // Don't fail event creation
+            // No fallar la creación del evento si hay error en las cuotas
         }
+    }
+
+    /**
+     * Regenera las cuotas de jugadores para un evento existente.
+     * Elimina las cuotas anteriores de goleadores/asistencias y las recalcula.
+     */
+    public void regeneratePlayerOdds(Long eventId) {
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new RuntimeException("Event not found"));
+
+        // Eliminar cuotas de jugadores existentes
+        List<Outcome> existingOutcomes = outcomeRepository.findByEventId(eventId);
+        for (Outcome outcome : existingOutcomes) {
+            String group = outcome.getOutcomeGroup();
+            if (group != null && (group.equals("Goleadores") || group.equals("Asistencias") ||
+                    group.equals("Tarjetas") || group.equals("Primer Goleador") ||
+                    group.equals("Especiales Jugador"))) {
+                // Solo eliminar si no tiene apuestas pendientes
+                if (outcome.getStatus() == Outcome.OutcomeStatus.PENDING) {
+                    outcomeRepository.delete(outcome);
+                }
+            }
+        }
+
+        // Regenerar cuotas
+        playerOddsService.generateAllPlayerOdds(event);
     }
 
     public Outcome addOutcome(Long eventId, String description, BigDecimal odds) {
