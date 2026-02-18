@@ -198,6 +198,10 @@ public class AuthController {
             authenticationManager.authenticate(
                     new org.springframework.security.authentication.UsernamePasswordAuthenticationToken(
                             request.getUsername(), request.getPassword()));
+        } catch (org.springframework.security.authentication.DisabledException e) {
+            return ResponseEntity.badRequest().body("Error: Account not verified. Please check your email to confirm your account.");
+        } catch (org.springframework.security.authentication.BadCredentialsException e) {
+            return ResponseEntity.badRequest().body("Error: Invalid username or password");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error: Invalid username or password");
         }
